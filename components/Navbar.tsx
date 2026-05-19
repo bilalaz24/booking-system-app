@@ -12,9 +12,9 @@ const Navbar = async () => {
   const {business} = await getBusiness(supabase)
 
   return (
-    <nav className='w-full px-24 border-b-gray-300 border-b-[1px] flex items-center justify-between'>
+    <nav className='w-full py-8 px-24 border-b-gray-300 border-b-[1px] flex items-center justify-between'>
       <div>
-        <Image src="/logo.png" alt='logo' width="120" height="120" />
+        <h1 className='text-2xl'>GOLDEN FADE</h1>
       </div>
       <ul className='flex items-center gap-8 text-gray-300'>
         <li>
