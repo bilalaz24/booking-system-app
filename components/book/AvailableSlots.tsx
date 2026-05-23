@@ -2,24 +2,39 @@
 import { Button } from '../ui/button'
 import { useState } from 'react'
 
-const AvailableSlots = ({slots}: {slots: string[]}) => {
-    const [timeSlot, setTimeSlot] = useState<string>()
+interface SlotsProps {
+  slots: string[]
+  selectedDate: Date | null
+  onSelectSlot: (slotId: string) => void // Or whatever signature your handler uses
+}
 
-    const setSlot = (slot: string) => {
-        setTimeSlot(slot)
+const AvailableSlots = ({slots, selectedDate, onSelectSlot}: SlotsProps) => {
+    const [slot, setSlot] = useState<string>("")
+
+    console.log(slots)
+
+    const handleSelect = () => {
+        onSelectSlot(slot)
+        console.log(slot)
     }
 
     return (
-        <div>
+        <div className='flex-1 flex justify-center'>
             <div>
-                {slots.map((slot) => (
-                    <div key={slot}>
-                        <Button className='bg-gray-200 text-gray-950' onClick={() => setSlot(slot)}>{slot}</Button>
+                {slots.length > 0 ? (
+                    <div>
+                        {slots.map((slot) => (
+                            <div key={slot}>
+                                <Button className='bg-gray-200 text-gray-950' onClick={() => setSlot(slot)}>{slot}</Button>
+                            </div>
+                        ))}
                     </div>
-                ))}
+                ) : (
+                    <p>Stängt</p>
+                )}
             </div>
             <div>
-                <Button className='bg-yellow-600'>Bekräfta</Button>
+                <Button disabled={slot == ""} className='bg-yellow-600' onClick={handleSelect} >Bekräfta</Button>
             </div>
         </div>
     )

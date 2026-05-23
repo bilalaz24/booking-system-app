@@ -1,16 +1,24 @@
 import { getAvailableSlots } from '@/app/actions/slots'
-import AvailableSlots from '@/components/book/AvailableSlots'
+import BookingForm from '@/components/book/BookingForm'
 
 const Book = async () => {
+    
     const businessId = process.env.NEXT_PUBLIC_BUSINESS_ID
+    if (!businessId) {
+        throw new Error("Missing NEXT_PUBLIC_BUSINESS_ID")
+    }
+
     const d = new Date()
-    d.setDate(d.getDate()-1)
     
     const availableSlots: string[] = await getAvailableSlots(businessId!, d.toISOString().split("T")[0])
 
+    console.log("--------------------------")
+    console.log(availableSlots)
+    console.log("--------------------------")
+
     return (
         <div>
-            <AvailableSlots slots={availableSlots} />
+            <BookingForm initialSlots={availableSlots} initialDate={d} businessId={businessId} />
         </div>
     )
 }

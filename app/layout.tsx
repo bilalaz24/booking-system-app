@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
+import { Toaster } from "sonner";
 import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { BusinessProvider } from "@/components/providers/BusinessProvider";
@@ -51,6 +52,7 @@ export default async function RootLayout({
           <main className="max-w-7xl mx-auto w-full px-4 md:px-6 lg:px-8">
             {children}
           </main>
+          <Toaster />
         </BusinessProvider>
       </body>
     </html>

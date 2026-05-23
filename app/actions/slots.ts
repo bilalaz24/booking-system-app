@@ -5,9 +5,8 @@ import { createAdminClient } from "@/lib/supabase/admin"
 export async function getAvailableSlots(businessId: string, date: string) {
     const supabase = createAdminClient()
 
-    const jsDay = new Date(date).getDay()
-
-    const dayOfWeek = jsDay === 0 ? 7 : jsDay
+    const dayOfWeek = new Date(date + "T00:00:00").getDay()
+    //const dayOfWeek = jsDay === 0 ? 7 : jsDay
 
     console.log(businessId, date, dayOfWeek)
 
@@ -17,7 +16,7 @@ export async function getAvailableSlots(businessId: string, date: string) {
             .select("start_time, end_time")
             .eq("business_id", businessId)
             .eq("day_of_week", dayOfWeek)
-            .single(),
+            .maybeSingle(),
         
         supabase
             .from("bookings")
@@ -25,6 +24,8 @@ export async function getAvailableSlots(businessId: string, date: string) {
             .eq("business_id", businessId)
             .eq("date", date)
     ])
+
+    console.log(slots)
 
     if (slotError) {
     console.error("Slot error:", JSON.stringify(slotError, null, 2))
@@ -34,8 +35,14 @@ export async function getAvailableSlots(businessId: string, date: string) {
     console.error("Booking error:", JSON.stringify(bookingError, null, 2))
     }
 
+    if (!slots) {
+        return []
+    }
+
     console.log(slots)
     console.log(booked)
+
+
 
     const [startH, startM] = slots?.start_time.split(":").map(Number)
     const [endH, endM] = slots?.end_time.split(":").map(Number)
