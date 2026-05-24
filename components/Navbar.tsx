@@ -14,8 +14,10 @@ const Navbar = async () => {
   return (
     <nav className='w-full py-8 px-24 border-b-gray-300 border-b-[1px] flex items-center justify-between'>
       <div>
-        {/*}<Image src="/logo.png" alt={business.name} height="100" width="150" />{*/}
-        <h1 className='text-2xl'>{business.name}</h1>
+        <Link href="/">
+          {/*}<Image src="/logo.png" alt={business.name} height="100" width="150" />{*/}
+          <h1 className='text-2xl'>{business.name}</h1>
+        </Link>
       </div>
       <ul className='flex items-center gap-8 text-gray-300'>
         <li>

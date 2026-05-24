@@ -1,4 +1,4 @@
-import { getAvailableSlots } from '@/app/actions/slots'
+import { getAvailableSlots } from '@/lib/actions/slots'
 import BookingForm from '@/components/book/BookingForm'
 
 const Book = async () => {
@@ -9,6 +9,8 @@ const Book = async () => {
     }
 
     const d = new Date()
+
+    console.log("from booking page", d)
     
     const availableSlots: string[] = await getAvailableSlots(businessId!, d.toISOString().split("T")[0])
 

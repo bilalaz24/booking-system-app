@@ -2,27 +2,26 @@
 import React, { useEffect, useRef, useState } from 'react'
 import AvailableSlots from './AvailableSlots'
 import AvailableDates from './AvailableDates'
-import { getAvailableSlots } from '@/app/actions/slots' // Import your existing action
+import { getAvailableSlots } from '@/lib/actions/slots' // Import your existing action
 import ContactInfo from './ContactInfo'
+import Services from './Services'
 
 // 1. Accept the initial server-fetched slots as a prop
 const BookingForm = ({ initialSlots, initialDate, businessId }: { initialSlots: string[], initialDate: Date, businessId: string }) => {
     const [selectedDate, setSelectedDate] = useState<Date | null>(initialDate)
     const [selectedSlot, setSelectedSlot] = useState<string | null>(null)
+    const [selectedService, setSelectedService] = useState<string | null>(null)
+
     const [slots, setSlots] = useState<string[]>(initialSlots)
     const [loadingSlots, setLoadingSlots] = useState(false)   
-
-    const hasLoaded = useRef(false)
     
-    /*useEffect(() => {
-        if (hasLoaded.current) return
-        hasLoaded.current = true
+    const handleServiceSelect = (serviceId: string) => {
+        console.log(serviceId)
+        setSelectedService(serviceId)
+    }
 
-        handleDateSelect(new Date())
-    }, [])
-*/
-    const handleSlotSelect = (slotId: string) => {
-        setSelectedSlot(slotId)
+    const handleSlotSelect = (slot: string) => {
+        setSelectedSlot(slot)
     }
 
     // 3. Trigger this whenever a new date is clicked
@@ -36,9 +35,11 @@ const BookingForm = ({ initialSlots, initialDate, businessId }: { initialSlots: 
                 console.error("No business found")
                 return
             }
+
+            console.log("from bookingform", date)
             
             // Format to safely match YYYY-MM-DD format without timezone issues
-            const formattedDate = date.toISOString().split("T")[0]
+            const formattedDate = date.toLocaleDateString('en-CA')
 
             // Call your EXACT server action directly from the client!
             const newSlots = await getAvailableSlots(businessId!, formattedDate)
@@ -53,6 +54,7 @@ const BookingForm = ({ initialSlots, initialDate, businessId }: { initialSlots: 
 
     return (
         <div className="space-y-6 flex justify-between">
+            <Services onSelectService={handleServiceSelect} />
             <AvailableDates selectedDate={selectedDate} onSelectDate={handleDateSelect} />
             
             {loadingSlots ? (
@@ -67,7 +69,7 @@ const BookingForm = ({ initialSlots, initialDate, businessId }: { initialSlots: 
                 />
             )}
 
-            <ContactInfo selectedDate={selectedDate} selectedSlot={selectedSlot} />
+            <ContactInfo selectedDate={selectedDate} selectedSlot={selectedSlot} selectedService={selectedService} />
         </div>
     )
 }

@@ -8,10 +8,12 @@ interface CalendarProps {
 }
 
 const AvailableDates = ({selectedDate, onSelectDate}: CalendarProps) => {
-  const [date, setDate] = React.useState<Date | undefined>(new Date())
+  const [date, setDate] = React.useState<Date | undefined>(undefined)
 
   const handleSelect = (value: Date | undefined) => {
     if (!value) return
+
+    console.log(value)
 
     setDate(value)
     onSelectDate(value)

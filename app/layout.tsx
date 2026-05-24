@@ -49,10 +49,10 @@ export default async function RootLayout({
       <body className="min-h-full flex flex-col">
         <BusinessProvider value={business}>
           <Navbar />
-          <main className="max-w-7xl mx-auto w-full px-4 md:px-6 lg:px-8">
+          <main className="max-w-7xl mx-auto w-full px-2 py-8 md:px-6 lg:px-8">
             {children}
           </main>
-          <Toaster />
+          <Toaster closeButton />
         </BusinessProvider>
       </body>
     </html>

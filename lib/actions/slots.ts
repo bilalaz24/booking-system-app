@@ -8,13 +8,15 @@ export async function getAvailableSlots(businessId: string, date: string) {
     //const dayOfWeek = new Date(date + "T00:00:00").getDay()
     //const dayOfWeek = jsDay === 0 ? 7 : jsDay
 
+    console.log("FIRST IN SERVER ACTION", date)
+
     const jsDay = new Date(date + "T00:00:00").getDay(); // 0 (Sun) to 6 (Sat)
 
     // Shift so Monday is 0 and Sunday is 6
     const dayOfWeek = jsDay === 0 ? 6 : jsDay - 1;
 
 
-    console.log(businessId, date, dayOfWeek)
+    console.log("from server action", businessId, date, dayOfWeek)
 
     const [{ data: slots, error: slotError}, { data: booked, error: bookingError }] = await Promise.all([
         supabase
