@@ -11,7 +11,7 @@ export async function getAvailableSlots(businessId: string, date: string) {
     const jsDay = new Date(date + "T00:00:00").getDay(); // 0 (Sun) to 6 (Sat)
 
     // Shift so Monday is 0 and Sunday is 6
-    const dbDay = jsDay === 0 ? 6 : jsDay - 1;
+    const dayOfWeek = jsDay === 0 ? 6 : jsDay - 1;
 
 
     console.log(businessId, date, dayOfWeek)
