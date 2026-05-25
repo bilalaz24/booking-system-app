@@ -56,10 +56,14 @@ const BookingForm = ({ initialSlots, initialDate, businessId }: { initialSlots: 
         <div className="space-y-6 flex-col justify-center">
             <Services onSelectService={handleServiceSelect} />
 
-            <div className='text-center border-1 border-grey-300 rounded-2xl py-8'>
+            <div className={`text-center border border-gray-300 rounded-2xl py-8 ${/*
+                selectedService != null
+                ? "shadow-[0_0_8px_rgba(255,255,255,0.9),0_0_25px_rgba(255,255,255,0.5),inset_0_0_10px_rgba(255,255,255,0.2)]"
+                : ""
+            */""}`}>
                 <h2 className='text-xl mb-4'>Välj en tid</h2>
                 <div className='md:flex justify-between'>
-                    <AvailableDates selectedDate={selectedDate} onSelectDate={handleDateSelect} />
+                    <AvailableDates selectedService={selectedService} onSelectDate={handleDateSelect} />
                     
                     {loadingSlots ? (
                         <div className='flex-1 flex justify-center'>

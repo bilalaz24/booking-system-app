@@ -43,7 +43,7 @@ const Services = ({onSelectService} : Props) => {
   }, [])
 
   return (
-    <div className="flex-1 flex text-center justify-center border-1 border-grey-300 rounded-2xl py-8">
+    <div className={`flex-1 flex text-center justify-center border-1 border-grey-300 rounded-2xl py-8`}>
       <div>
         <h2 className="text-xl mb-4">Välj en tjänst</h2>
         <div>
