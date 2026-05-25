@@ -5,6 +5,7 @@ import { Button, buttonVariants } from './ui/button'
 import { getBusiness } from '@/lib/queries/business'
 import { createClient } from '@/lib/supabase/server'
 import { cookies } from 'next/headers'
+import { Menu } from 'lucide-react'
 
 const Navbar = async () => {
   const cookieStore = await cookies()
@@ -19,7 +20,10 @@ const Navbar = async () => {
           <h1 className='text-2xl'>{business.name}</h1>
         </Link>
       </div>
-      <ul className='flex items-center gap-8 text-gray-300'>
+      <div className='md:hidden'>
+        <Menu />
+      </div>
+      <ul className='hidden md:flex items-center gap-8 text-gray-300'>
         <li>
           <Link className='hover:text-yellow-500' href="/">Hem</Link>
         </li>
@@ -30,7 +34,7 @@ const Navbar = async () => {
           <Link className='hover:text-yellow-500' href="/contact">Kontakta</Link>
         </li>
       </ul>
-      <div>
+      <div className='hidden md:block'>
         <Link className={buttonVariants()} href="/book">Booka Nu</Link>
       </div>
     </nav>

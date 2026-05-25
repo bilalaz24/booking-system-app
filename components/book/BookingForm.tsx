@@ -53,21 +53,27 @@ const BookingForm = ({ initialSlots, initialDate, businessId }: { initialSlots: 
     }
 
     return (
-        <div className="space-y-6 flex justify-between">
+        <div className="space-y-6 flex-col justify-center">
             <Services onSelectService={handleServiceSelect} />
-            <AvailableDates selectedDate={selectedDate} onSelectDate={handleDateSelect} />
-            
-            {loadingSlots ? (
-                <div className='flex-1 flex justify-center'>
-                    <p className="text-center text-sm text-gray-500">Laddar tider...</p>
+
+            <div className='text-center border-1 border-grey-300 rounded-2xl py-8'>
+                <h2 className='text-xl mb-4'>Välj en tid</h2>
+                <div className='md:flex justify-between'>
+                    <AvailableDates selectedDate={selectedDate} onSelectDate={handleDateSelect} />
+                    
+                    {loadingSlots ? (
+                        <div className='flex-1 flex justify-center'>
+                            <p className="text-center text-sm text-gray-500">Laddar tider...</p>
+                        </div>
+                    ) : (
+                        <AvailableSlots 
+                            slots={slots} 
+                            selectedDate={selectedDate || new Date()} 
+                            onSelectSlot={handleSlotSelect} 
+                        />
+                    )}
                 </div>
-            ) : (
-                <AvailableSlots 
-                    slots={slots} 
-                    selectedDate={selectedDate || new Date()} 
-                    onSelectSlot={handleSlotSelect} 
-                />
-            )}
+            </div>
 
             <ContactInfo selectedDate={selectedDate} selectedSlot={selectedSlot} selectedService={selectedService} />
         </div>

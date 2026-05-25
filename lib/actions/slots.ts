@@ -2,78 +2,79 @@
 
 import { createAdminClient } from "@/lib/supabase/admin"
 
+const toMinutes = (time: string) => {
+  const [h, m] = time.split(":").map(Number)
+  return h * 60 + m
+}
+
+const toTimeString = (minutes: number) => {
+  const h = Math.floor(minutes / 60)
+  const m = minutes % 60
+  return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`
+}
+
 export async function getAvailableSlots(businessId: string, date: string) {
-    const supabase = createAdminClient()
+  const supabase = createAdminClient()
 
-    //const dayOfWeek = new Date(date + "T00:00:00").getDay()
-    //const dayOfWeek = jsDay === 0 ? 7 : jsDay
+  const jsDay = new Date(date + "T00:00:00").getDay()
+  const dayOfWeek = jsDay === 0 ? 6 : jsDay - 1
 
-    console.log("FIRST IN SERVER ACTION", date)
+  const [{ data: slots, error: slotError }, { data: booked, error: bookingError }] =
+    await Promise.all([
+      supabase
+        .from("available_slots")
+        .select("start_time, end_time")
+        .eq("business_id", businessId)
+        .eq("day_of_week", dayOfWeek)
+        .maybeSingle(),
 
-    const jsDay = new Date(date + "T00:00:00").getDay(); // 0 (Sun) to 6 (Sat)
-
-    // Shift so Monday is 0 and Sunday is 6
-    const dayOfWeek = jsDay === 0 ? 6 : jsDay - 1;
-
-
-    console.log("from server action", businessId, date, dayOfWeek)
-
-    const [{ data: slots, error: slotError}, { data: booked, error: bookingError }] = await Promise.all([
-        supabase
-            .from("available_slots")
-            .select("start_time, end_time")
-            .eq("business_id", businessId)
-            .eq("day_of_week", dayOfWeek)
-            .maybeSingle(),
-        
-        supabase
-            .from("bookings")
-            .select("start_time, end_time")
-            .eq("business_id", businessId)
-            .eq("date", date)
+      supabase
+        .from("bookings")
+        .select("start_time, end_time")
+        .eq("business_id", businessId)
+        .eq("date", date),
     ])
 
-    console.log(slots)
+  if (slotError) {
+    console.error("Slot error:", slotError)
+    return []
+  }
 
-    if (slotError) {
-    console.error("Slot error:", JSON.stringify(slotError, null, 2))
+  if (bookingError) {
+    console.error("Booking error:", bookingError)
+    return []
+  }
+
+  if (!slots) return []
+
+  const workStart = toMinutes(slots.start_time)
+  const workEnd = toMinutes(slots.end_time)
+
+  const bookedRanges = (booked ?? []).map((b) => ({
+    start: toMinutes(b.start_time),
+    end: toMinutes(b.end_time),
+  }))
+
+  const result: string[] = []
+
+  const SLOT_DURATION = 30
+
+  let current = workStart
+
+  while (current + SLOT_DURATION <= workEnd) {
+    const slotStart = current
+    const slotEnd = current + SLOT_DURATION
+
+    const overlaps = bookedRanges.some((b) => {
+      return slotStart < b.end && slotEnd > b.start
+    })
+
+    if (!overlaps) {
+      result.push(toTimeString(slotStart))
     }
 
-    if (bookingError) {
-    console.error("Booking error:", JSON.stringify(bookingError, null, 2))
-    }
+    current += SLOT_DURATION
+  }
 
-    if (!slots) {
-        return []
-    }
-
-    console.log(slots)
-    console.log(booked)
-
-
-
-    const [startH, startM] = slots?.start_time.split(":").map(Number)
-    const [endH, endM] = slots?.end_time.split(":").map(Number)
-
-    let start = startH * 60 + startM
-    const end = endH * 60 + endM
-
-    const result: string[] = []
-
-    while (start < end) {
-        const h = Math.floor(start / 60)
-        const m = start % 60
-
-        const formatted = `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`
-        result.push(formatted)
-
-        start  += 30
-    }
-
-    console.log(result)
-
-    //const bookedTimes = new Set(booked.map(b => b.start_time))
-    //const available = slots.filter(s => !bookedTimes.has(s.start_time))
-
-    return result
+  return result
 }

@@ -1,5 +1,9 @@
 "use server"
 import { createAdminClient } from "@/lib/supabase/admin"
+import { bookingSchema } from "@/app/schemas/booking"
+import { z } from "zod"
+
+type BookingData = z.infer<typeof bookingSchema>
 
 async function addMinutes(time: string, serviceId: string) {
   const [hours, minutes] = time.split(":").map(Number)
@@ -24,18 +28,27 @@ async function addMinutes(time: string, serviceId: string) {
   return date.toTimeString().slice(0, 5)
 }
 
-export async function bookAppointment(prevState: any, formData: FormData) {
+export async function bookAppointment(data: BookingData) {
     try {
         const supabase = createAdminClient()
 
         const businessId = process.env.NEXT_PUBLIC_BUSINESS_ID
 
+        const {
+            name,
+            email,
+            phone,
+            date,
+            slot,
+            service,
+        } = data
+        /*
         const name = formData.get("name")?.toString().trim()
         const email = formData.get("email")?.toString().trim()
         const phone = formData.get("phone")?.toString().trim()
         const date = formData.get("date")?.toString()
         const slot = formData.get("slot")?.toString()
-        const service = formData.get("service")?.toString()
+        const service = formData.get("service")?.toString()*/
 
         if (!name || !phone || !date || !slot || !service) {
             return {
@@ -43,6 +56,15 @@ export async function bookAppointment(prevState: any, formData: FormData) {
                 error: "Missing fields"
             }
             //throw new Error("Missing fields")
+        }
+
+        const parsed = bookingSchema.safeParse(data)
+
+        if (!parsed.success) {
+            return {
+                success: false,
+                error: "Invalid form data",
+            }
         }
 
         console.log({

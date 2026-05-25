@@ -43,21 +43,24 @@ const Services = ({onSelectService} : Props) => {
   }, [])
 
   return (
-    <div className="flex-1 flex justify-center">
+    <div className="flex-1 flex text-center justify-center border-1 border-grey-300 rounded-2xl py-8">
       <div>
-        {loading ? (
-          <p>Laddar tjänster</p>
-        ) : (
-          <div>
-            {services?.map((service) => (
-              <div key={service.id}>
-                <Button className="bg-gray-200 text-gray-950" onClick={() => onSelectService(service.id)}>
-                  {service.name}
-                </Button>
-              </div>
-            ))}
-          </div>
-        )}
+        <h2 className="text-xl mb-4">Välj en tjänst</h2>
+        <div>
+          {loading ? (
+            <p>Laddar tjänster</p>
+          ) : (
+            <div>
+              {services?.map((service) => (
+                <div key={service.id}>
+                  <Button className="bg-gray-200 text-gray-950" onClick={() => onSelectService(service.id)}>
+                    {service.name}
+                  </Button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   )
