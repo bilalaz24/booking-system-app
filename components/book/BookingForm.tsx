@@ -56,7 +56,7 @@ const BookingForm = ({ initialSlots, initialDate, businessId }: { initialSlots: 
         <div className="space-y-6 flex-col justify-center">
             <Services onSelectService={handleServiceSelect} />
 
-            <div className={`text-center border border-gray-300 rounded-2xl py-8 ${/*
+            <div className={`text-center border border-b-muted rounded-2xl py-8 ${/*
                 selectedService != null
                 ? "shadow-[0_0_8px_rgba(255,255,255,0.9),0_0_25px_rgba(255,255,255,0.5),inset_0_0_10px_rgba(255,255,255,0.2)]"
                 : ""

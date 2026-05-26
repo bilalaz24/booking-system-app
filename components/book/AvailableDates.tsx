@@ -23,6 +23,7 @@ const AvailableDates = ({selectedService, onSelectDate}: CalendarProps) => {
     <div className='flex-1 flex justify-center'>
       <div>
         <Calendar
+          size='lg'
           mode="single"
           selected={date}
           onSelect={handleSelect}

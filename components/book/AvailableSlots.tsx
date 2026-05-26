@@ -25,7 +25,7 @@ const AvailableSlots = ({slots, selectedDate, onSelectSlot}: SlotsProps) => {
                     <div>
                         {slots.map((slot) => (
                             <div key={slot}>
-                                <Button className='bg-gray-200 text-gray-950' onClick={() => setSlot(slot)}>{slot}</Button>
+                                <Button className='bg-card text-card-foreground' onClick={() => setSlot(slot)}>{slot}</Button>
                             </div>
                         ))}
                     </div>
@@ -34,7 +34,7 @@ const AvailableSlots = ({slots, selectedDate, onSelectSlot}: SlotsProps) => {
                 )}
             </div>
             <div>
-                <Button disabled={slot == ""} className='bg-yellow-600' onClick={handleSelect} >Bekräfta</Button>
+                <Button disabled={slot == ""} onClick={handleSelect} >Bekräfta</Button>
             </div>
         </div>
     )

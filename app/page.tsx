@@ -12,6 +12,7 @@ export default async function Home() {
   return (
     <div>
       <h1>{config.hero_title}</h1>
+      <p>this is a test for the font</p>
     </div>
   );
 }

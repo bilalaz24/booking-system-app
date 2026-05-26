@@ -13,10 +13,10 @@ const Navbar = async () => {
   const {business} = await getBusiness(supabase)
 
   return (
-    <nav className='w-full py-8 px-24 border-b-gray-300 border-b-[1px] flex items-center justify-between'>
+    <nav className='w-full sticky top-0 z-50 py-8 px-24 bg-navfoot-bg border-b-muted border-b-4 flex items-center justify-between'>
       <div>
         <Link href="/">
-          {/*}<Image src="/logo.png" alt={business.name} height="100" width="150" />{*/}
+          {/*<Image src="/logof.png" alt={business.name} height="50" width="100" />*/}
           <h1 className='text-2xl'>{business.name}</h1>
         </Link>
       </div>
@@ -25,13 +25,13 @@ const Navbar = async () => {
       </div>
       <ul className='hidden md:flex items-center gap-8 text-gray-300'>
         <li>
-          <Link className='hover:text-yellow-500' href="/">Hem</Link>
+          <Link className='hover:text-barber-blue' href="/">Hem</Link>
         </li>
         <li>
-          <Link className='hover:text-yellow-500' href="/about">Om oss</Link>
+          <Link className='hover:text-barber-blue' href="/about">Om oss</Link>
         </li>
         <li>
-          <Link className='hover:text-yellow-500' href="/contact">Kontakta</Link>
+          <Link className='hover:text-barber-blue' href="/contact">Kontakta</Link>
         </li>
       </ul>
       <div className='hidden md:block'>

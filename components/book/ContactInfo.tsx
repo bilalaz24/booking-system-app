@@ -80,7 +80,7 @@ const ContactInfo = ({ selectedDate, selectedSlot, selectedService }: Props) => 
     }
 
     return (
-        <div className='flex-1 w-full flex justify-center border-1 border-grey-300 rounded-2xl py-8'>
+        <div className='flex-1 w-full flex justify-center border-1 border-b-muted rounded-2xl py-8'>
             <Card className='max-w-md w-full'>
                 <CardHeader>
                     <CardTitle>Boka</CardTitle>

@@ -43,7 +43,7 @@ const Services = ({onSelectService} : Props) => {
   }, [])
 
   return (
-    <div className={`flex-1 flex text-center justify-center border-1 border-grey-300 rounded-2xl py-8`}>
+    <div className={`flex-1 flex text-center justify-center border border-b-muted rounded-2xl py-8`}>
       <div>
         <h2 className="text-xl mb-4">Välj en tjänst</h2>
         <div>
@@ -53,7 +53,7 @@ const Services = ({onSelectService} : Props) => {
             <div>
               {services?.map((service) => (
                 <div key={service.id}>
-                  <Button className="bg-gray-200 text-gray-950" onClick={() => onSelectService(service.id)}>
+                  <Button className='bg-card text-card-foreground' onClick={() => onSelectService(service.id)}>
                     {service.name}
                   </Button>
                 </div>
