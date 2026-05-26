@@ -45,7 +45,7 @@ export default async function RootLayout({
         <body className="flex items-center justify-center h-full text-white font-body">
           <div className="text-center p-6 border border-[#161a22] bg-[#11141a]">
             <h1 className="text-xl font-bold text-[#E60026] uppercase font-heading tracking-wider">Configuration Error</h1>
-            <p className="text-sm text-[#A3A8B3] mt-2">Could not load business settings.</p>
+            <p className="text-sm text-[#A3A8B3] mt-2">Could not load business data.</p>
           </div>
         </body>
       </html>
@@ -60,11 +60,9 @@ export default async function RootLayout({
     >
       <body className="min-h-full flex flex-col bg-background text-foreground font-body">
         <BusinessProvider value={business}>
-          <Navbar />
-          <main className="max-w-7xl flex-1 mx-auto w-full px-2 py-8 md:px-6 lg:px-8">
+          {/*<main>className="max-w-7xl flex-1 mx-auto w-full px-2 py-8 md:px-6 lg:px-8"*/}
             {children}
-          </main>
-          <Footer />
+          {/*</main>*/}
           <Toaster closeButton />
         </BusinessProvider>
       </body>

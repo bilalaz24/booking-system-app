@@ -2,10 +2,10 @@
 
 import React, { useActionState, useEffect } from 'react'
 import { bookAppointment } from '@/lib/actions/book'
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
-import { Input } from '../ui/input'
-import { Field, FieldError, FieldGroup, FieldLabel } from '../ui/field'
-import { Button } from '../ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field"
+import { Button } from "@/components/ui/button"
 import { toast } from 'sonner'
 import { Loader2 } from 'lucide-react'
 import { Controller, useForm } from 'react-hook-form'
@@ -115,27 +115,6 @@ const ContactInfo = ({ selectedDate, selectedSlot, selectedService }: Props) => 
                                     )}
                                 </Field>
                             )} />
-{/*
-                            <input
-                                type="hidden"
-                                name="date"
-                                value={selectedDate?.toLocaleDateString("en-CA") ?? ""}
-                                required
-                            />
-
-                            <input
-                                type="hidden"
-                                name="slot"
-                                value={selectedSlot ?? ""}
-                                required
-                            />
-
-                            <input
-                                type="hidden"
-                                name="service"
-                                value={selectedService ?? ""}
-                                required
-                            />*/}
 
                             <Field>
                                 <Button type='submit' disabled={isSubmitting}>
