@@ -1,4 +1,4 @@
-import Overview from '@/components/staff/Overview'
+import Overview from '@/components/staff/Bookings'
 import React from 'react'
 
 const OverviewPage = () => {

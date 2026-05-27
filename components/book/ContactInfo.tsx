@@ -13,6 +13,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import z from 'zod'
 import { bookingSchema } from '@/app/schemas/booking'
 import { useRouter } from 'next/navigation'
+import { routes } from '@/lib/routes'
 
 type BookingFormValues = z.infer<typeof bookingSchema>
 
@@ -71,7 +72,7 @@ const ContactInfo = ({ selectedDate, selectedSlot, selectedService }: Props) => 
             toast.success("Din bokning lyckades", {
                 description: `${result.date} - ${result.slot}`
             })
-            router.push("/")
+            router.push(routes.home)
         }
 
         if (result.error) {

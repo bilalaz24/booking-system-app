@@ -6,6 +6,7 @@ import { useBusiness } from "../providers/BusinessProvider";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "../ui/button";
+import { routes } from "@/lib/routes";
 
 export default function SideBar() {
     const supabase = createClient()
@@ -14,7 +15,7 @@ export default function SideBar() {
 
     const logout = async () => {
         await supabase.auth.signOut()
-        router.push("/")
+        router.push(routes.home)
     }
 
     return (
@@ -25,10 +26,10 @@ export default function SideBar() {
             </div>
 
             <nav className="space-y-3">
-                <Link className="block hover:bg-gray-800 p-2" href="/staff/overview">
+                <Link className="block hover:bg-gray-800 p-2" href={routes.staffOverview}>
                 Översikt
                 </Link>
-                <Link className="block hover:bg-gray-800 p-2" href="/staff/settings">
+                <Link className="block hover:bg-gray-800 p-2" href={routes.staffSettings}>
                 Inställningar
                 </Link>
                 <Button className="block text-center" onClick={logout}>

@@ -1,24 +1,28 @@
 "use client"
 
-import React, { useActionState, useEffect } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import React, { useActionState, useEffect, useState } from 'react'
+import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { Button } from "@/components/ui/button"
 import { toast } from 'sonner'
-import { Loader2 } from 'lucide-react'
+import { ArrowLeft, Loader2 } from 'lucide-react'
 import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from "@hookform/resolvers/zod"
 import z from 'zod'
 import { useRouter } from 'next/navigation'
 import { authSchema } from '@/app/schemas/auth'
 import { createClient } from '@/lib/supabase/client'
+import Link from 'next/link'
+import { routes } from '@/lib/routes'
 
 type AuthSchemaValues = z.infer<typeof authSchema>
 
 const LoginPage = () => {
     const supabase = createClient()
     const router = useRouter()
+
+    const [authError, setAuthError] = useState("")
 
     const { control, handleSubmit, formState: { errors, isSubmitting } } = useForm<AuthSchemaValues>({
         resolver: zodResolver(authSchema),
@@ -35,18 +39,24 @@ const LoginPage = () => {
         })
 
         if (error) {
-            console.error("Error logging in", error)
+            if (error.message === "Invalid login credentials") {
+                setAuthError("Fel e-post eller lösenord")
+            } else {
+                setAuthError("Något gick fel")
+            }
+            console.log("Error logging in", error)
             return
         }
 
-        router.push("/admin")
+        router.push(routes.staffOverview)
     }
 
     return (
         <div className='flex-1 w-full flex justify-center border-1 border-b-muted rounded-2xl py-8'>
             <Card className='max-w-md w-full'>
                 <CardHeader>
-                    <CardTitle>Boka</CardTitle>
+                    <CardTitle>Personalinloggning</CardTitle>
+                    <CardDescription>Endast behörig personal</CardDescription>
                 </CardHeader>
                 <CardContent>
                     <form onSubmit={handleSubmit(onSubmit)}>
@@ -70,6 +80,12 @@ const LoginPage = () => {
                                 </Field>
                             )} />
 
+                            {
+                                authError && (
+                                    <p className='text-red-500 text-sm'>{authError}</p>
+                                )
+                            }
+
                             <Field>
                                 <Button type='submit' disabled={isSubmitting}>
                                     {
@@ -82,6 +98,7 @@ const LoginPage = () => {
                             </Field>
                         </FieldGroup>
                     </form>
+                    <Button onClick={() => router.back()} className='bg-secondary' disabled={isSubmitting}> <span> <ArrowLeft /> </span> Gå bak</Button>
                 </CardContent>
             </Card>
         </div>

@@ -3,6 +3,7 @@ import { StaffUserProvider } from "@/components/providers/StaffUserProvider";
 import { createClient } from "@/lib/supabase/server";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { routes } from "@/lib/routes";
 
 const StaffLayout = async ({
     children,
@@ -15,14 +16,14 @@ const StaffLayout = async ({
     const {data: {user: authUser}} = await supabase.auth.getUser()
 
     if (!authUser) {
-        redirect("/auth/login")
+        redirect(routes.login)
     }
 
     const  {data: businessUser, error} = await supabase.from("business_users").select("*").eq("auth_user_id", authUser.id).single()
 
 
     if (error || !businessUser) {
-        redirect("/auth/login")
+        redirect(routes.login)
     }
 
   return (

@@ -1,5 +1,6 @@
 "use server"
-import { createAdminClient } from "@/lib/supabase/admin"
+import { cookies } from "next/headers";
+import { createClient } from "../supabase/server";
 import { bookingSchema } from "@/app/schemas/booking"
 import { z } from "zod"
 
@@ -8,7 +9,8 @@ type BookingData = z.infer<typeof bookingSchema>
 async function addMinutes(time: string, serviceId: string) {
   const [hours, minutes] = time.split(":").map(Number)
 
-  const supabase = createAdminClient()
+  const cookieStore = await cookies()
+  const supabase = createClient(cookieStore)
 
   const { data, error } = await supabase
     .from("services")
@@ -30,7 +32,8 @@ async function addMinutes(time: string, serviceId: string) {
 
 export async function bookAppointment(data: BookingData) {
     try {
-        const supabase = createAdminClient()
+        const cookieStore = await cookies()
+        const supabase = createClient(cookieStore)
 
         const businessId = process.env.NEXT_PUBLIC_BUSINESS_ID
 
@@ -114,7 +117,7 @@ export async function bookAppointment(data: BookingData) {
             customer_phone: phone,
             start_time: slot,
             end_time: endTime,
-            status: "pending"
+            //status: "pending"
         })
 
         if (error) {
