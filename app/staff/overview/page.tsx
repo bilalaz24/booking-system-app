@@ -1,10 +1,10 @@
-import Overview from '@/components/staff/Bookings'
+import Bookings from '@/components/staff/Bookings'
 import React from 'react'
 
 const OverviewPage = () => {
   return (
     <div>
-        <Overview />
+        <Bookings />
     </div>
   )
 }
