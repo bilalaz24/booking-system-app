@@ -91,10 +91,19 @@ const ContactInfo = ({ selectedDate, selectedSlot, selectedService }: Props) => 
                         <FieldGroup>
                             <Controller name='name' control={control} render={({ field }) => (
                                 <Field>
-                                    <FieldLabel>Namn</FieldLabel>
+                                    <FieldLabel>Namn <span className='text-barber-red'>*</span></FieldLabel>
                                     <Input type='text' {...field} />
                                     {errors.name && (
                                         <FieldError errors={[errors.name]} />
+                                    )}
+                                </Field>
+                            )} />
+                            <Controller name='phone' control={control} render={({ field }) => (
+                                <Field>
+                                    <FieldLabel>Telefon <span className='text-barber-red'>*</span></FieldLabel>
+                                    <Input type='tel' required {...field} />
+                                    {errors.phone && (
+                                        <FieldError errors={[errors.phone]} />
                                     )}
                                 </Field>
                             )} />
@@ -103,16 +112,7 @@ const ContactInfo = ({ selectedDate, selectedSlot, selectedService }: Props) => 
                                     <FieldLabel>Email</FieldLabel>
                                     <Input type='email' {...field} />
                                     {errors.email && (
-                                        <FieldError errors={[errors.email]} />
-                                    )}
-                                </Field>
-                            )} />
-                            <Controller name='phone' control={control} render={({ field }) => (
-                                <Field>
-                                    <FieldLabel>Telefon</FieldLabel>
-                                    <Input type='tel' {...field} />
-                                    {errors.phone && (
-                                        <FieldError errors={[errors.phone]} />
+                                      <FieldError errors={[errors.email]} />
                                     )}
                                 </Field>
                             )} />
