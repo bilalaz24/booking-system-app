@@ -124,6 +124,7 @@ const Bookings = () => {
   return (
     <div>
       <div>
+        {/*
         {(passedTodayBookings ?? []).length !== 0 && (
           <Card className='my-3'>
             <CardHeader>
@@ -227,7 +228,7 @@ const Bookings = () => {
               ))}
             </CardContent>
           </Card>
-        )}
+        )}*/}
         <Card className='my-3'>
           <CardHeader>
             <CardTitle><h2>Dagens tider</h2></CardTitle>
