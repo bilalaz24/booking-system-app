@@ -287,7 +287,7 @@ const Bookings = () => {
               </TableBody>
             </Table>
             {(todayBookings ?? []).length === 0 ? (
-              <p>Inga bokningar</p>
+              <p className='lg:hidden text-muted-foreground'>Inga bokningar</p>
             ) : (
               (todayBookings ?? []).map((booking) => (
                 <Card key={booking.id} className='lg:hidden'>
@@ -378,7 +378,7 @@ const Bookings = () => {
               </TableBody>
             </Table>
             {(futureBookings ?? []).length === 0 ? (
-              <p>Inga bokningar</p>
+              <p className='lg:hidden text-muted-foreground'>Inga bokningar</p>
             ) : (
               (futureBookings ?? []).map((booking) => (
                 <Card key={booking.id} className='lg:hidden'>

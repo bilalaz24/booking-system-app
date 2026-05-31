@@ -1,4 +1,6 @@
 import { Button } from "@/components/ui/button"
+import { routes } from "@/lib/routes";
+import Link from "next/link";
 
 export default function AboutPage() {
   return (
@@ -75,9 +77,11 @@ export default function AboutPage() {
           Boka din tid idag och upplev skillnaden hos Fade Studio.
         </p>
 
-        <Button className="px-6 py-3>
-          Boka nu
-        </Button>
+        <Link href={routes.booking}>
+          <Button className="px-6 py-3">
+            Boka nu
+          </Button>
+        </Link>
       </section>
     </main>
   );
