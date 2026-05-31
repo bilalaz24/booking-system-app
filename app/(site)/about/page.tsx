@@ -1,3 +1,5 @@
+import { Button } from "@/components/ui/button"
+
 export default function AboutPage() {
   return (
     <main className="max-w-4xl mx-auto px-6 py-16">
@@ -73,9 +75,9 @@ export default function AboutPage() {
           Boka din tid idag och upplev skillnaden hos Fade Studio.
         </p>
 
-        <button className="px-6 py-3 rounded-lg bg-black text-white">
+        <Button className="px-6 py-3>
           Boka nu
-        </button>
+        </Button>
       </section>
     </main>
   );
