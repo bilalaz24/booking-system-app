@@ -1,27 +1,82 @@
-const About = () => {
-    return (
-        <div>
-            <h1>Fade Studio<\h1>
-            <p>
-                Välkommen till Fade Studio – en modern barbershop där stil, precision och kvalitet står i fokus.     Vi tror att en riktigt bra klippning handlar om mer än bara hår. Det handlar om självförtroende, personligt uttryck och känslan av att lämna salongen som den bästa versionen av sig själv. Därför kombinerar vi modern barberarkonst med noggrannhet och service för att ge varje kund en upplevelse utöver det vanliga.
-                På Fade Studio specialiserar vi oss på skarpa fades, moderna frisyrer, klassiska klippningar och professionell skäggvård. Varje behandling utförs med stor uppmärksamhet på detaljer för att säkerställa ett resultat som passar just dig och din stil.
-                Vår ambition är att skapa en avslappnad och välkomnande miljö där kvalitet alltid kommer först. Oavsett om du är ute efter en snabb uppfräschning eller en helt ny look kan du lita på att vårt team levererar med precision och passion.
-            </p>
-            <b>
-                Fade Studio är mer än en barbershop – det är en plats där stil möter hantverk.
-            </b>
-            <h2>Varför välja Fade Studio?<\h2>
-            <ul>
-                <li>Moderna och trendmedvetna klippningar</li>
-                <li>Skarpa fades med fokus på detaljer<\li>
-                <li>Professionell skäggtrimning och grooming<\li>
-                <li>Hög servicenivå och personlig rådgivning<\li>
-                <li>En stilren och välkomnande miljö<\li>
-            </ul>
-            <p>Vi ser fram emot att välkomna dig till Fade Studio och hjälpa dig att hitta din perfekta look.</p>
-            <b>Skarpa fades. Modern stil. Professionellt utfört.<\b>
-        <\div>
-    )
-}
+export default function AboutPage() {
+  return (
+    <main className="max-w-4xl mx-auto px-6 py-16">
+      <section className="text-center mb-16">
+        <h1 className="text-4xl font-bold mb-4">Om Fade Studio</h1>
+        <p className="text-lg text-muted-foreground">
+          Modern barberarkonst med fokus på precision, stil och kvalitet.
+        </p>
+      </section>
 
-export default About
+      <section className="mb-12">
+        <h2 className="text-2xl font-semibold mb-4">Vår historia</h2>
+        <p className="leading-7 text-muted-foreground">
+          Fade Studio grundades med en enkel vision – att erbjuda förstklassiga
+          klippningar i en modern och avslappnad miljö. Vi kombinerar klassiskt
+          hantverk med dagens trender för att ge varje kund en look som känns
+          både personlig och tidlös.
+        </p>
+      </section>
+
+      <section className="mb-12">
+        <h2 className="text-2xl font-semibold mb-4">Vad vi erbjuder</h2>
+        <div className="grid gap-4 md:grid-cols-2">
+          <div className="border rounded-lg p-5">
+            <h3 className="font-semibold mb-2">Fades & Klippningar</h3>
+            <p className="text-muted-foreground">
+              Skarpa fades, moderna frisyrer och klassiska klippningar med
+              noggrann precision.
+            </p>
+          </div>
+
+          <div className="border rounded-lg p-5">
+            <h3 className="font-semibold mb-2">Skäggvård</h3>
+            <p className="text-muted-foreground">
+              Professionell trimning och formning för ett välvårdat resultat.
+            </p>
+          </div>
+
+          <div className="border rounded-lg p-5">
+            <h3 className="font-semibold mb-2">Personlig Service</h3>
+            <p className="text-muted-foreground">
+              Vi tar oss tid att förstå din stil och ge rekommendationer som
+              passar dig.
+            </p>
+          </div>
+
+          <div className="border rounded-lg p-5">
+            <h3 className="font-semibold mb-2">Kvalitet i Fokus</h3>
+            <p className="text-muted-foreground">
+              Varje detalj räknas – från första konsultationen till sista
+              finishen.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section className="mb-12">
+        <h2 className="text-2xl font-semibold mb-4">Varför välja oss?</h2>
+        <ul className="space-y-3">
+          <li>✓ Erfarna barberare</li>
+          <li>✓ Moderna tekniker och trender</li>
+          <li>✓ Hög kvalitet på varje klippning</li>
+          <li>✓ Avslappnad och välkomnande miljö</li>
+          <li>✓ Enkel onlinebokning</li>
+        </ul>
+      </section>
+
+      <section className="text-center border rounded-xl p-8">
+        <h2 className="text-2xl font-semibold mb-4">
+          Redo för nästa klippning?
+        </h2>
+        <p className="text-muted-foreground mb-6">
+          Boka din tid idag och upplev skillnaden hos Fade Studio.
+        </p>
+
+        <button className="px-6 py-3 rounded-lg bg-black text-white">
+          Boka nu
+        </button>
+      </section>
+    </main>
+  );
+}
