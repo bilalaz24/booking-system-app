@@ -1,12 +1,12 @@
 import Bookings from '@/components/staff/Bookings'
 import React from 'react'
 
-const OverviewPage = () => {
+const BookingsPage = () => {
   return (
     <div>
-        <Bookings page="overview" />
+        <Bookings page="bookings" />
     </div>
   )
 }
 
-export default OverviewPage
+export default BookingsPage

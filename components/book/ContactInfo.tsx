@@ -14,6 +14,7 @@ import z from 'zod'
 import { bookingSchema } from '@/app/schemas/booking'
 import { useRouter } from 'next/navigation'
 import { routes } from '@/lib/routes'
+import Loader from '../Loader'
 
 type BookingFormValues = z.infer<typeof bookingSchema>
 
@@ -122,7 +123,7 @@ const ContactInfo = ({ selectedDate, selectedSlot, selectedService }: Props) => 
                                     {
                                         isSubmitting ? (
                                             <div className='flex justify-center items-center gap-x-1'>
-                                                <Loader2 className='animate-spin' /><p>Bokar...</p>
+                                                <Loader /><p>Bokar...</p>
                                             </div>) : "Boka nu"
                                     }
                                 </Button>

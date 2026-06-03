@@ -5,6 +5,7 @@ export const routes = {
     contact: "/contact",
     login: "/auth/login",
     staffOverview: "/staff/overview",
+    staffBookings: "/staff/bookings",
     staffSettings: "/staff/settings",
     staffStats: "/staff/stats"
 }

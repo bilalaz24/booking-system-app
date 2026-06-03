@@ -32,6 +32,7 @@ export default function SideBar() {
                 </div>
                 <nav className="space-y-3">
                     <Link className="block hover:bg-gray-800 p-2" href={routes.staffOverview}> Översikt </Link>
+                    <Link className="block hover:bg-gray-800 p-2" href={routes.staffBookings}> Bookningar </Link>
                     <Link className="block hover:bg-gray-800 p-2" href={routes.staffSettings}> Inställningar </Link>
                     <Button className="block text-center" onClick={logout}> Logga ut </Button>
                 </nav>
@@ -45,7 +46,7 @@ export default function SideBar() {
             />
 
             <aside
-                className={`fixed top-0 left-0 z-50 h-screen w-64 bg-navfoot-bg p-6
+                className={`z-50 fixed top-0 left-0 z-50 h-screen w-64 bg-navfoot-bg p-6
                 transform transition-transform duration-300 ease-out
                 ${open ? "translate-x-0" : "-translate-x-full"}`}
             >
@@ -58,16 +59,22 @@ export default function SideBar() {
                 </div>
                 <nav className="space-y-3">
                     <Link className="block hover:bg-gray-800 p-2" href={routes.staffOverview}> Översikt </Link>
+                    <Link className="block hover:bg-gray-800 p-2" href={routes.staffBookings}> Bookningar </Link>
                     <Link className="block hover:bg-gray-800 p-2" href={routes.staffSettings}> Inställningar </Link>
                     <Button className="block text-center" onClick={logout}> Logga ut </Button>
                 </nav>
             </aside>
 
             {!open && (
-                <div className="fixed top-3 left-3 z-50 md:hidden">
-                    <Button onClick={() => setOpen(true)}>
-                        <MenuIcon />
-                    </Button>
+                <div className="bg-navfoot-bg w-full fixed top-0 left-0 md:hidden">
+                    <div className="relative h-16">
+                        <Button className="absolute top-1/2 -translate-y-1/2 left-3" onClick={() => setOpen(true)}>
+                            <MenuIcon />
+                        </Button>
+                        <div className="text-center absolute left-1/2 top-1/2 -translate-y-1/2 -translate-x-1/2">
+                            <h1 className="items-center">{business.name}</h1>
+                        </div>
+                    </div>
                 </div>
             )}
         </div>

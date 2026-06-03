@@ -15,6 +15,7 @@ import { authSchema } from '@/app/schemas/auth'
 import { createClient } from '@/lib/supabase/client'
 import Link from 'next/link'
 import { routes } from '@/lib/routes'
+import Loader from '@/components/Loader'
 
 type AuthSchemaValues = z.infer<typeof authSchema>
 
@@ -91,7 +92,7 @@ const LoginPage = () => {
                                     {
                                         isSubmitting ? (
                                             <div className='flex justify-center items-center gap-x-1'>
-                                                <Loader2 className='animate-spin' /><p>Loggar in...</p>
+                                                <Loader /><p>Loggar in...</p>
                                             </div>) : "Logga in"
                                     }
                                 </Button>

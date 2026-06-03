@@ -1,7 +1,7 @@
 "use client"
 
 import { useStaffUser } from '../providers/StaffUserProvider'
-import React, { use, useEffect, useState } from 'react'
+import React, { use, useEffect, useRef, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Item, ItemActions, ItemContent, ItemTitle } from '../ui/item'
 import { Button } from '../ui/button'
@@ -11,6 +11,7 @@ import { CalendarCheck, CalendarX, Loader2 } from 'lucide-react'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '../ui/dropdown-menu'
 import { completeBooking, missedBooking } from '@/lib/actions/staffBookings'
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
+import Loader from '../Loader'
 
 interface Service {
   id: string,
@@ -56,7 +57,7 @@ export function isBookingPast(date: string, time: string) {
   return bookingTime < new Date();
 }
 
-const Bookings = () => {
+const Bookings = ({ page }: { page: string }) => {
   const supabase = createClient()
   const user = useStaffUser()
 
@@ -64,9 +65,18 @@ const Bookings = () => {
   const [todayBookings, setTodayBookings] = useState<Booking[] | null>(null)
   const [futureBookings, setFutureBookings] = useState<Booking[] | null>(null)
   const [passedBookings, setPassedBookings] = useState<Booking[] | null>(null)
+  const upcomingBookings = [
+    ...(todayBookings ?? []).filter(
+      (b) => !isBookingPast(b.date, b.end_time)
+    ),
+    ...(futureBookings ?? [])
+  ]
 
   const [statusMap, setStatusMap] = useState<Record<string, string>>({})
-  const [loading, setLoading] = useState(true)
+  const debounceRefs = useRef<Record<string, NodeJS.Timeout>>({})
+
+  const [loading, setLoading] = useState(false)
+  const [statusLoading, setStatusLoading] = useState<Record<string, boolean>>({})
 
   const today = new Date().toISOString().split("T")[0]
 
@@ -144,8 +154,8 @@ const Bookings = () => {
         `date.lt.${today},and(date.eq.${today},end_time.lt.${new Date().toTimeString().slice(0,8)})`
       )
       //.in("status", ["confirmed", "pending"])
-      .order("date", { ascending: true })
-      .order("start_time", { ascending: true })
+      .order("date", { ascending: false })
+      .order("start_time", { ascending: false })
     
     if (error) {
       console.error(error)
@@ -170,11 +180,40 @@ const Bookings = () => {
   }
 
   const updateStatus = (id: string, value: string) => {
+    // optimistic update
     setStatusMap((prev) => ({
       ...prev,
-      [id]: value
+      [id]: value,
     }))
+
+    // set loading for THIS booking
+    setStatusLoading((prev) => ({
+      ...prev,
+      [id]: true,
+    }))
+
+    if (debounceRefs.current[id]) {
+      clearTimeout(debounceRefs.current[id])
+    }
+
+    debounceRefs.current[id] = setTimeout(async () => {
+      try {
+        if (value == "complete") completeBooking(id)
+        else if (value == "missed") missedBooking(id)
+      } finally {
+        setStatusLoading((prev) => ({
+          ...prev,
+          [id]: false,
+        }))
+      }
+    }, 1000)
   }
+
+  useEffect(() => {
+    return () => {
+      Object.values(debounceRefs.current).forEach(clearTimeout)
+    }
+  }, [])
 
   useEffect(() => {
     if (!passedBookings) return
@@ -220,219 +259,320 @@ const Bookings = () => {
       }
   }, [user.business_id])
 
-
+  console.log(page)
   return (
     <div>
       <div> 
-
-        <Card className='my-3'>
-          <CardHeader>
-            <CardTitle><h2>Dagens tider</h2></CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Table className='hidden lg:table w-full'>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Tjänst</TableHead>
-                  <TableHead>Datum</TableHead>
-                  <TableHead>Start</TableHead>
-                  <TableHead>Slut</TableHead>
-                  <TableHead>Kund Namn</TableHead>
-                  <TableHead>Kund Mail</TableHead>
-                  <TableHead>Kund Telefon</TableHead>
-                  <TableHead>Övrigt</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
+        {page == "overview" && (
+          <div>
+            <Card className='my-3'>
+              <CardHeader>
+                <CardTitle><h2>Drop in</h2></CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p></p>
+              </CardContent>
+            </Card>
+            <Card className='my-3'>
+              <CardHeader>
+                <CardTitle><h2>Dagens tider</h2></CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Table className='hidden lg:table w-full'>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Tjänst</TableHead>
+                      <TableHead>Datum</TableHead>
+                      <TableHead>Start</TableHead>
+                      <TableHead>Slut</TableHead>
+                      <TableHead>Kund Namn</TableHead>
+                      <TableHead>Kund Mail</TableHead>
+                      <TableHead>Kund Telefon</TableHead>
+                      <TableHead>Övrigt</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {loading ? (
+                      <TableRow>
+                        <TableCell colSpan={9} className='text-center pt-8 pb-4 text-muted-foreground text-lg'>
+                          Laddar bokningar
+                        </TableCell>
+                      </TableRow>
+                    ) : (todayBookings ?? []).length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={9} className='text-center pt-8 pb-4 text-muted-foreground text-lg'>
+                          Inga bokningar
+                        </TableCell>
+                      </TableRow>
+                    ) : (
+                      (todayBookings ?? []).map((booking) => (
+                        <TableRow key={booking.id}>
+                          <TableCell>{booking.service.name} - {booking.service.duration_min} min</TableCell>
+                          <TableCell>{booking.date.split("-")[2]} {new Date(2026, Number(booking.date.split("-")[1]) - 1).toLocaleString("sv-SE", {month: "long"})}</TableCell>
+                          <TableCell>{booking.start_time.split(":")[0]}:{booking.start_time.split(":")[1]}</TableCell>
+                          <TableCell>{booking.end_time.split(":")[0]}:{booking.end_time.split(":")[1]}</TableCell>
+                          <TableCell>{booking.customer_name}</TableCell>
+                          <TableCell>{booking.customer_email}</TableCell>
+                          <TableCell>{booking.customer_phone}</TableCell>
+                          <TableCell>{booking.notes}</TableCell>
+                          
+                        </TableRow>
+                      )))}
+                  </TableBody>
+                </Table>
                 {loading ? (
-                  <TableRow>
-                    <TableCell colSpan={9} className='text-center pt-8 pb-4 text-muted-foreground text-lg'>
-                      Laddar bokningar
-                    </TableCell>
-                  </TableRow>
+                  <p>Laddar bokningar</p>
                 ) : (todayBookings ?? []).length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={9} className='text-center pt-8 pb-4 text-muted-foreground text-lg'>
-                      Inga bokningar
-                    </TableCell>
-                  </TableRow>
+                  <p className='lg:hidden text-muted-foreground'>Inga bokningar</p>
                 ) : (
                   (todayBookings ?? []).map((booking) => (
-                    <TableRow key={booking.id}>
-                      <TableCell>{booking.service.name} - {booking.service.duration_min} min</TableCell>
-                      <TableCell>{booking.date.split("-")[2]} {new Date(2026, Number(booking.date.split("-")[1]) - 1).toLocaleString("sv-SE", {month: "long"})}</TableCell>
-                      <TableCell>{booking.start_time.split(":")[0]}:{booking.start_time.split(":")[1]}</TableCell>
-                      <TableCell>{booking.end_time.split(":")[0]}:{booking.end_time.split(":")[1]}</TableCell>
-                      <TableCell>{booking.customer_name}</TableCell>
-                      <TableCell>{booking.customer_email}</TableCell>
-                      <TableCell>{booking.customer_phone}</TableCell>
-                      <TableCell>{booking.notes}</TableCell>
-                      
-                    </TableRow>
-                  )))}
-              </TableBody>
-            </Table>
-            {loading ? (
-              <p>Laddar bokningar</p>
-            ) : (todayBookings ?? []).length === 0 ? (
-              <p className='lg:hidden text-muted-foreground'>Inga bokningar</p>
-            ) : (
-              (todayBookings ?? []).map((booking) => (
-                <Card key={booking.id} className='lg:hidden'>
-                  <CardContent>
-                    <div className='pb-4 font-semibold'>
-                      <p>
-                        {booking.service.name} - {booking.service.duration_min} min
-                      </p>
-                    </div>
-                    <div className='grid sm:grid-cols-3 xs:grid-cols-2 grid-col-1 gap-4 text-sm'>
-                      <div className='py-2'>
-                        <p className='text-muted-foreground'>Datum</p>
-                        <p>{booking.date.split("-")[2]} {new Date(2026, Number(booking.date.split("-")[1]) - 1).toLocaleString("sv-SE", {month: "long"})}</p>
-                      </div>
-                      <div className=''>
-                        <p className='text-muted-foreground'>Tid</p>
-                        <p>{booking.start_time.slice(0, 5)}</p>
-                      </div>
-                      <div className='py-2'>
-                        <p className='text-muted-foreground'>Kund</p>
-                        <p>{booking.customer_name}</p>
-                      </div>
-                      <div className='py-2'>
-                        <p className='text-muted-foreground'>Telefon</p>
-                        <p>{booking.customer_phone}</p>
-                      </div>
-                      {booking.customer_email && (
-                        <div>
-                          <p className='text-muted-foreground text-sm'>Mail</p>
-                          <p className='text-sm'>{booking.customer_email}</p>
+                    <Card key={booking.id} className='lg:hidden'>
+                      <CardContent>
+                        <div className='pb-4 font-semibold'>
+                          <p>
+                            {booking.service.name} - {booking.service.duration_min} min
+                          </p>
                         </div>
-                      )}
-                      {booking.notes && (
-                        <div>
-                          <p className='text-muted-foreground text-sm'>Övrigt</p>
-                          <p className='text-sm'>{booking.notes}</p>
+                        <div className='grid sm:grid-cols-3 xs:grid-cols-2 grid-col-1 gap-4 text-sm'>
+                          <div className='py-2'>
+                            <p className='text-muted-foreground'>Datum</p>
+                            <p>{booking.date.split("-")[2]} {new Date(2026, Number(booking.date.split("-")[1]) - 1).toLocaleString("sv-SE", {month: "long"})}</p>
+                          </div>
+                          <div className=''>
+                            <p className='text-muted-foreground'>Tid</p>
+                            <p>{booking.start_time.slice(0, 5)}</p>
+                          </div>
+                          <div className='py-2'>
+                            <p className='text-muted-foreground'>Kund</p>
+                            <p>{booking.customer_name}</p>
+                          </div>
+                          <div className='py-2'>
+                            <p className='text-muted-foreground'>Telefon</p>
+                            <p>{booking.customer_phone}</p>
+                          </div>
+                          {booking.customer_email && (
+                            <div>
+                              <p className='text-muted-foreground text-sm'>Mail</p>
+                              <p className='text-sm'>{booking.customer_email}</p>
+                            </div>
+                          )}
+                          {booking.notes && (
+                            <div>
+                              <p className='text-muted-foreground text-sm'>Övrigt</p>
+                              <p className='text-sm'>{booking.notes}</p>
+                            </div>
+                          )}
                         </div>
-                      )}
-                      {/*
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button className='w-[50%]' disabled={
-                            !passedBookings?.some((b) => b.id === booking.id)
-                          }>Välj</Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent>
-                          <DropdownMenuItem onClick={() => completeBooking(booking.id)}><CalendarCheck /> Slutförd</DropdownMenuItem>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem onClick={() => missedBooking(booking.id)}><CalendarX /> Missad tid</DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>*/}
-                    </div>
-                  </CardContent>
-                </Card>
-              ))
-            )}
-          </CardContent>
-        </Card>
-        <Card className='my-3'>
-          <CardHeader>
-            <CardTitle><h2>Kommande bokningar</h2></CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Table className='hidden lg:table w-full'>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Tjänst</TableHead>
-                  <TableHead>Datum</TableHead>
-                  <TableHead>Start</TableHead>
-                  <TableHead>Slut</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {loading ? (
-                  <TableRow>
-                    <TableCell colSpan={9} className='text-center pt-8 pb-4 text-muted-foreground text-lg'>
-                      Laddar bokningar
-                    </TableCell>
-                  </TableRow>
-                ) : (futureBookings ?? []).length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={9} className='text-center pt-8 pb-4 text-muted-foreground text-lg'>
-                      Inga bokningar
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  (futureBookings ?? []).map((booking) => (
-                    <TableRow key={booking.id}>
-                      <TableCell>{booking.service.name} - {booking.service.duration_min} min</TableCell>
-                      <TableCell>{booking.date.split("-")[2]} {new Date(2026, Number(booking.date.split("-")[1]) - 1).toLocaleString("sv-SE", {month: "long"})}</TableCell>
-                      <TableCell>{booking.start_time.split(":")[0]}:{booking.start_time.split(":")[1]}</TableCell>
-                      <TableCell>{booking.end_time.split(":")[0]}:{booking.end_time.split(":")[1]}</TableCell>
+                      </CardContent>
+                    </Card>
+                  ))
+                )}
+              </CardContent>
+            </Card>
+          </div>
+        )}
+        {page == "bookings" && (
+          <div>
+            <Card className='my-3'>
+              <CardHeader>
+                <CardTitle><h2>Kommande</h2></CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Table className='hidden lg:table w-full'>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Tjänst</TableHead>
+                      <TableHead>Datum</TableHead>
+                      <TableHead>Start</TableHead>
+                      <TableHead>Slut</TableHead>
+                      <TableHead>Kund Namn</TableHead>
+                      <TableHead>Kund Mail</TableHead>
+                      <TableHead>Kund Telefon</TableHead>
+                      <TableHead>Övrigt</TableHead>
                     </TableRow>
-                  )))}
-              </TableBody>
-            </Table>
-            {loading ? (
-              <p>Laddar bokningar</p>
-            ) : (futureBookings ?? []).length === 0 ? (
-              <p className='lg:hidden text-muted-foreground'>Inga bokningar</p>
-            ) : (
-              (futureBookings ?? []).map((booking) => (
-                <Card key={booking.id} className='lg:hidden'>
-                  <CardContent>
-                    <div className='pb-4 font-semibold'>
-                      <p>
-                        {booking.service.name} - {booking.service.duration_min} min
-                      </p>
-                    </div>
-                    <div className='grid sm:grid-cols-3 xs:grid-cols-2 grid-col-1 gap-4 text-sm'>
-                      <div className='py-2'>
-                        <p className='text-muted-foreground'>Datum</p>
-                        <p>{booking.date.split("-")[2]} {new Date(2026, Number(booking.date.split("-")[1]) - 1).toLocaleString("sv-SE", {month: "long"})}</p>
-                      </div>
-                      <div className=''>
-                        <p className='text-muted-foreground'>Tid</p>
-                        <p>{booking.start_time.slice(0, 5)}</p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))
-            )}
-          </CardContent>
-        </Card>
-        {(passedBookings ?? []).length !== 0 && (
-          <Card className='my-3'>
-            <CardHeader>
-              <CardTitle><h2>Historik</h2></CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Table className='hidden lg:table w-full'>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Tjänst</TableHead>
-                    <TableHead>Datum</TableHead>
-                    <TableHead>Start</TableHead>
-                    <TableHead>Slut</TableHead>
-                    <TableHead>Kund Namn</TableHead>
-                    <TableHead>Kund Mail</TableHead>
-                    <TableHead>Kund Telefon</TableHead>
-                    <TableHead>Övrigt</TableHead>
-                    <TableHead>Status</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                    {(passedBookings ?? []).map((booking) => (
-                      <TableRow className={booking.status == "missed" ? "bg-red-500/10" : "bg-green-700/10"} key={booking.id}>
-                        <TableCell>{booking.service.name} - {booking.service.duration_min} min</TableCell>
-                        <TableCell>{booking.date.split("-")[2]} {new Date(2026, Number(booking.date.split("-")[1]) - 1).toLocaleString("sv-SE", {month: "long"})}</TableCell>
-                        <TableCell>{booking.start_time.split(":")[0]}:{booking.start_time.split(":")[1]}</TableCell>
-                        <TableCell>{booking.end_time.split(":")[0]}:{booking.end_time.split(":")[1]}</TableCell>
-                        <TableCell>{booking.customer_name}</TableCell>
-                        <TableCell>{booking.customer_email}</TableCell>
-                        <TableCell>{booking.customer_phone}</TableCell>
-                        <TableCell>{booking.notes}</TableCell>
-                        <TableCell>
+                  </TableHeader>
+                  <TableBody>
+                    {loading ? (
+                      <TableRow>
+                        <TableCell colSpan={9} className='text-center pt-8 pb-4 text-muted-foreground text-lg'>
+                          Laddar bokningar
+                        </TableCell>
+                      </TableRow>
+                    ) : (upcomingBookings ?? []).length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={9} className='text-center pt-8 pb-4 text-muted-foreground text-lg'>
+                          Inga bokningar
+                        </TableCell>
+                      </TableRow>
+                    ) : (
+                      (upcomingBookings ?? []).map((booking) => {
+                        return (
+                          <TableRow key={booking.id}>
+                            <TableCell>{booking.service.name} - {booking.service.duration_min} min</TableCell>
+                            <TableCell>{booking.date.split("-")[2]} {new Date(2026, Number(booking.date.split("-")[1]) - 1).toLocaleString("sv-SE", {month: "long"})}</TableCell>
+                            <TableCell>{booking.start_time.split(":")[0]}:{booking.start_time.split(":")[1]}</TableCell>
+                            <TableCell>{booking.end_time.split(":")[0]}:{booking.end_time.split(":")[1]}</TableCell>
+                            <TableCell>{booking.customer_name}</TableCell>
+                            <TableCell>{booking.customer_email}</TableCell>
+                            <TableCell>{booking.customer_phone}</TableCell>
+                            <TableCell>{booking.notes}</TableCell>
+                          </TableRow>
+                        )})
+                    )}
+                  </TableBody>
+                </Table>
+                
+                {(upcomingBookings ?? []).map((booking) => (
+                    <Card key={booking.id} className="lg:hidden">
+                      <CardContent>
+                        <div className='pb-4 font-semibold'>
+                          <p>
+                            {booking.service.name} - {booking.service.duration_min} min
+                          </p>
+                        </div>
+                        <div className='grid sm:grid-cols-3 xs:grid-cols-2 grid-col-1 gap-4 text-sm'>
+                          <div className='py-2'>
+                            <p className='text-muted-foreground'>Datum</p>
+                            <p>{booking.date.split("-")[2]} {new Date(2026, Number(booking.date.split("-")[1]) - 1).toLocaleString("sv-SE", {month: "long"})}</p>
+                          </div>
+                          <div className=''>
+                            <p className='text-muted-foreground'>Tid</p>
+                            <p>{booking.start_time.slice(0, 5)}</p>
+                          </div>
+                          <div className='py-2'>
+                            <p className='text-muted-foreground'>Kund</p>
+                            <p>{booking.customer_name}</p>
+                          </div>
+                          <div className='py-2'>
+                            <p className='text-muted-foreground'>Telefon</p>
+                            <p>{booking.customer_phone}</p>
+                          </div>
+                          {booking.customer_email && (
+                            <div>
+                              <p className='text-muted-foreground text-sm'>Mail</p>
+                              <p className='text-sm'>{booking.customer_email}</p>
+                            </div>
+                          )}
+                          {booking.notes && (
+                            <div>
+                              <p className='text-muted-foreground text-sm'>Övrigt</p>
+                              <p className='text-sm'>{booking.notes}</p>
+                            </div>
+                          )}
+                        </div>
+                      </CardContent>
+                    </Card>
+                ))}
+              </CardContent>
+            </Card>        
+            <Card className='my-3'>
+              <CardHeader>
+                <CardTitle><h2>Historik</h2></CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Table className='hidden lg:table w-full'>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Tjänst</TableHead>
+                      <TableHead>Datum</TableHead>
+                      <TableHead>Start</TableHead>
+                      <TableHead>Slut</TableHead>
+                      <TableHead>Kund Namn</TableHead>
+                      <TableHead>Kund Mail</TableHead>
+                      <TableHead>Kund Telefon</TableHead>
+                      <TableHead>Övrigt</TableHead>
+                      <TableHead>Status</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {loading ? (
+                      <TableRow>
+                        <TableCell colSpan={9} className='text-center pt-8 pb-4 text-muted-foreground text-lg'>
+                          Laddar bokningar
+                        </TableCell>
+                      </TableRow>
+                    ) : (passedBookings ?? []).length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={9} className='text-center pt-8 pb-4 text-muted-foreground text-lg'>
+                          Inga bokningar
+                        </TableCell>
+                      </TableRow>
+                    ) : (
+                      (passedBookings ?? []).map((booking) => {
+                        const isLoading = statusLoading[booking.id]
+                        return (
+                          <TableRow className={(statusMap[booking.id] || booking.status) == "missed" ? "bg-red-500/10" : "bg-green-700/10"} key={booking.id}>
+                            <TableCell>{booking.service.name} - {booking.service.duration_min} min</TableCell>
+                            <TableCell>{booking.date.split("-")[2]} {new Date(2026, Number(booking.date.split("-")[1]) - 1).toLocaleString("sv-SE", {month: "long"})}</TableCell>
+                            <TableCell>{booking.start_time.split(":")[0]}:{booking.start_time.split(":")[1]}</TableCell>
+                            <TableCell>{booking.end_time.split(":")[0]}:{booking.end_time.split(":")[1]}</TableCell>
+                            <TableCell>{booking.customer_name}</TableCell>
+                            <TableCell>{booking.customer_email}</TableCell>
+                            <TableCell>{booking.customer_phone}</TableCell>
+                            <TableCell>{booking.notes}</TableCell>
+                            <TableCell>
+                              <Select value={statusMap[booking.id] || booking.status} onValueChange={(value) => updateStatus(booking.id, value)} >
+                                <SelectTrigger className="w-full min-w-36 flex text-left justify-between">
+                                  {isLoading ? (<><Loader /> Sparar...</>) : <SelectValue className='text-left' />}
+                                </SelectTrigger>
+                                <SelectContent position="popper">
+                                  <SelectGroup>
+                                    <SelectItem value='complete'><CalendarCheck /> Slutfört</SelectItem>
+                                    <SelectItem value='missed'><CalendarX />  Missad tid</SelectItem>
+                                  </SelectGroup>
+                                </SelectContent>
+                              </Select>
+                            </TableCell>
+                          </TableRow>
+                        )})
+                    )}
+                  </TableBody>
+                </Table>
+                
+                {(passedBookings ?? []).map((booking) => (
+                    <Card key={booking.id} className={`
+                      ${
+                        (statusMap[booking.id] || booking.status) === "missed"
+                          ? "bg-red-500/10"
+                          : "bg-green-700/10"
+                      }
+                      lg:hidden
+                    `}>
+                      <CardContent>
+                        <div className='pb-4 font-semibold'>
+                          <p>
+                            {booking.service.name} - {booking.service.duration_min} min
+                          </p>
+                        </div>
+                        <div className='grid sm:grid-cols-3 xs:grid-cols-2 grid-col-1 gap-4 text-sm'>
+                          <div className='py-2'>
+                            <p className='text-muted-foreground'>Datum</p>
+                            <p>{booking.date.split("-")[2]} {new Date(2026, Number(booking.date.split("-")[1]) - 1).toLocaleString("sv-SE", {month: "long"})}</p>
+                          </div>
+                          <div className=''>
+                            <p className='text-muted-foreground'>Tid</p>
+                            <p>{booking.start_time.slice(0, 5)}</p>
+                          </div>
+                          <div className='py-2'>
+                            <p className='text-muted-foreground'>Kund</p>
+                            <p>{booking.customer_name}</p>
+                          </div>
+                          <div className='py-2'>
+                            <p className='text-muted-foreground'>Telefon</p>
+                            <p>{booking.customer_phone}</p>
+                          </div>
+                          {booking.customer_email && (
+                            <div>
+                              <p className='text-muted-foreground text-sm'>Mail</p>
+                              <p className='text-sm'>{booking.customer_email}</p>
+                            </div>
+                          )}
+                          {booking.notes && (
+                            <div>
+                              <p className='text-muted-foreground text-sm'>Övrigt</p>
+                              <p className='text-sm'>{booking.notes}</p>
+                            </div>
+                          )}
                           <Select value={statusMap[booking.id] || booking.status} onValueChange={(value) => updateStatus(booking.id, value)} >
                             <SelectTrigger className="w-full min-w-32">
                               <SelectValue />
@@ -444,67 +584,25 @@ const Bookings = () => {
                               </SelectGroup>
                             </SelectContent>
                           </Select>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                </TableBody>
-              </Table>
-              
-              {(passedBookings ?? []).map((booking) => (
-                  <Card key={booking.id} className='lg:hidden'>
-                    <CardContent>
-                      <div className='pb-4 font-semibold'>
-                        <p>
-                          {booking.service.name} - {booking.service.duration_min} min
-                        </p>
-                      </div>
-                      <div className='grid sm:grid-cols-3 xs:grid-cols-2 grid-col-1 gap-4 text-sm'>
-                        <div className='py-2'>
-                          <p className='text-muted-foreground'>Datum</p>
-                          <p>{booking.date.split("-")[2]} {new Date(2026, Number(booking.date.split("-")[1]) - 1).toLocaleString("sv-SE", {month: "long"})}</p>
+                          {/*<DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button className='w-[50%]' disabled={
+                                !passedBookings?.some((b) => b.id === booking.id)
+                              }>Välj</Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent>
+                              <DropdownMenuItem onClick={() => completeBooking(booking.id)}><CalendarCheck /> Slutförd</DropdownMenuItem>
+                              <DropdownMenuSeparator />
+                              <DropdownMenuItem onClick={() => missedBooking(booking.id)}><CalendarX /> Missad tid</DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>*/}
                         </div>
-                        <div className=''>
-                          <p className='text-muted-foreground'>Tid</p>
-                          <p>{booking.start_time.slice(0, 5)}</p>
-                        </div>
-                        <div className='py-2'>
-                          <p className='text-muted-foreground'>Kund</p>
-                          <p>{booking.customer_name}</p>
-                        </div>
-                        <div className='py-2'>
-                          <p className='text-muted-foreground'>Telefon</p>
-                          <p>{booking.customer_phone}</p>
-                        </div>
-                        {booking.customer_email && (
-                          <div>
-                            <p className='text-muted-foreground text-sm'>Mail</p>
-                            <p className='text-sm'>{booking.customer_email}</p>
-                          </div>
-                        )}
-                        {booking.notes && (
-                          <div>
-                            <p className='text-muted-foreground text-sm'>Övrigt</p>
-                            <p className='text-sm'>{booking.notes}</p>
-                          </div>
-                        )}
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button className='w-[50%]' disabled={
-                              !passedBookings?.some((b) => b.id === booking.id)
-                            }>Välj</Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent>
-                            <DropdownMenuItem onClick={() => completeBooking(booking.id)}><CalendarCheck /> Slutförd</DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem onClick={() => missedBooking(booking.id)}><CalendarX /> Missad tid</DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </div>
-                    </CardContent>
-                  </Card>
-              ))}
-            </CardContent>
-          </Card>
+                      </CardContent>
+                    </Card>
+                ))}
+              </CardContent>
+            </Card>
+          </div>
         )}
       </div>
         
