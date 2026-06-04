@@ -72,6 +72,9 @@ const Bookings = ({ page }: { page: string }) => {
     ...(futureBookings ?? [])
   ]
 
+  const [timeUntil, setTimeUntil] = useState("")
+  const [dropIn, setDropIn] = useState<number>()
+
   const [statusMap, setStatusMap] = useState<Record<string, string>>({})
   const debounceRefs = useRef<Record<string, NodeJS.Timeout>>({})
 
@@ -209,6 +212,56 @@ const Bookings = ({ page }: { page: string }) => {
     }, 1000)
   }
 
+  const updateTime = () => {
+    const now = new Date();
+
+    const nextBooking = upcomingBookings
+      .map((booking) => new Date(booking.date+"T"+booking.start_time))
+      .filter((date) => date > now)
+      .sort((a, b) => a.getTime() - b.getTime())[0];
+
+    //console.log(nextBooking)
+
+    if (!nextBooking) {
+      setTimeUntil("No upcoming bookings");
+      return;
+    }
+
+    const diff = nextBooking.getTime() - now.getTime();
+
+    const minutesUntil = Math.floor(diff / (1000 * 60));
+
+    if (minutesUntil < 60) {
+      setDropIn(60)
+    }
+
+    if (minutesUntil < 30) {
+      setDropIn(30)
+    }
+
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const minutes = Math.floor(
+      (diff % (1000 * 60 * 60)) / (1000 * 60)
+    );
+    const seconds = Math.floor(
+      (diff % (1000 * 60)) / 1000
+    );
+
+    setTimeUntil(
+      `${hours}h ${minutes}m`
+    );
+  };
+  
+  useEffect(() => {
+
+    updateTime();
+
+    const interval = setInterval(updateTime, 1000);
+
+    return () => clearInterval(interval);
+  }, [upcomingBookings]);
+
+
   useEffect(() => {
     return () => {
       Object.values(debounceRefs.current).forEach(clearTimeout)
@@ -265,12 +318,12 @@ const Bookings = ({ page }: { page: string }) => {
       <div> 
         {page == "overview" && (
           <div>
-            <Card className='my-3'>
+            <Card className={`${dropIn == 30 ? "bg-red-500/10" : dropIn == 60 ? "bg-yellow-400/10" : "bg-green-700/10"} my-3`}>
               <CardHeader>
                 <CardTitle><h2>Drop in</h2></CardTitle>
               </CardHeader>
               <CardContent>
-                <p></p>
+                <p>Nästa bokning om: {timeUntil}</p>
               </CardContent>
             </Card>
             <Card className='my-3'>
@@ -528,8 +581,9 @@ const Bookings = ({ page }: { page: string }) => {
                     )}
                   </TableBody>
                 </Table>
-                
-                {(passedBookings ?? []).map((booking) => (
+                {(passedBookings ?? []).map((booking) => {
+                  const isLoading = statusLoading[booking.id]
+                  return (
                     <Card key={booking.id} className={`
                       ${
                         (statusMap[booking.id] || booking.status) === "missed"
@@ -574,8 +628,8 @@ const Bookings = ({ page }: { page: string }) => {
                             </div>
                           )}
                           <Select value={statusMap[booking.id] || booking.status} onValueChange={(value) => updateStatus(booking.id, value)} >
-                            <SelectTrigger className="w-full min-w-32">
-                              <SelectValue />
+                            <SelectTrigger className="w-full min-w-36 flex text-left justify-between">
+                              {isLoading ? (<><Loader /> Sparar...</>) : <SelectValue className='text-left' />}
                             </SelectTrigger>
                             <SelectContent position="popper">
                               <SelectGroup>
@@ -584,22 +638,10 @@ const Bookings = ({ page }: { page: string }) => {
                               </SelectGroup>
                             </SelectContent>
                           </Select>
-                          {/*<DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button className='w-[50%]' disabled={
-                                !passedBookings?.some((b) => b.id === booking.id)
-                              }>Välj</Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent>
-                              <DropdownMenuItem onClick={() => completeBooking(booking.id)}><CalendarCheck /> Slutförd</DropdownMenuItem>
-                              <DropdownMenuSeparator />
-                              <DropdownMenuItem onClick={() => missedBooking(booking.id)}><CalendarX /> Missad tid</DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>*/}
                         </div>
                       </CardContent>
                     </Card>
-                ))}
+                )})}
               </CardContent>
             </Card>
           </div>
