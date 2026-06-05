@@ -276,6 +276,8 @@ const Bookings = ({ page }: { page: string }) => {
       passedBookings?.map((b) => [b.id, b.status])
     )
 
+    console.log(initial)
+    
     setStatusMap(initial)
   }, [passedBookings])
 
