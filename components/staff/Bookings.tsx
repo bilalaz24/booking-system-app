@@ -168,6 +168,7 @@ const Bookings = ({ page }: { page: string }) => {
     setPassedBookings(data ?? [])
   }
 
+  /*
   const cleanUp = async () => {
     const lastRun = localStorage.getItem("cleanup_last_run")
     const now = Date.now()
@@ -180,7 +181,7 @@ const Bookings = ({ page }: { page: string }) => {
         console.error("Cleanup failed", error)
       }
     }
-  }
+  }*/
 
   const updateStatus = (id: string, value: string) => {
     // optimistic update
@@ -283,7 +284,6 @@ const Bookings = ({ page }: { page: string }) => {
     
     const init = async () => {
       setLoading(true)
-      await cleanUp()
       await Promise.all([fetchToday(), fetchFuture(), fetchPassed()])
       //fetchAllBookings()
       setLoading(false)
@@ -312,7 +312,6 @@ const Bookings = ({ page }: { page: string }) => {
       }
   }, [user.business_id])
 
-  console.log(page)
   return (
     <div>
       <div> 
@@ -328,7 +327,7 @@ const Bookings = ({ page }: { page: string }) => {
             </Card>
             <Card className='my-3'>
               <CardHeader>
-                <CardTitle><h2>Dagens tider</h2></CardTitle>
+                <CardTitle><h2>Dagens nästa tider</h2></CardTitle>
               </CardHeader>
               <CardContent>
                 <Table className='hidden lg:table w-full'>

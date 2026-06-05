@@ -1,7 +1,7 @@
 {
     "crons": [
         {
-            "path": "/api/cron/bookings",
+            "path": "/api/cron/bookings?secret=c1355f5324435d3a44186c87e82677537ab1fa0adad0231dbe46c52ff29a5d91",
             "schedule": "0 0 * * *"
         }
     ]
