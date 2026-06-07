@@ -92,6 +92,13 @@ export async function bookAppointment(data: BookingData) {
             .eq("start_time", normalizedSlot)
             .maybeSingle()
 
+        //const { data: existingNew, error: existingErrorNew } = await supabase
+        //    .from("bookings_new")
+        //    .select("*")
+        //    .eq("date", date)
+        //    .eq("start_time", normalizedSlot)
+        //    .maybeSingle()
+
         if (existingError) {
             return {
                 success: false,

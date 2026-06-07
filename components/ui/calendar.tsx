@@ -16,7 +16,7 @@ import {
 import { cn } from "@/lib/utils"
 import { Button, buttonVariants } from "@/components/ui/button"
 
-// 1. Define sizing configurations
+// -------------------- SIZE CONFIG --------------------
 const sizeConfigs = {
   sm: {
     containerPadding: "p-3",
@@ -30,13 +30,13 @@ const sizeConfigs = {
     navButton: "h-12 w-12",
     captionText: "text-base tracking-widest",
     weekdayText: "text-xs tracking-widest pb-2",
-    dayCell: "h-14 w-14 text-sm font-bold", // Aggressive, large interactive tap-targets
-  }
+    dayCell: "h-14 w-14 text-sm font-bold",
+  },
 }
 
 type CalendarProps = React.ComponentProps<typeof DayPicker> & {
   buttonVariant?: React.ComponentProps<typeof Button>["variant"]
-  size?: "sm" | "lg" // 2. Add the custom size variant prop
+  size?: "sm" | "lg"
 }
 
 function Calendar({
@@ -48,11 +48,11 @@ function Calendar({
   locale,
   formatters,
   components,
-  size = "sm", // Default to small size mapping
+  size = "sm",
   ...props
 }: CalendarProps) {
   const defaultClassNames = getDefaultClassNames()
-  const s = sizeConfigs[size] // Extract current size styles
+  const s = sizeConfigs[size]
 
   return (
     <DayPicker
@@ -60,8 +60,6 @@ function Calendar({
       className={cn(
         "group/calendar bg-card border border-border",
         s.containerPadding,
-        String.raw`rtl:**:[.rdp-button\_next>svg]:rotate-180`,
-        String.raw`rtl:**:[.rdp-button\_previous>svg]:rotate-180`,
         className
       )}
       captionLayout={captionLayout}
@@ -72,96 +70,85 @@ function Calendar({
         ...formatters,
       }}
       classNames={{
-        root: cn("w-fit", defaultClassNames.root),
+        root: cn("w-full", defaultClassNames.root),
+
         months: cn(
-          "relative flex flex-col gap-4 md:flex-row",
+          "flex flex-col gap-4",
           defaultClassNames.months
         ),
-        month: cn("flex w-full flex-col gap-4", defaultClassNames.month),
-        nav: cn(
-          "absolute inset-x-0 top-0 flex w-full items-center justify-between gap-1",
-          defaultClassNames.nav
+
+        month: cn(
+          "flex w-full flex-col gap-4",
+          defaultClassNames.month
         ),
-        button_previous: cn(
-          buttonVariants({ variant: buttonVariant }),
-          "p-0 select-none rounded-none border border-border hover:bg-secondary hover:text-foreground",
-          s.navButton,
-          defaultClassNames.button_previous
-        ),
-        button_next: cn(
-          buttonVariants({ variant: buttonVariant }),
-          "p-0 select-none rounded-none border border-border hover:bg-secondary hover:text-foreground",
-          s.navButton,
-          defaultClassNames.button_next
-        ),
-        month_caption: cn(
-          "flex w-full items-center justify-center font-bold text-foreground uppercase",
-          size === "lg" ? "h-12" : "h-8",
-          s.captionText,
-          defaultClassNames.month_caption
-        ),
-        dropdowns: cn(
-          "flex w-full items-center justify-center gap-1.5 text-sm font-medium",
-          size === "lg" ? "h-12" : "h-8",
-          defaultClassNames.dropdowns
-        ),
-        dropdown_root: cn(
-          "cn-calendar-dropdown-root relative rounded-none",
-          defaultClassNames.dropdown_root
-        ),
-        dropdown: cn(
-          "absolute inset-0 bg-popover opacity-0",
-          defaultClassNames.dropdown
-        ),
-        caption_label: cn(
-          "font-bold select-none text-foreground uppercase tracking-wider",
-          s.captionText,
-          defaultClassNames.caption_label
-        ),
+
+        // ✅ FIXED GRID (THIS WAS THE BIG ISSUE)
         month_grid: "w-full border-collapse",
-        weekdays: cn("flex mt-2", defaultClassNames.weekdays),
+
+        weekdays: cn("grid grid-cols-7 mt-2", defaultClassNames.weekdays),
+
         weekday: cn(
-          "flex-1 font-bold text-muted-foreground uppercase text-center select-none",
-          s.weekdayText,
-          defaultClassNames.weekday
+          "text-center font-bold text-muted-foreground uppercase select-none",
+          s.weekdayText
         ),
-        week: cn("mt-1 flex w-full", defaultClassNames.week),
+
+        // ✅ FIXED GRID (NO FLEX)
+        week: cn(
+          "grid grid-cols-7 w-full",
+          defaultClassNames.week
+        ),
+
         day: cn(
-          "group/day relative aspect-square h-full w-full p-0 text-center select-none rounded-none",
+          "flex items-center justify-center select-none p-0",
           defaultClassNames.day
         ),
+
+        nav: cn(
+          "flex items-center justify-between w-full",
+          defaultClassNames.nav
+        ),
+
+        button_previous: cn(
+          buttonVariants({ variant: buttonVariant }),
+          "border border-border hover:bg-secondary",
+          s.navButton
+        ),
+
+        button_next: cn(
+          buttonVariants({ variant: buttonVariant }),
+          "border border-border hover:bg-secondary",
+          s.navButton
+        ),
+
+        month_caption: cn(
+          "flex justify-center font-bold uppercase",
+          s.captionText
+        ),
+
+        caption_label: cn(
+          "font-bold uppercase tracking-wider"
+        ),
+
         today: cn(
-          "bg-secondary/60 text-foreground font-black border border-barber-blue/40",
-          defaultClassNames.today
+          "relative text-foreground font-semibold",
+          "after:absolute after:bottom-1 after:left-1/2 after:-translate-x-1/2",
+          "after:h-1 after:w-1 after:rounded-full after:bg-barber-blue"
         ),
-        outside: cn(
-          "text-muted-foreground/30",
-          defaultClassNames.outside
-        ),
-        disabled: cn(
-          "text-muted-foreground/20 line-through opacity-50",
-          defaultClassNames.disabled
-        ),
-        hidden: cn("invisible", defaultClassNames.hidden),
+
+        outside: "text-muted-foreground/30",
+        disabled: "text-muted-foreground/20 line-through opacity-50",
+        hidden: "invisible",
+
         ...classNames,
       }}
       components={{
-        Root: ({ className, rootRef, ...props }) => {
-          return (
-            <div
-              data-slot="calendar"
-              ref={rootRef}
-              className={cn(className)}
-              {...props}
-            />
-          )
-        },
-        Chevron: ({ className, orientation, ...props }) => {
-          const chevronClass = size === "lg" ? "size-5" : "size-4"
+        Chevron: ({ orientation, className, ...props }) => {
+          const iconClass = size === "lg" ? "size-5" : "size-4"
+
           if (orientation === "left") {
             return (
               <ChevronLeftIcon
-                className={cn("text-foreground", chevronClass, className)}
+                className={cn(iconClass, className)}
                 {...props}
               />
             )
@@ -170,20 +157,28 @@ function Calendar({
           if (orientation === "right") {
             return (
               <ChevronRightIcon
-                className={cn("text-foreground", chevronClass, className)}
+                className={cn(iconClass, className)}
                 {...props}
               />
             )
           }
 
           return (
-            <ChevronDownIcon className={cn("text-foreground", chevronClass, className)} {...props} />
+            <ChevronDownIcon
+              className={cn(iconClass, className)}
+              {...props}
+            />
           )
         },
-        DayButton: ({ ...props }) => (
-          // Pass the dynamic class configurations down to the interactive buttons
-          <CalendarDayButton locale={locale} dayCellClass={s.dayCell} {...props} />
+
+        DayButton: (props) => (
+          <CalendarDayButton
+            {...props}
+            locale={locale}
+            dayCellClass={s.dayCell}
+          />
         ),
+
         ...components,
       }}
       {...props}
@@ -191,6 +186,7 @@ function Calendar({
   )
 }
 
+// -------------------- DAY BUTTON FIX --------------------
 function CalendarDayButton({
   className,
   day,
@@ -198,13 +194,12 @@ function CalendarDayButton({
   locale,
   dayCellClass,
   ...props
-}: React.ComponentProps<typeof DayButton> & { 
+}: React.ComponentProps<typeof DayButton> & {
   locale?: Partial<Locale>
-  dayCellClass: string 
+  dayCellClass: string
 }) {
-  const defaultClassNames = getDefaultClassNames()
-
   const ref = React.useRef<HTMLButtonElement>(null)
+
   React.useEffect(() => {
     if (modifiers.focused) ref.current?.focus()
   }, [modifiers.focused])
@@ -213,14 +208,21 @@ function CalendarDayButton({
     <Button
       ref={ref}
       variant="ghost"
-      size="icon"
-      data-day={day.date.toLocaleDateString(locale?.code)}
-      data-selected-single={modifiers.selected}
+      data-selected={modifiers.selected}
       className={cn(
-        "relative flex aspect-square items-center justify-center border-0 leading-none font-medium transition-all text-foreground rounded-none bg-transparent",
-        "hover:bg-secondary hover:text-white hover:ring-1 hover:ring-barber-blue",
-        "data-[selected-single=true]:bg-barber-red data-[selected-single=true]:text-white data-[selected-single=true]:font-bold data-[selected-single=true]:hover:bg-barber-red",
-        dayCellClass, // Dynamically injection of structural sizing properties
+        // base
+        "w-full h-full flex items-center justify-center rounded-none font-medium transition-all",
+
+        // hover
+        "hover:bg-secondary hover:text-white",
+
+        // selected (FULL override, no shrinking)
+        "data-[selected=true]:bg-barber-red data-[selected=true]:text-white data-[selected=true]:font-bold",
+
+        // important: no rings causing size mismatch
+        "data-[selected=true]:hover:bg-barber-red",
+
+        dayCellClass,
         className
       )}
       {...props}

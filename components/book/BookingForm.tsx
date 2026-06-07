@@ -1,87 +1,143 @@
 "use client"
-import React, { useEffect, useRef, useState } from 'react'
-import AvailableSlots from './AvailableSlots'
-import AvailableDates from './AvailableDates'
-import { getAvailableSlots } from '@/lib/actions/slots' // Import your existing action
-import ContactInfo from './ContactInfo'
-import Services from './Services'
 
-// 1. Accept the initial server-fetched slots as a prop
-const BookingForm = ({ initialSlots, initialDate, businessId }: { initialSlots: string[], initialDate: Date, businessId: string }) => {
-    const [selectedDate, setSelectedDate] = useState<Date | null>(initialDate)
-    const [selectedSlot, setSelectedSlot] = useState<string | null>(null)
-    const [selectedService, setSelectedService] = useState<string | null>(null)
+import React, { useRef, useState } from "react"
+import AvailableSlots from "./AvailableSlots"
+import AvailableDates from "./AvailableDates"
+import { getAvailableSlots } from "@/lib/actions/slots"
+import ContactInfo from "./ContactInfo"
+import Services from "./Services"
 
-    const [slots, setSlots] = useState<string[]>(initialSlots)
-    const [loadingSlots, setLoadingSlots] = useState(false)   
-    
-    const handleServiceSelect = (serviceId: string) => {
-        console.log(serviceId)
-        setSelectedService(serviceId)
-    }
+const BookingForm = ({
+  initialSlots,
+  initialDate,
+  businessId,
+}: {
+  initialSlots: string[]
+  initialDate: Date
+  businessId: string
+}) => {
+  const [selectedDate, setSelectedDate] = useState<Date | null>(initialDate)
+  const [selectedSlot, setSelectedSlot] = useState<string | null>(null)
+  const [selectedService, setSelectedService] = useState<string | null>(null)
 
-    const handleSlotSelect = (slot: string) => {
-        setSelectedSlot(slot)
-    }
+  const [slots, setSlots] = useState<string[]>(initialSlots)
+  const [loadingSlots, setLoadingSlots] = useState(false)
 
-    // 3. Trigger this whenever a new date is clicked
-    const handleDateSelect = async (date: Date) => {
-        setSelectedDate(date)
-        setSelectedSlot(null) // Clear previous slot selection
-        setLoadingSlots(true)
+  const calendarRef = useRef<HTMLDivElement | null>(null)
+  const contactRef = useRef<HTMLDivElement | null>(null)
 
-        try {
-            if (!businessId) {
-                console.error("No business found")
-                return
-            }
+  const handleServiceSelect = (serviceId: string) => {
+    setSelectedService(serviceId)
 
-            console.log("from bookingform", date)
-            
-            // Format to safely match YYYY-MM-DD format without timezone issues
-            const formattedDate = date.toLocaleDateString('en-CA')
+    // scroll to calendar
+    setTimeout(() => {
+        if (calendarRef.current) {
+        const yOffset = -80 // adjust this value
+        const y =
+            calendarRef.current.getBoundingClientRect().top +
+            window.pageYOffset +
+            yOffset
 
-            // Call your EXACT server action directly from the client!
-            const newSlots = await getAvailableSlots(businessId!, formattedDate)
-
-            setSlots(newSlots)
-        } catch (err) {
-            console.error("Kunde inte hämta tider:", err)
-        } finally {
-            setLoadingSlots(false)
+        window.scrollTo({
+            top: y,
+            behavior: "smooth",
+        })
         }
+    }, 100)
+  }
+
+  const handleSlotSelect = (slot: string) => {
+    setSelectedSlot(slot)
+  }
+
+  const handleDateSelect = async (date: Date) => {
+    setSelectedDate(date)
+    setSelectedSlot(null)
+    setLoadingSlots(true)
+
+    try {
+      const formattedDate = date.toLocaleDateString("en-CA")
+
+      const newSlots = await getAvailableSlots(
+        businessId!,
+        formattedDate
+      )
+
+      setSlots(newSlots)
+    } catch (err) {
+      console.error("Kunde inte hämta tider:", err)
+    } finally {
+      setLoadingSlots(false)
     }
+  }
 
-    return (
-        <div className="space-y-6 flex-col justify-center">
-            <Services onSelectService={handleServiceSelect} />
+  const handleConfirmSlot = () => {
+    setTimeout(() => {
+      contactRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      })
+    }, 150)
+  }
 
-            <div className={`text-center border border-b-muted rounded-2xl py-8 ${/*
-                selectedService != null
-                ? "shadow-[0_0_8px_rgba(255,255,255,0.9),0_0_25px_rgba(255,255,255,0.5),inset_0_0_10px_rgba(255,255,255,0.2)]"
-                : ""
-            */""}`}>
-                <h2 className='text-xl mb-4'>Välj en tid</h2>
-                <div className='md:flex justify-between'>
-                    <AvailableDates selectedService={selectedService} onSelectDate={handleDateSelect} />
-                    
-                    {loadingSlots ? (
-                        <div className='flex-1 flex justify-center'>
-                            <p className="text-center text-sm text-gray-500">Laddar tider...</p>
-                        </div>
-                    ) : (
-                        <AvailableSlots 
-                            slots={slots} 
-                            selectedDate={selectedDate || new Date()} 
-                            onSelectSlot={handleSlotSelect} 
-                        />
-                    )}
-                </div>
-            </div>
+  return (
+    <div className="space-y-10 flex flex-col items-center w-full">
 
-            <ContactInfo selectedDate={selectedDate} selectedSlot={selectedSlot} selectedService={selectedService} />
+      {/* SERVICES */}
+      <div className="w-full max-w-4xl">
+        <Services onSelectService={handleServiceSelect} />
+      </div>
+
+      {/* CALENDAR + SLOTS */}
+      <div
+        ref={calendarRef}
+        className="w-full max-w-4xl border border-b-muted rounded-2xl p-6 text-center"
+      >
+        <h2 className="text-xl mb-6">Välj en tid</h2>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+
+          {/* CALENDAR */}
+          <div className="flex justify-center">
+            <AvailableDates
+              selectedService={selectedService}
+              onSelectDate={handleDateSelect}
+            />
+          </div>
+
+          {/* SLOTS */}
+          <div className="flex justify-center">
+            {loadingSlots ? (
+              <p className="text-sm text-gray-500">
+                Laddar tider...
+              </p>
+            ) : (
+              <AvailableSlots
+                slots={slots}
+                selectedDate={selectedDate || new Date()}
+                onSelectSlot={(slot) => {
+                  handleSlotSelect(slot)
+                  handleConfirmSlot()
+                }}
+              />
+            )}
+          </div>
         </div>
-    )
+      </div>
+
+      {/* CONTACT */}
+      <div
+        ref={contactRef}
+        className="w-full max-w-4xl"
+      >
+        <ContactInfo
+          selectedDate={selectedDate}
+          selectedSlot={selectedSlot}
+          selectedService={selectedService}
+        />
+      </div>
+    </div>
+  )
 }
 
 export default BookingForm
