@@ -7,6 +7,10 @@ export async function GET(request: Request) {
 
   const authHeader = request.headers.get("authorization")
 
+  console.log("CRON_SECRET exists:", !!process.env.CRON_SECRET);
+  console.log("CRON_SECRET value:", process.env.CRON_SECRET);
+  console.log("Authorization header:", request.headers.get("authorization"));
+
   if (authHeader !== process.env.CRON_SECRET) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
