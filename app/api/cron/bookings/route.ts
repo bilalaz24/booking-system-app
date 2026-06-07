@@ -11,7 +11,7 @@ export async function GET(request: Request) {
   console.log("CRON_SECRET value:", process.env.CRON_SECRET);
   console.log("Authorization header:", request.headers.get("authorization"));
 
-  if (authHeader !== process.env.CRON_SECRET) {
+  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
