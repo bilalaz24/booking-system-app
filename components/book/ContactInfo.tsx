@@ -2,7 +2,7 @@
 
 import React, { useActionState, useEffect } from 'react'
 import { bookAppointment } from '@/lib/actions/book'
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { Button } from "@/components/ui/button"
@@ -82,10 +82,14 @@ const ContactInfo = ({ selectedDate, selectedSlot, selectedService }: Props) => 
     }
 
     return (
-        <div className='flex-1 w-full flex justify-center border-1 border-b-muted rounded-2xl py-8'>
+        <div className='flex-1 w-full flex flex-col items-center border border-b-muted rounded-2xl py-8'>
+            <h2 className="text-2xl font-semibold mb-6 text-center">
+                Boka din tid
+            </h2>
             <Card className='max-w-md w-full'>
                 <CardHeader>
-                    <CardTitle>Boka</CardTitle>
+                    <CardTitle>Dina uppgifter</CardTitle>
+                    <CardDescription>Fyll i dina kontaktuppgifter för att slutföra bokningen</CardDescription>
                 </CardHeader>
                 <CardContent>
                     <form onSubmit={handleSubmit(onSubmit)}>

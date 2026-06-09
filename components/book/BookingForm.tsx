@@ -93,7 +93,7 @@ const BookingForm = ({
         ref={calendarRef}
         className="w-full max-w-4xl border border-b-muted rounded-2xl p-6 text-center"
       >
-        <h2 className="text-xl mb-6">Välj en tid</h2>
+        <h2 className="text-2xl font-semibold mb-6">Välj en tid</h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
 

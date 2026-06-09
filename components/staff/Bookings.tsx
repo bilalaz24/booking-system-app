@@ -12,7 +12,9 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSepara
 import { completeBooking, missedBooking } from '@/lib/actions/staffBookings'
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
 import Loader from '../Loader'
+import type { Service, Booking } from '@/lib/types'
 
+/*
 interface Service {
   id: string,
   created_at: string,
@@ -40,7 +42,7 @@ interface Booking {
   status: string
 
   service: Service
-}
+}*/
 
 export function isBookingPast(date: string, time: string) {
   const [y, m, d] = date.split("-");

@@ -29,6 +29,9 @@ const Navbar = async () => {
           <Link className='hover:text-barber-blue' href={routes.home}>Hem</Link>
         </li>
         <li>
+          <Link className='hover:text-barber-blue' href={routes.services}>Tjänster</Link>
+        </li>
+        <li>
           <Link className='hover:text-barber-blue' href={routes.about}>Om oss</Link>
         </li>
         <li>
