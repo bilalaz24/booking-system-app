@@ -6,13 +6,14 @@ import { createClient } from '@/lib/supabase/client'
 import { Item, ItemActions, ItemContent, ItemTitle } from '../ui/item'
 import { Button } from '../ui/button'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table'
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
-import { CalendarCheck, CalendarX, Loader2 } from 'lucide-react'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card'
+import { CalendarCheck, CalendarDays, CalendarX, CheckCircle2, Clock3, Loader2, XCircle } from 'lucide-react'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '../ui/dropdown-menu'
 import { completeBooking, missedBooking } from '@/lib/actions/staffBookings'
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
 import Loader from '../Loader'
 import type { Service, Booking } from '@/lib/types'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs'
 
 /*
 interface Service {
@@ -76,6 +77,7 @@ const Bookings = ({ page }: { page: string }) => {
 
   const [timeUntil, setTimeUntil] = useState("")
   const [dropIn, setDropIn] = useState<number>()
+  const [dropInStyles, setDropInStyles] = useState("")
 
   const [statusMap, setStatusMap] = useState<Record<string, string>>({})
   const debounceRefs = useRef<Record<string, NodeJS.Timeout>>({})
@@ -253,6 +255,11 @@ const Bookings = ({ page }: { page: string }) => {
     setTimeUntil(
       `${hours}h ${minutes}m`
     );
+    setDropInStyles(dropIn === 30
+    ? "border-red-500 bg-red-500/10"
+    : dropIn === 60
+      ? "border-yellow-500 bg-yellow-500/10"
+      : "border-green-500 bg-green-500/10")
   };
   
   useEffect(() => {
@@ -321,6 +328,7 @@ const Bookings = ({ page }: { page: string }) => {
       <div> 
         {page == "overview" && (
           <div>
+            {/*
             <Card className={`${dropIn == 30 ? "bg-red-500/10" : dropIn == 60 ? "bg-yellow-400/10" : "bg-green-700/10"} my-3`}>
               <CardHeader>
                 <CardTitle><h2>Drop in</h2></CardTitle>
@@ -328,12 +336,225 @@ const Bookings = ({ page }: { page: string }) => {
               <CardContent>
                 <p>Nästa bokning om: {timeUntil}</p>
               </CardContent>
+            </Card>*/}
+
+            {/* DROP-IN */}
+            <Card className={`border-2 ${dropInStyles}`}>
+              <CardContent className="py-8">
+                <p className="uppercase tracking-wider text-muted-foreground">
+                  Drop-in Status
+                </p>
+
+                <h2 className="text-3xl font-bold mt-2">
+                  {dropIn === 30
+                    ? "Inte tillgänglig"
+                    : dropIn === 60
+                    ? "Begränsad tid"
+                    : "Tillgänglig"}
+                </h2>
+
+                <p className="text-muted-foreground mt-3">
+                  Nästa tid om {timeUntil}
+                </p>
+              </CardContent>
             </Card>
+
+            {/* OVERVIEW CARDS */}
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 my-4">
+              <Card>
+                <CardContent className="flex items-center justify-between py-6">
+                  <div>
+                    <p className="text-lg text-muted-foreground">
+                      Dagens bokningar
+                    </p>
+                    <h2 className="text-3xl font-bold mt-2">
+                      {todayBookings?.length ?? 0}
+                    </h2>
+                  </div>
+                  <CalendarDays />
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="flex items-center justify-between py-6">
+                  <div>
+                    <p className="text-lg text-muted-foreground">
+                      Kommande
+                    </p>
+                    <h2 className="text-3xl font-bold mt-2">
+                      {upcomingBookings.length}
+                    </h2>
+                  </div>
+                  <Clock3 />
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="flex items-center justify-between py-6">
+                  <div>
+                    <p className="text-lg text-muted-foreground">
+                      Slutförda
+                    </p>
+                    <h2 className="text-3xl font-bold mt-2">
+                      {
+                        (passedBookings ?? []).filter(
+                          b => (statusMap[b.id] || b.status) === "complete"
+                        ).length
+                      }
+                    </h2>
+                  </div>
+                  <CheckCircle2 className="h-8 w-8 text-green-500" />
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="flex items-center justify-between py-6">
+                  <div>
+                    <p className="text-lg text-muted-foreground">
+                      Missade
+                    </p>
+                    <h2 className="text-3xl font-bold mt-2">
+                      {
+                        (passedBookings ?? []).filter(
+                          b => (statusMap[b.id] || b.status) === "missed"
+                        ).length
+                      }
+                    </h2>
+                  </div>
+                  <XCircle className="h-8 w-8 text-red-500" />
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* TODAYS BOOKINGS */}
             <Card className='my-3'>
               <CardHeader>
-                <CardTitle><h2>Dagens nästa tider</h2></CardTitle>
+                <CardTitle><h2 className='text-xl'>Dagens schema</h2></CardTitle>
+                <CardDescription>Alla återstående bokingar för idag</CardDescription>
               </CardHeader>
               <CardContent>
+                {loading ? (
+                  <div className="flex justify-center py-12">
+                    <Loader />
+                  </div>
+                ) : (todayBookings ?? []).length === 0 ? (
+                  <div className="text-center py-12">
+                    <p className="text-muted-foreground">
+                      Inga bokningar idag
+                    </p>
+                  </div>
+                ) : (
+                  <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+                    {(todayBookings ?? []).map((booking, index) => {
+                      const isNext =
+                        index === 0 &&
+                        !isBookingPast(booking.date, booking.end_time)
+
+                      return (
+                        <Card
+                          key={booking.id}
+                          className={`
+                            transition-all
+                            hover:shadow-lg
+                            hover:-translate-y-1
+                            ${
+                              isNext
+                                ? "border-primary ring-2 ring-primary/20"
+                                : ""
+                            }
+                          `}
+                        >
+                          <CardContent className="p-5">
+                            {isNext && (
+                              <div className="mb-4">
+                                <span className="rounded-full bg-primary/10 text-primary px-3 py-1 text-xs font-medium">
+                                  NÄSTA BOKNING
+                                </span>
+                              </div>
+                            )}
+
+                            <div className="space-y-4">
+                              <div>
+                                <h3 className="font-semibold text-lg">
+                                  {booking.service.name}
+                                </h3>
+
+                                <p className="text-sm text-muted-foreground">
+                                  {booking.service.duration_min} minuter
+                                </p>
+                              </div>
+
+                              <div className="flex items-center justify-between">
+                                <div>
+                                  <p className="text-xs text-muted-foreground">
+                                    Start
+                                  </p>
+
+                                  <p className="font-medium">
+                                    {booking.start_time.slice(0, 5)}
+                                  </p>
+                                </div>
+
+                                <div>
+                                  <p className="text-xs text-muted-foreground">
+                                    Slut
+                                  </p>
+
+                                  <p className="font-medium">
+                                    {booking.end_time.slice(0, 5)}
+                                  </p>
+                                </div>
+                              </div>
+
+                              <div className="border-t pt-4">
+                                <p className="text-xs text-muted-foreground">
+                                  Kund
+                                </p>
+
+                                <p className="font-medium">
+                                  {booking.customer_name}
+                                </p>
+                              </div>
+
+                              <div>
+                                <p className="text-xs text-muted-foreground">
+                                  Telefon
+                                </p>
+
+                                <p>
+                                  {booking.customer_phone}
+                                </p>
+                              </div>
+
+                              {booking.customer_email && (
+                                <div>
+                                  <p className="text-xs text-muted-foreground">
+                                    E-post
+                                  </p>
+
+                                  <p className="break-all">
+                                    {booking.customer_email}
+                                  </p>
+                                </div>
+                              )}
+
+                              {booking.notes && (
+                                <div>
+                                  <p className="text-xs text-muted-foreground">
+                                    Anteckningar
+                                  </p>
+
+                                  <p className="text-sm">
+                                    {booking.notes}
+                                  </p>
+                                </div>
+                              )}
+                            </div>
+                          </CardContent>
+                        </Card>
+                      )
+                    })}
+                  </div>
+                )}
+
+                {/*
                 <Table className='hidden lg:table w-full'>
                   <TableHeader>
                     <TableRow>
@@ -422,235 +643,257 @@ const Bookings = ({ page }: { page: string }) => {
                       </CardContent>
                     </Card>
                   ))
-                )}
+                )}*/}
               </CardContent>
             </Card>
           </div>
         )}
         {page == "bookings" && (
           <div>
-            <Card className='my-3'>
-              <CardHeader>
-                <CardTitle><h2>Kommande</h2></CardTitle>
-              </CardHeader>
-              <CardContent>
-                <Table className='hidden lg:table w-full'>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Tjänst</TableHead>
-                      <TableHead>Datum</TableHead>
-                      <TableHead>Start</TableHead>
-                      <TableHead>Slut</TableHead>
-                      <TableHead>Kund Namn</TableHead>
-                      <TableHead>Kund Mail</TableHead>
-                      <TableHead>Kund Telefon</TableHead>
-                      <TableHead>Övrigt</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
+            <Tabs defaultValue='next'>
+              <div className='flex justify-center'>
+                <TabsList>
+                  <TabsTrigger value='next'>Kommande</TabsTrigger>
+                  <TabsTrigger value='history'>Historik</TabsTrigger>
+                </TabsList>
+              </div>
+              <TabsContent value='next'>
+                <Card className='my-3'>
+                  <CardHeader>
+                    <CardTitle><h2>Kommande bokingar</h2></CardTitle>
+                    <CardDescription>Alla framtida bokningar</CardDescription>
+                  </CardHeader>
+                  <CardContent>
                     {loading ? (
-                      <TableRow>
-                        <TableCell colSpan={9} className='text-center pt-8 pb-4 text-muted-foreground text-lg'>
-                          Laddar bokningar
-                        </TableCell>
-                      </TableRow>
-                    ) : (upcomingBookings ?? []).length === 0 ? (
-                      <TableRow>
-                        <TableCell colSpan={9} className='text-center pt-8 pb-4 text-muted-foreground text-lg'>
-                          Inga bokningar
-                        </TableCell>
-                      </TableRow>
+                      <div className="flex justify-center py-12">
+                        <Loader />
+                      </div>
+                    ) : upcomingBookings.length === 0 ? (
+                      <div className="text-center py-12">
+                        <p className="text-muted-foreground">
+                          Inga kommande bokningar
+                        </p>
+                      </div>
                     ) : (
-                      (upcomingBookings ?? []).map((booking) => {
-                        return (
-                          <TableRow key={booking.id}>
-                            <TableCell>{booking.service.name} - {booking.service.duration_min} min</TableCell>
-                            <TableCell>{booking.date.split("-")[2]} {new Date(2026, Number(booking.date.split("-")[1]) - 1).toLocaleString("sv-SE", {month: "long"})}</TableCell>
-                            <TableCell>{booking.start_time.split(":")[0]}:{booking.start_time.split(":")[1]}</TableCell>
-                            <TableCell>{booking.end_time.split(":")[0]}:{booking.end_time.split(":")[1]}</TableCell>
-                            <TableCell>{booking.customer_name}</TableCell>
-                            <TableCell>{booking.customer_email}</TableCell>
-                            <TableCell>{booking.customer_phone}</TableCell>
-                            <TableCell>{booking.notes}</TableCell>
-                          </TableRow>
-                        )})
+                      <div className="grid gap-4 lg:grid-cols-2">
+                        {upcomingBookings.map((booking, index) => {
+                          const isNext = index === 0
+
+                          return (
+                            <Card
+                              key={booking.id}
+                              className={`
+                                transition-all
+                                hover:shadow-lg
+                                hover:-translate-y-1
+                                ${
+                                  isNext
+                                    ? "border-primary ring-2 ring-primary/20"
+                                    : ""
+                                }
+                              `}
+                            >
+                              <CardContent className="p-5">
+                                {isNext && (
+                                  <span className="inline-block rounded-full bg-primary/10 text-primary px-3 py-1 text-xs font-medium mb-4">
+                                    NÄSTA BOKNING
+                                  </span>
+                                )}
+
+                                <div className="space-y-4">
+                                  <div>
+                                    <h3 className="font-semibold text-lg">
+                                      {booking.service.name}
+                                    </h3>
+
+                                    <p className="text-sm text-muted-foreground">
+                                      {booking.service.duration_min} min
+                                    </p>
+                                  </div>
+
+                                  <div className="flex justify-between">
+                                    <div>
+                                      <p className="text-xs text-muted-foreground">
+                                        Datum
+                                      </p>
+
+                                      <p className="font-medium">
+                                        {booking.date}
+                                      </p>
+                                    </div>
+
+                                    <div>
+                                      <p className="text-xs text-muted-foreground">
+                                        Tid
+                                      </p>
+
+                                      <p className="font-medium">
+                                        {booking.start_time.slice(0, 5)}
+                                        {" - "}
+                                        {booking.end_time.slice(0, 5)}
+                                      </p>
+                                    </div>
+                                  </div>
+
+                                  <div className="border-t pt-4">
+                                    <p className="text-xs text-muted-foreground">
+                                      Kund
+                                    </p>
+
+                                    <p className="font-medium">
+                                      {booking.customer_name}
+                                    </p>
+                                  </div>
+
+                                  <div>
+                                    <p className="text-xs text-muted-foreground">
+                                      Telefon
+                                    </p>
+
+                                    <p>
+                                      {booking.customer_phone}
+                                    </p>
+                                  </div>
+
+                                  {booking.customer_email && (
+                                    <div>
+                                      <p className="text-xs text-muted-foreground">
+                                        E-post
+                                      </p>
+
+                                      <p className="break-all">
+                                        {booking.customer_email}
+                                      </p>
+                                    </div>
+                                  )}
+
+                                  {booking.notes && (
+                                    <div>
+                                      <p className="text-xs text-muted-foreground">
+                                        Anteckningar
+                                      </p>
+
+                                      <p className="text-sm">
+                                        {booking.notes}
+                                      </p>
+                                    </div>
+                                  )}
+                                </div>
+                              </CardContent>
+                            </Card>
+                          )
+                        })}
+                      </div>
                     )}
-                  </TableBody>
-                </Table>
-                
-                {(upcomingBookings ?? []).map((booking) => (
-                    <Card key={booking.id} className="lg:hidden">
-                      <CardContent>
-                        <div className='pb-4 font-semibold'>
-                          <p>
-                            {booking.service.name} - {booking.service.duration_min} min
-                          </p>
-                        </div>
-                        <div className='grid sm:grid-cols-3 xs:grid-cols-2 grid-col-1 gap-4 text-sm'>
-                          <div className='py-2'>
-                            <p className='text-muted-foreground'>Datum</p>
-                            <p>{booking.date.split("-")[2]} {new Date(2026, Number(booking.date.split("-")[1]) - 1).toLocaleString("sv-SE", {month: "long"})}</p>
-                          </div>
-                          <div className=''>
-                            <p className='text-muted-foreground'>Tid</p>
-                            <p>{booking.start_time.slice(0, 5)}</p>
-                          </div>
-                          <div className='py-2'>
-                            <p className='text-muted-foreground'>Kund</p>
-                            <p>{booking.customer_name}</p>
-                          </div>
-                          <div className='py-2'>
-                            <p className='text-muted-foreground'>Telefon</p>
-                            <p>{booking.customer_phone}</p>
-                          </div>
-                          {booking.customer_email && (
-                            <div>
-                              <p className='text-muted-foreground text-sm'>Mail</p>
-                              <p className='text-sm'>{booking.customer_email}</p>
-                            </div>
-                          )}
-                          {booking.notes && (
-                            <div>
-                              <p className='text-muted-foreground text-sm'>Övrigt</p>
-                              <p className='text-sm'>{booking.notes}</p>
-                            </div>
-                          )}
-                        </div>
-                      </CardContent>
-                    </Card>
-                ))}
-              </CardContent>
-            </Card>        
-            <Card className='my-3'>
-              <CardHeader>
-                <CardTitle><h2>Historik</h2></CardTitle>
-              </CardHeader>
-              <CardContent>
-                <Table className='hidden lg:table w-full'>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Tjänst</TableHead>
-                      <TableHead>Datum</TableHead>
-                      <TableHead>Start</TableHead>
-                      <TableHead>Slut</TableHead>
-                      <TableHead>Kund Namn</TableHead>
-                      <TableHead>Kund Mail</TableHead>
-                      <TableHead>Kund Telefon</TableHead>
-                      <TableHead>Övrigt</TableHead>
-                      <TableHead>Status</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
+                  </CardContent>
+                </Card> 
+              </TabsContent>
+              <TabsContent value='history'>
+                <Card className='my-3'>
+                  <CardHeader>
+                    <CardTitle><h2>Historik</h2></CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
                     {loading ? (
-                      <TableRow>
-                        <TableCell colSpan={9} className='text-center pt-8 pb-4 text-muted-foreground text-lg'>
-                          Laddar bokningar
-                        </TableCell>
-                      </TableRow>
+                      <div className="flex justify-center py-12">
+                        <Loader />
+                      </div>
                     ) : (passedBookings ?? []).length === 0 ? (
-                      <TableRow>
-                        <TableCell colSpan={9} className='text-center pt-8 pb-4 text-muted-foreground text-lg'>
-                          Inga bokningar
-                        </TableCell>
-                      </TableRow>
+                      <div className="text-center py-12">
+                        <p className="text-muted-foreground">
+                          Ingen historik
+                        </p>
+                      </div>
                     ) : (
-                      (passedBookings ?? []).map((booking) => {
-                        const isLoading = statusLoading[booking.id]
+                      passedBookings?.map((booking) => {
+                        const status =
+                          statusMap[booking.id] || booking.status
+
+                        const isLoading =
+                          statusLoading[booking.id]
+
                         return (
-                          <TableRow className={(statusMap[booking.id] || booking.status) == "missed" ? "bg-red-500/10" : "bg-green-700/10"} key={booking.id}>
-                            <TableCell>{booking.service.name} - {booking.service.duration_min} min</TableCell>
-                            <TableCell>{booking.date.split("-")[2]} {new Date(2026, Number(booking.date.split("-")[1]) - 1).toLocaleString("sv-SE", {month: "long"})}</TableCell>
-                            <TableCell>{booking.start_time.split(":")[0]}:{booking.start_time.split(":")[1]}</TableCell>
-                            <TableCell>{booking.end_time.split(":")[0]}:{booking.end_time.split(":")[1]}</TableCell>
-                            <TableCell>{booking.customer_name}</TableCell>
-                            <TableCell>{booking.customer_email}</TableCell>
-                            <TableCell>{booking.customer_phone}</TableCell>
-                            <TableCell>{booking.notes}</TableCell>
-                            <TableCell>
-                              <Select value={statusMap[booking.id] || booking.status} onValueChange={(value) => updateStatus(booking.id, value)} >
-                                <SelectTrigger className="w-full min-w-36 flex text-left justify-between">
-                                  {isLoading ? (<><Loader /> Sparar...</>) : <SelectValue className='text-left' />}
-                                </SelectTrigger>
-                                <SelectContent position="popper">
-                                  <SelectGroup>
-                                    <SelectItem value='complete'><CalendarCheck /> Slutfört</SelectItem>
-                                    <SelectItem value='missed'><CalendarX />  Missad tid</SelectItem>
-                                  </SelectGroup>
-                                </SelectContent>
-                              </Select>
-                            </TableCell>
-                          </TableRow>
-                        )})
+                          <Card
+                            key={booking.id}
+                            className="transition-all hover:shadow-md"
+                          >
+                            <CardContent className="p-4">
+                              <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                                <div className="space-y-1">
+                                  <div className="flex items-center gap-2">
+                                    <div
+                                      className={`h-2 w-2 rounded-full ${
+                                        status === "complete" || ["confirmed", "pending"].includes(status)
+                                          ? "bg-green-500"
+                                          : "bg-red-500"
+                                      }`}
+                                    />
+
+                                    <h3 className="font-medium">
+                                      {booking.service.name}
+                                    </h3>
+                                  </div>
+
+                                  <p className="text-sm text-muted-foreground">
+                                    {booking.customer_name}
+                                  </p>
+
+                                  <p className="text-sm text-muted-foreground">
+                                    {booking.date} • {booking.start_time.slice(0, 5)}
+                                  </p>
+                                </div>
+
+                                <div className="min-w-[180px]">
+                                  <Select
+                                    value={
+                                      ["confirmed", "pending"].includes(status)
+                                      ? "complete"
+                                      : status
+                                    }
+                                    onValueChange={(value) =>
+                                      updateStatus(
+                                        booking.id,
+                                        value
+                                      )
+                                    }
+                                  >
+                                    <SelectTrigger>
+                                      {isLoading ? (
+                                        <>
+                                          <Loader />
+                                          Sparar...
+                                        </>
+                                      ) : (
+                                        <SelectValue />
+                                      )}
+                                    </SelectTrigger>
+
+                                    <SelectContent>
+                                      <SelectItem value="complete">
+                                        <CalendarCheck />
+                                        Slutfört
+                                      </SelectItem>
+
+                                      <SelectItem value="missed">
+                                        <CalendarX />
+                                        Missad tid
+                                      </SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                </div>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        )
+                      })
                     )}
-                  </TableBody>
-                </Table>
-                {(passedBookings ?? []).map((booking) => {
-                  const isLoading = statusLoading[booking.id]
-                  return (
-                    <Card key={booking.id} className={`
-                      ${
-                        (statusMap[booking.id] || booking.status) === "missed"
-                          ? "bg-red-500/10"
-                          : "bg-green-700/10"
-                      }
-                      lg:hidden
-                    `}>
-                      <CardContent>
-                        <div className='pb-4 font-semibold'>
-                          <p>
-                            {booking.service.name} - {booking.service.duration_min} min
-                          </p>
-                        </div>
-                        <div className='grid sm:grid-cols-3 xs:grid-cols-2 grid-col-1 gap-4 text-sm'>
-                          <div className='py-2'>
-                            <p className='text-muted-foreground'>Datum</p>
-                            <p>{booking.date.split("-")[2]} {new Date(2026, Number(booking.date.split("-")[1]) - 1).toLocaleString("sv-SE", {month: "long"})}</p>
-                          </div>
-                          <div className=''>
-                            <p className='text-muted-foreground'>Tid</p>
-                            <p>{booking.start_time.slice(0, 5)}</p>
-                          </div>
-                          <div className='py-2'>
-                            <p className='text-muted-foreground'>Kund</p>
-                            <p>{booking.customer_name}</p>
-                          </div>
-                          <div className='py-2'>
-                            <p className='text-muted-foreground'>Telefon</p>
-                            <p>{booking.customer_phone}</p>
-                          </div>
-                          {booking.customer_email && (
-                            <div>
-                              <p className='text-muted-foreground text-sm'>Mail</p>
-                              <p className='text-sm'>{booking.customer_email}</p>
-                            </div>
-                          )}
-                          {booking.notes && (
-                            <div>
-                              <p className='text-muted-foreground text-sm'>Övrigt</p>
-                              <p className='text-sm'>{booking.notes}</p>
-                            </div>
-                          )}
-                          <Select value={statusMap[booking.id] || booking.status} onValueChange={(value) => updateStatus(booking.id, value)} >
-                            <SelectTrigger className="w-full min-w-36 flex text-left justify-between">
-                              {isLoading ? (<><Loader /> Sparar...</>) : <SelectValue className='text-left' />}
-                            </SelectTrigger>
-                            <SelectContent position="popper">
-                              <SelectGroup>
-                                <SelectItem value='complete'><CalendarCheck /> Slutfört</SelectItem>
-                                <SelectItem value='missed'><CalendarX />  Missad tid</SelectItem>
-                              </SelectGroup>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                      </CardContent>
-                    </Card>
-                )})}
-              </CardContent>
-            </Card>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+            </Tabs>
           </div>
         )}
       </div>
-        
     </div>
   )
 }
