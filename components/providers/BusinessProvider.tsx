@@ -10,6 +10,7 @@ type Business = {
   domain: string,
   description: string,
   slug: string,
+  address: string,
   created_at: string
 }
 

@@ -24,7 +24,7 @@ const OverviewPage = async () => {
 
   return (
     <div>
-      <h1 className='mb-6 mt-6 md:mt-0 text-3xl'>Hello <span className='text-muted-foreground' style={{ fontFamily: "inherit" }}>{user.name}</span>!</h1>  
+      <h1 className='mb-6 mt-6 md:mt-0 text-3xl'>Hej, <span className='text-muted-foreground' style={{ fontFamily: "inherit" }}>{user.name}</span></h1>  
       <Bookings page="overview" />
     </div>
   )
