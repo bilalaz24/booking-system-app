@@ -7,24 +7,48 @@ import { Textarea } from "../ui/textarea"
 import { Button } from "../ui/button"
 import { createClient } from "@/lib/supabase/client"
 import { useBusiness } from "../providers/BusinessProvider"
+import { Field, FieldError, FieldGroup, FieldLabel } from "../ui/field"
+import { Controller, useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { businessProfileSchema } from "@/app/schemas/business"
+import { ProfileFormValues } from "@/app/schemas/business"
+import Loader from "../Loader"
+import { updateBusiness } from "@/lib/actions/staffBusiness"
+import { toast } from "sonner"
 
 const Profile = () => {
     const supabase = createClient()
-    const business = useBusiness()
-    //const [businessSettings, setBusinessSettings] = useState<object>()
-    console.log(business)
+    const {business, settings} = useBusiness()
+    const { control, handleSubmit, formState: { errors, isDirty, isSubmitting } } = useForm<ProfileFormValues>({
+        resolver: zodResolver(businessProfileSchema),
+        defaultValues: {
+            name: business.name,
+            hero_title: settings.hero_title,
+            hero_description: settings.hero_description,
 
-    /*
-    useEffect(() => {
-        const fetchData = async () => {
-            const {data, error} = await supabase.from("business_settings").select("*").eq("business_id", business.id).single()
-            if (error) {
-                console.error("Error fetching business settings", error)
-            }
-            setBusinessSettings(data)
+            address: business.address,
+            city: business.city,
+
+            phone: business.phone,
+            email: business.email,
+
+            instagram: settings.instagram_url,
+            facebook: settings.facebook_url,
         }
-        fetchData()
-    })*/
+    })
+
+    const onSubmit = async (data: ProfileFormValues) => {
+        console.log(data)
+        const result = await updateBusiness(data)
+
+        if (result?.success) {
+            toast.success("Företagsprofil updaterades")
+        }
+
+        if (result?.error) {
+            toast.error(result.error)
+        }
+    }
 
     return (
         <div className="max-w-3xl space-y-6">
@@ -45,129 +69,165 @@ const Profile = () => {
             </Button>*/}
         </div>
 
-        {/* Basic Info */}
-        <Card>
-            <CardHeader>
-            <CardTitle>Grundinformation</CardTitle>
-            </CardHeader>
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+            {/* Basic Info */}
+            <Card>
+                <CardHeader>
+                    <CardTitle>Grundinformation</CardTitle>
+                </CardHeader>
 
-            <CardContent className="space-y-4">
+                <CardContent className="space-y-4">
 
-            <div className="space-y-1">
-                <label className="text-sm font-medium">
-                Företagsnamn
-                </label>
-                <Input placeholder="Företagsnamn" value={business.name} />
-            </div>
+                    <FieldGroup>
+                        <Controller name='name' control={control} render={({ field }) => (
+                            <Field>
+                                <FieldLabel>Företagsnamn</FieldLabel>
+                                <Input type='text' {...field} />
+                                {errors.name && (
+                                    <FieldError errors={[errors.name]} />
+                                )}
+                            </Field>
+                        )} />
+                    </FieldGroup>
 
-            <div className="space-y-1">
-                <label className="text-sm font-medium">
-                Beskrivning
-                </label>
-                <Textarea
-                placeholder="Berätta kort om din verksamhet..."
-                value={business.description}
-                className="min-h-[100px]"
-                />
-            </div>
+                    <FieldGroup>
+                        <Controller name='hero_title' control={control} render={({ field }) => (
+                            <Field>
+                                <FieldLabel>Hero-rubrik</FieldLabel>
+                                <Input type="text" {...field} />
+                                {errors.hero_title && (
+                                    <FieldError errors={[errors.hero_title]} />
+                                )}
+                            </Field>
+                        )} />
+                    </FieldGroup>
 
-            </CardContent>
-        </Card>
+                    <FieldGroup>
+                        <Controller name='hero_description' control={control} render={({ field }) => (
+                            <Field>
+                                <FieldLabel>Beskrivning</FieldLabel>
+                                <Textarea className="min-h-[100px]" {...field} />
+                                {errors.hero_description && (
+                                    <FieldError errors={[errors.hero_description]} />
+                                )}
+                            </Field>
+                        )} />
+                    </FieldGroup>
 
-        {/* Contact */}
-        <Card>
-            <CardHeader>
-            <CardTitle>Kontakt</CardTitle>
-            </CardHeader>
+                </CardContent>
+            </Card>
 
-            <CardContent className="space-y-4">
+            {/* Contact */}
+            <Card>
+                <CardHeader>
+                <CardTitle>Kontakt</CardTitle>
+                </CardHeader>
 
-            <div className="space-y-1">
-                <label className="text-sm font-medium">
-                E-post
-                </label>
-                <Input value={business.email} type="email" placeholder="info@företag.se" />
-            </div>
+                <CardContent className="space-y-4">
 
-            <div className="space-y-1">
-                <label className="text-sm font-medium">
-                Telefon
-                </label>
-                <Input value={business.phone} placeholder="+46..." />
-            </div>
+                    <FieldGroup>
+                        <Controller name='email' control={control} render={({ field }) => (
+                            <Field>
+                                <FieldLabel>E-post</FieldLabel>
+                                <Input type="email" {...field} />
+                                {errors.email && (
+                                    <FieldError errors={[errors.email]} />
+                                )}
+                            </Field>
+                        )} />
+                    </FieldGroup>
 
-            </CardContent>
-        </Card>
+                    <FieldGroup>
+                        <Controller name='phone' control={control} render={({ field }) => (
+                            <Field>
+                                <FieldLabel>Telefon</FieldLabel>
+                                <Input type="tel" {...field} />
+                                {errors.phone && (
+                                    <FieldError errors={[errors.phone]} />
+                                )}
+                            </Field>
+                        )} />
+                    </FieldGroup>
 
-        {/* Location */}
-        <Card>
-            <CardHeader>
-            <CardTitle>Adress</CardTitle>
-            </CardHeader>
+                    <div className="grid grid-cols-2 gap-4">
 
-            <CardContent className="space-y-4">
+                        <FieldGroup>
+                            <Controller name='address' control={control} render={({ field }) => (
+                                <Field>
+                                    <FieldLabel>Gatuaddress</FieldLabel>
+                                    <Input type="text" {...field} />
+                                    {errors.address && (
+                                        <FieldError errors={[errors.address]} />
+                                    )}
+                                </Field>
+                            )} />
+                        </FieldGroup>
 
-            <div className="space-y-1">
-                <label className="text-sm font-medium">
-                Gatuadress
-                </label>
-                <Input value={business.address} placeholder="Storgatan 12" />
-            </div>
+                        <FieldGroup>
+                            <Controller name='city' control={control} render={({ field }) => (
+                                <Field>
+                                    <FieldLabel>Stad</FieldLabel>
+                                    <Input type="text" {...field} />
+                                    {errors.city && (
+                                        <FieldError errors={[errors.city]} />
+                                    )}
+                                </Field>
+                            )} />
+                        </FieldGroup>
+                    </div>
 
-            <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1">
-                <label className="text-sm font-medium">
-                    Stad
-                </label>
-                <Input placeholder="Göteborg" />
-                </div>
+                </CardContent>
+            </Card>
 
-                <div className="space-y-1">
-                <label className="text-sm font-medium">
-                    Postnummer
-                </label>
-                <Input placeholder="411 01" />
-                </div>
-            </div>
+            <Card>
+                <CardHeader>
+                <CardTitle>Sociala medier</CardTitle>
+                </CardHeader>
 
-            </CardContent>
-        </Card>
+                <CardContent className="space-y-4">
 
-        {/* Optional social */}
-        <Card>
-            <CardHeader>
-            <CardTitle>Sociala medier</CardTitle>
-            </CardHeader>
+                    <FieldGroup>
+                        <Controller name='instagram' control={control} render={({ field }) => (
+                            <Field>
+                                <FieldLabel>Instagram</FieldLabel>
+                                <Input type="text" {...field} />
+                                {errors.instagram && (
+                                    <FieldError errors={[errors.instagram]} />
+                                )}
+                            </Field>
+                        )} />
+                    </FieldGroup>
 
-            <CardContent className="space-y-4">
+                    <FieldGroup>
+                        <Controller name='facebook' control={control} render={({ field }) => (
+                            <Field>
+                                <FieldLabel>Facebook</FieldLabel>
+                                <Input type="text" {...field} />
+                                {errors.facebook && (
+                                    <FieldError errors={[errors.facebook]} />
+                                )}
+                            </Field>
+                        )} />
+                    </FieldGroup>
 
-            <div className="space-y-1">
-                <label className="text-sm font-medium">
-                Instagram
-                </label>
-                <Input
-                    //value={businessSettings.instagram}
-                    placeholder="@dittinstagramkonto" />
-            </div>
+                </CardContent>
+            </Card>
 
-            <div className="space-y-1">
-                <label className="text-sm font-medium">
-                Facebook
-                </label>
-                <Input
-                    //value={businessSettings.facebook}
-                    placeholder="@dittfacebookkonto" />
-            </div>
+            {/* Bottom save (backup) */}
+            <FieldGroup>
+                <Field>
+                    <Button className="w-full sm:w-auto" type='submit' disabled={isSubmitting}>
+                        {
+                            isSubmitting ? (
+                                <div className='flex justify-center items-center gap-x-1'>
+                                    <Loader /><p>Sparar</p>
+                                </div>) : "Spara ändringar"
+                        }
+                    </Button>
+                </Field>
+            </FieldGroup>
+        </form>
 
-            </CardContent>
-        </Card>
-
-        {/* Bottom save (backup) */}
-        <div className="flex justify-end">
-            <Button className="w-full sm:w-auto">
-            Spara ändringar
-            </Button>
-        </div>
 
         </div>
     )

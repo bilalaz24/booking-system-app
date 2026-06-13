@@ -1,3 +1,28 @@
+export interface Business {
+  id: string
+  name: string
+  phone: string
+  email: string
+  domain: string,
+  description: string,
+  slug: string,
+  address: string,
+  city: string,
+  created_at: string
+}
+
+export interface BusinessSettings {
+  id: string
+  business_id: string
+  primary_color: string
+  secondary_color: string
+  hero_title: string,
+  hero_description: string,
+  instagram_url: string,
+  facebook_url: string,
+  created_at: string
+}
+
 export interface Service {
   id: string,
   created_at: string,

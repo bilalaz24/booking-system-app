@@ -39,7 +39,21 @@ export default async function RootLayout({
 
   const { data: business, error } = await supabase.from("businesses").select("*").eq("id", businessId).single()
 
-  if (error || !business) {
+  const { data: business_config, error: business_config_error } = await supabase
+  .from("business_settings")
+  .select("*")
+  .eq("business_id", businessId)
+  .single()
+
+  if (error) throw business_config_error
+  if (business_config_error) throw business_config_error
+
+  const businessData = {
+    business,
+    settings: business_config
+  }
+
+  if (error || business_config_error || !business_config || !business) {
     return (
       <html lang="en" className={`${oswald.variable} ${arimo.variable} h-full bg-[#050608]`}>
         <body className="flex items-center justify-center h-full text-white font-body">
@@ -59,7 +73,7 @@ export default async function RootLayout({
       className={`${oswald.variable} ${arimo.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-background text-foreground font-body">
-        <BusinessProvider value={business}>
+        <BusinessProvider value={businessData}>
           {/*<main>className="max-w-7xl flex-1 mx-auto w-full px-2 py-8 md:px-6 lg:px-8"*/}
             {children}
           {/*</main>*/}

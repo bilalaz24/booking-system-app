@@ -13,14 +13,18 @@ const StaffLayout = async ({
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)
     
-    const {data: {user: authUser}} = await supabase.auth.getUser()
+    const {data: {user: authUser}, error: authError} = await supabase.auth.getUser()
+
+    if (!authUser) {
+        console.error("Error fetching auth user", authError)
+        redirect(routes.login)
+    }
 
     if (!authUser) {
         redirect(routes.login)
     }
 
     const  {data: businessUser, error} = await supabase.from("business_users").select("*").eq("auth_user_id", authUser.id).single()
-
 
     if (error || !businessUser) {
         redirect(routes.login)

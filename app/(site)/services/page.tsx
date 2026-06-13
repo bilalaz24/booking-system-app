@@ -1,4 +1,5 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { getCurrentBusiness } from '@/lib/business/getCurrentBusiness'
 import { getBusiness } from '@/lib/queries/business'
 import { createClient } from '@/lib/supabase/server'
 import { Service } from '@/lib/types'
@@ -10,9 +11,10 @@ const ServicesPage = async () => {
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)
 
-    const business = await getBusiness(supabase)
-    const businessName = business.business.name
-    const { data: services, error } = await supabase.from("services").select("*").eq("business_id", process.env.NEXT_PUBLIC_BUSINESS_ID)
+    //const business = await getBusiness(supabase)
+    const business = await getCurrentBusiness()
+    const businessName = business.name
+    const { data: services, error } = await supabase.from("services").select("*").eq("business_id", business.id)
 
     if (error || !services) {
         console.error("Error fetching services", error)
@@ -34,7 +36,7 @@ const ServicesPage = async () => {
                 </h1>
 
                 <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                    {business.business.description}
+                    {business.description}
                 </p>
             </section>
 

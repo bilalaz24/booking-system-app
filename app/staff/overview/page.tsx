@@ -10,7 +10,12 @@ const OverviewPage = async () => {
   const cookieStore = await cookies()
   const supabase = createClient(cookieStore)
   
-  const {data: {user: authUser}} = await supabase.auth.getUser()
+  const {data: {user: authUser}, error: authError} = await supabase.auth.getUser()
+
+  if (!authUser) {
+    console.error("Error fetching auth user", authError)
+    redirect(routes.login)
+  }
 
   if (!authUser) {
     redirect(routes.login)

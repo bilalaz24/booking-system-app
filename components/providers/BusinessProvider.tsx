@@ -1,27 +1,17 @@
 "use client"
 
 import { createContext, useContext } from "react"
+import { Business } from "@/lib/types";
+import { BusinessSettings } from "@/lib/types";
 
-type Business = {
-  id: string
-  name: string
-  phone: string
-  email: string
-  domain: string,
-  description: string,
-  slug: string,
-  address: string,
-  created_at: string
-}
-
-const BusinessContext = createContext<Business | null>(null)
+const BusinessContext = createContext<{business: Business, settings: BusinessSettings} | null>(null)
 
 export function BusinessProvider({ 
   children, 
   value 
 }: { 
   children: React.ReactNode; 
-  value: Business 
+  value: {business: Business, settings: BusinessSettings }
 }) {
   return (
     <BusinessContext.Provider value={value}>
