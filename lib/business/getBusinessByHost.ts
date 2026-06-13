@@ -11,10 +11,14 @@ export async function getBusinessByHost(host: string) {
   const normalizedHost = cleanHost.replace(/^www\./, "")
 
   const isLocalhost = normalizedHost.includes("localhost")
+  const isVercel = normalizedHost.includes("vercel")
+
   const parts = normalizedHost.split(".")
 
   const subdomain = isLocalhost
   ? "fadestudio" // or your test business slug
+  : isVercel
+  ? "fadestudio"
   : parts.length > 2
     ? parts[0]
     : null
