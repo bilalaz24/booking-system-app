@@ -140,7 +140,7 @@ export default function SideBar() {
                 className="hidden md:block fixed top-0 left-0 z-50 h-screen w-64 bg-navfoot-bg p-6">
                 <div>
                     {/*<Image src="/logo.png" alt={business.name} height="50" width="100" />*/}
-                    <h1 className="text-xl font-bold mb-6">{business.name}</h1>
+                    <h1 className="text-xl font-bold mb-6">{business.business.name}</h1>
                 </div>
                 <Links />
             </aside>
@@ -158,8 +158,8 @@ export default function SideBar() {
                 ${open ? "translate-x-0" : "-translate-x-full"}`}
             >
                 <div className="flex justify-between">
-                    {/*<Image src="/logo.png" alt={business.name} height="50" width="100" />*/}
-                    <h1 className="text-xl font-bold mb-6">{business.name}</h1>
+                    {/*<Image src="/logo.png" alt={business.business.name} height="50" width="100" />*/}
+                    <h1 className="text-xl font-bold mb-6">{business.business.name}</h1>
                     <Button onClick={() => setOpen(!open)} className="">
                         <XIcon />
                     </Button>
@@ -174,7 +174,7 @@ export default function SideBar() {
                             <MenuIcon />
                         </Button>
                         <div className="text-center absolute left-1/2 top-1/2 -translate-y-1/2 -translate-x-1/2">
-                            <h1 className="items-center">{business.name}</h1>
+                            <h1 className="items-center">{business.business.name}</h1>
                         </div>
                     </div>
                 </div>
