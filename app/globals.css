@@ -37,18 +37,23 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
 
-  --color-navfoot-bg: #0B0D12;
+  --color-navfoot-bg: #0E1116;
   
   /* Tactical Custom Branding Utilities */
-  --color-barber-blue: #0055FF;
-  --color-barber-red: #E60026;
+  --color-barber-blue: #4DA3FF;
+  --color-barber-red: #FF4D6D;
   
   /* Hard Edges for a Serious Layout */
-  --radius-sm: 0px;
+  /*--radius-sm: 0px;
   --radius-md: 0px;
   --radius-lg: 0px;
   --radius-xl: 0px;
-  --radius-2xl: 0px;
+  --radius-2xl: 0px;*/
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 18px;
+  --radius-2xl: 22px;
 
   /* FIX: Explicitly mapping font families with functional tailwind keyword strings */
   --font-heading: var(--font-heading), sans-serif;
@@ -58,40 +63,40 @@
 /* BOTH ROOT AND DARK ENFORCE THE SAME INTENSE SERIOUS PALETTE */
 :root, .dark {
   /* The Void Black */
-  --background: #050608;
-  --foreground: #FFFFFF;
+  --background: #0B0F14;
+  --foreground: #E7EDF5;
   
   /* The Sharp Slate */
-  --card: #11141a;
-  --card-foreground: #FFFFFF;
-  --popover: #11141a;
-  --popover-foreground: #FFFFFF;
+  --card: #121823;
+  --card-foreground: #E7EDF5;
+  --popover: #121823;
+  --popover-foreground: #E7EDF5;
   
   /* True Barber Red for Shading Priorities (Buttons, Sliders) */
-  --primary: #E60026;
-  --primary-foreground: #FFFFFF;
+  --primary: #4DA3FF;
+  --primary-foreground: #06121F;
   
   /* Secondary States (Using deep panels) */
-  --secondary: #161a22;
-  --secondary-foreground: #A3A8B3;
+  --secondary: #161E2C;
+  --secondary-foreground: #B7C3D6;
   
   /* Muted Text / Inactive UI */
-  --muted: #11141a;
-  --muted-foreground: #A3A8B3;
+  --muted: #111824;
+  --muted-foreground: #8FA0B8;
   
   /* Hover/Focus States (Shifting to True Blue accent points) */
-  --accent: #0055FF;
+  --accent: #FF3B5C;
   --accent-foreground: #FFFFFF;
   
-  --destructive: #E60026;
+  --destructive: #C76D6D;
   --destructive-foreground: #FFFFFF;
   
   /* Boundaries and Grid Lines */
-  --border: #161a22;
-  --input: #161a22;
-  --ring: rgba(0, 85, 255, 0.4);
+  --border: #1C2636;
+  --input: #1C2636;
+  --ring: rgba(77, 163, 255, 0.35);
   
-  --radius: 0px;
+  --radius: 14px;
 }
 
 @layer base {

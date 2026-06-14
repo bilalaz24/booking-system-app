@@ -7,9 +7,13 @@ export async function getCurrentBusiness() {
 
   console.log("host:", host)
 
-  const business = await getBusinessByHost(host)
+  const result = await getBusinessByHost(host)
 
-  console.log("business:", business)
+  if (!result) {
+    throw new Error("No business found")
+  }
 
-  return business
+  console.log("result:", result)
+
+  return result
 }

@@ -1,53 +1,53 @@
-import { createClient } from "../supabase/server"
+import { createClient } from "@/lib/supabase/server"
 import { cookies } from "next/headers"
+
+import { Business } from "@/lib/types"
+import { BusinessSettings } from "@/lib/types"
 
 export async function getBusinessByHost(host: string) {
   const cookieStore = await cookies()
   const supabase = createClient(cookieStore)
 
-  const cleanHost = host.split(":")[0].toLowerCase()
-
-  // optional: strip www
-  const normalizedHost = cleanHost.replace(/^www\./, "")
+  const normalizedHost = host
+    .split(":")[0]
+    .toLowerCase()
+    .replace(/^www\./, "")
 
   const isLocalhost = normalizedHost.includes("localhost")
   const isVercel = normalizedHost.includes("vercel")
 
   const parts = normalizedHost.split(".")
 
-  const subdomain = isLocalhost
-  ? "fadestudio" // or your test business slug
-  : isVercel
-  ? "fadestudio"
-  : parts.length > 2
-    ? parts[0]
-    : null
+  const subdomain =
+    isLocalhost || isVercel
+      ? "fadestudio"
+      : parts.length > 2
+        ? parts[0]
+        : null
 
-  // detect subdomain (fadestudio.nexora.com → fadestudio)
-  //const subdomain = parts.length > 2 ? parts[0] : null
+  if (!subdomain) return null
 
-  console.log("From getBusinessByHost, subdomain:", subdomain)
+  const { data: business, error } = await supabase
+    .from("businesses")
+    .select("*")
+    .eq("slug", subdomain)
+    .maybeSingle<Business>()
 
-  const {data: business, error} = await supabase
-  .from("businesses")
-  .select("*")
-  .eq("slug", subdomain)
-  .maybeSingle()
+  if (error || !business) {
+    console.error("Supabase business fetch error:", error)
+    return {success: false}
+  }
 
-  if (error) {
-    console.error("Supabase error:", error)
-    return null
-    }
-  
-  /*const business = await db.business.findFirst({
-    where: {
-      OR: [
-        subdomain ? { slug: subdomain } : undefined,
+  const { data: settings, error: settingsError } = await supabase
+    .from("business_settings")
+    .select("*")
+    .eq("business_id", business.id)
+    .maybeSingle<BusinessSettings>()
 
-        { customDomains: { has: normalizedHost } },
-      ].filter(Boolean),
-    },
-  })*/
+  if (settingsError) {
+    console.error("Supabase settings fetch error:", settingsError)
+    return {success: false}
+  }
 
-  return business
+  return { success: true, business, settings }
 }

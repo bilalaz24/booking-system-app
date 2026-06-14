@@ -11,7 +11,7 @@ import { Calendar, ChevronDown, Clock, Home, MenuIcon, MenuSquareIcon, Package, 
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 
-function Links() {
+function Links({ onNavigate }: { onNavigate?: () => void }) {
     const supabase = createClient()
     const router = useRouter()
     const pathname = usePathname()
@@ -49,6 +49,7 @@ function Links() {
                 className={linkClass(routes.staffOverview)}
                 //className="flex items-center rounded-lg px-3 py-2 text-sm font-medium hover:bg-muted transition-colors"
                 href={routes.staffOverview}
+                onClick={onNavigate}
             >
                 <Home className="w-4 mr-2" />
                 Översikt
@@ -58,14 +59,18 @@ function Links() {
                 className={linkClass(routes.staffBookings)}
                 //className="flex items-center rounded-lg px-3 py-2 text-sm font-medium hover:bg-muted transition-colors"
                 href={routes.staffBookings}
+                onClick={onNavigate}
             >
                 <Calendar className="w-4 mr-2" />
                 Bokningar
             </Link>
 
             <button
-                onClick={() => setDropdown(!dropdown)}
-                className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm font-medium hover:bg-muted transition-colors"
+                onClick={() => {
+                    setDropdown(!dropdown)
+                    onNavigate
+                }}
+                className="flex w-full bg-transparent items-center justify-between rounded-lg px-3 py-2 text-sm font-medium hover:bg-muted transition-colors"
             >
 
                 <span className="flex"><Settings2 className="w-4 mr-2" />Inställningar</span>
@@ -83,6 +88,7 @@ function Links() {
                     className={linkClass(routes.staffSettingsProfile)}
                     //className="flex items-center rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
                     href={routes.staffSettingsProfile}
+                    onClick={onNavigate}
                 >
                     <UserCircle2 className="w-4 mr-2" />
                     Profil
@@ -92,6 +98,7 @@ function Links() {
                     className={linkClass(routes.staffSettingsHours)}
                     //className="flex items-center rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
                     href={routes.staffSettingsHours}
+                    onClick={onNavigate}
                 >
                     <Clock className="w-4 mr-2" />
                     Öppettider
@@ -101,6 +108,7 @@ function Links() {
                     className={linkClass(routes.staffSettingsServices)}
                     //className="flex items-center rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
                     href={routes.staffSettingsServices}
+                    onClick={onNavigate}
                 >
                     <Package className="w-4 mr-2" />
                     Tjänster
@@ -142,7 +150,7 @@ export default function SideBar() {
                     {/*<Image src="/logo.png" alt={business.name} height="50" width="100" />*/}
                     <h1 className="text-xl font-bold mb-6">{business.business.name}</h1>
                 </div>
-                <Links />
+                <Links onNavigate={() => setOpen(false)} />
             </aside>
         <div className="md:hidden">
             <div
@@ -164,11 +172,11 @@ export default function SideBar() {
                         <XIcon />
                     </Button>
                 </div>
-                <Links />
+                <Links onNavigate={() => setOpen(false)} />
             </aside>
 
             {!open && (
-                <div className="bg-navfoot-bg w-full fixed top-0 left-0 md:hidden">
+                <div className="bg-navfoot-bg z-50 w-full fixed top-0 left-0 md:hidden">
                     <div className="relative h-16">
                         <Button className="absolute top-1/2 -translate-y-1/2 left-3" onClick={() => setOpen(true)}>
                             <MenuIcon />

@@ -36,7 +36,7 @@ const StaffLayout = async ({
             <SideBar />
 
             {/* Main content shifted right */}
-            <main className="mt-10 md:mt-0 md:ml-64 min-h-screen p-6">
+            <main className="mt-14 md:mt-0 md:ml-64 min-h-screen p-6">
                 {children}
             </main>
         </div>

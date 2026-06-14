@@ -7,6 +7,7 @@ import { Toaster } from "sonner";
 import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { BusinessProvider } from "@/components/providers/BusinessProvider";
+import { getCurrentBusiness } from "@/lib/business/getCurrentBusiness";
 
 // 2. Configure the aggressive heading font
 const oswald = Oswald({
@@ -31,7 +32,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-
+/*
   const cookieStore = await cookies()
   const supabase = createClient(cookieStore)
 
@@ -51,9 +52,12 @@ export default async function RootLayout({
   const businessData = {
     business,
     settings: business_config
-  }
+  }*/
 
-  if (error || business_config_error || !business_config || !business) {
+  const businessData = await getCurrentBusiness()
+  console.log("Business data in RootLayout:", businessData)
+
+  if (businessData.success === false || !businessData.business || !businessData.settings) {
     return (
       <html lang="en" className={`${oswald.variable} ${arimo.variable} h-full bg-[#050608]`}>
         <body className="flex items-center justify-center h-full text-white font-body">
@@ -73,7 +77,7 @@ export default async function RootLayout({
       className={`${oswald.variable} ${arimo.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-background text-foreground font-body">
-        <BusinessProvider value={businessData}>
+        <BusinessProvider value={{business: businessData.business, settings: businessData.settings}}>
           {/*<main>className="max-w-7xl flex-1 mx-auto w-full px-2 py-8 md:px-6 lg:px-8"*/}
             {children}
           {/*</main>*/}

@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button"
-import { getBusiness } from "@/lib/queries/business"
+import { getCurrentBusiness } from "@/lib/business/getCurrentBusiness"
 import { routes } from "@/lib/routes"
 import { createClient } from "@/lib/supabase/server"
 import { AboutService } from "@/lib/types"
@@ -10,10 +10,15 @@ export default async function AboutPage() {
   const cookieStore = await cookies()
   const supabase = createClient(cookieStore)
 
-  const business = await getBusiness(supabase)
-  const businessName = business.business.name
-  console.log("ABOUT PAGE BUSINESS ID: ",business.business.id)
-  const { data: about, error } = await supabase.from("about_page").select("*").eq("business_id", business.business.id).single()
+  const {business} = await getCurrentBusiness()
+
+  if (!business) {
+    throw new Error("Business not found, cannot render about page")
+  }
+
+  const businessName = business.name
+  console.log("ABOUT PAGE BUSINESS ID: ",business.id)
+  const { data: about, error } = await supabase.from("about_page").select("*").eq("business_id", business.id).single()
 
   if (error || !about) {
     console.error("Error fetching about page", error)

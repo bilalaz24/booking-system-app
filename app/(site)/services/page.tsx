@@ -1,6 +1,5 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { getCurrentBusiness } from '@/lib/business/getCurrentBusiness'
-import { getBusiness } from '@/lib/queries/business'
 import { createClient } from '@/lib/supabase/server'
 import { Service } from '@/lib/types'
 import { cookies } from 'next/headers'
@@ -11,9 +10,14 @@ const ServicesPage = async () => {
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)
 
-    //const business = await getBusiness(supabase)
-    const business = await getCurrentBusiness()
+    const {business, settings} = await getCurrentBusiness()
+
+    if (!business) {
+        throw new Error("Business not found, cannot load services")
+    }
+
     const businessName = business.name
+    console.log("business:", business)
     const { data: services, error } = await supabase.from("services").select("*").eq("business_id", business.id)
 
     if (error || !services) {
@@ -36,7 +40,7 @@ const ServicesPage = async () => {
                 </h1>
 
                 <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                    {business.description}
+                    {settings?.hero_description}
                 </p>
             </section>
 
