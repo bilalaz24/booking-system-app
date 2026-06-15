@@ -15,8 +15,8 @@ export const businessProfileSchema = z.object({
     .regex(/^[+]?[0-9\s()-]+$/, "Invalid phone number"),
   email: z.string().email("Invalid email"),
 
-  instagram: z.string().optional(),
-  facebook: z.string().optional(),
+  instagram: z.string().optional().or(z.literal("")),
+  facebook: z.string().optional().or(z.literal("")),
 })
 
 export type ProfileFormValues =

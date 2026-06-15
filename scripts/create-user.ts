@@ -12,8 +12,8 @@ export const supabase = createClient(
 async function createUser() {
   // 1. create auth user
   const { data, error } = await supabase.auth.admin.createUser({
-    email: "test@email.com",
-    password: "password123",
+    email: "tranare@email.com",
+    password: "password987",
     email_confirm: true,
   });
 
@@ -27,10 +27,10 @@ async function createUser() {
     .from("business_users")
     .insert({
       auth_user_id: data.user.id,
-      email: "test@email.com",
-      name: "Test User",
+      email: "tranare@email.com",
+      name: "Tränaren",
       role: "admin",
-      business_id: "d2959038-68db-47ed-be4f-37fc20f1c713",
+      business_id: "f98fa9c3-5240-487d-b35c-83b5800d824c",
     });
 
   if (dbError) {

@@ -190,7 +190,7 @@ const Profile = () => {
                         <Controller name='instagram' control={control} render={({ field }) => (
                             <Field>
                                 <FieldLabel>Instagram</FieldLabel>
-                                <Input type="text" {...field} />
+                                <Input placeholder="Inget länkat instagram-konto" type="text" {...field} />
                                 {errors.instagram && (
                                     <FieldError errors={[errors.instagram]} />
                                 )}
@@ -202,7 +202,7 @@ const Profile = () => {
                         <Controller name='facebook' control={control} render={({ field }) => (
                             <Field>
                                 <FieldLabel>Facebook</FieldLabel>
-                                <Input type="text" {...field} />
+                                <Input placeholder="Inget länkat facebook-konto" type="text" {...field} />
                                 {errors.facebook && (
                                     <FieldError errors={[errors.facebook]} />
                                 )}

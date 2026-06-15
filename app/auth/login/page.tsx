@@ -99,7 +99,7 @@ const LoginPage = () => {
                             </Field>
                         </FieldGroup>
                     </form>
-                    <Button onClick={() => router.back()} className='bg-secondary' disabled={isSubmitting}> <span> <ArrowLeft /> </span> Gå bak</Button>
+                    <Button onClick={() => router.back()} className='bg-accent' disabled={isSubmitting}> <span> <ArrowLeft /> </span> Gå bak</Button>
                 </CardContent>
             </Card>
         </div>
