@@ -38,10 +38,8 @@
   --color-ring: var(--ring);
 
   --color-navfoot-bg: #0E1116;
-  
-  /* Tactical Custom Branding Utilities */
-  --color-barber-blue: #4DA3FF;
-  --color-barber-red: #FF4D6D;
+
+  --color-highlight: #FF4D6D;
   
   /* Hard Edges for a Serious Layout */
   /*--radius-sm: 0px;

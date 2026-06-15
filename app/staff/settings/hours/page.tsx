@@ -1,8 +1,11 @@
-import React from 'react'
+import OpeningHours from '@/components/staff/OpeningHours'
+import { Suspense } from 'react'
 
 const HoursPage = () => {
   return (
-    <div>HoursPage</div>
+    <div>
+      <OpeningHours />
+    </div>
   )
 }
 

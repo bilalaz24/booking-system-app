@@ -31,7 +31,7 @@ const ServicesPage = async () => {
 
             {/* HERO */}
             <section className="text-center mb-16">
-                <div className="inline-block px-4 py-1 rounded-full bg-barber-red/10 text-barber-red text-sm mb-4">
+                <div className="inline-block px-4 py-1 rounded-full bg-highlight/10 text-highlight text-sm mb-4">
                     {businessName}
                 </div>
 
@@ -53,11 +53,11 @@ const ServicesPage = async () => {
                 >
                     <CardHeader>
                     <CardTitle className="flex justify-between items-center">
-                        <span className="group-hover:text-barber-blue transition">
+                        <span className="group-hover:text-primary transition">
                         {service.name}
                         </span>
 
-                        <span className="text-barber-blue font-semibold">
+                        <span className="text-highlight font-semibold">
                         {service.price} kr
                         </span>
                     </CardTitle>

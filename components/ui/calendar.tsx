@@ -17,20 +17,23 @@ import { cn } from "@/lib/utils"
 import { Button, buttonVariants } from "@/components/ui/button"
 
 // -------------------- SIZE CONFIG --------------------
+// Added gap configurations and clean rounding profiles
 const sizeConfigs = {
   sm: {
-    containerPadding: "p-3",
-    navButton: "h-8 w-8",
-    captionText: "text-xs tracking-wider",
-    weekdayText: "text-[0.7rem] tracking-widest",
-    dayCell: "h-8 w-8 text-xs",
+    containerPadding: "p-4 rounded-xl",
+    navButton: "h-8 w-8 rounded-lg",
+    captionText: "text-sm tracking-wide",
+    weekdayText: "text-[0.75rem] tracking-wider font-semibold pb-1",
+    dayCell: "h-9 w-9 text-xs rounded-lg",
+    gridGap: "gap-1",
   },
   lg: {
-    containerPadding: "p-6",
-    navButton: "h-12 w-12",
-    captionText: "text-base tracking-widest",
-    weekdayText: "text-xs tracking-widest pb-2",
-    dayCell: "h-14 w-14 text-sm font-bold",
+    containerPadding: "p-6 rounded-2xl",
+    navButton: "h-11 w-11 rounded-xl",
+    captionText: "text-lg tracking-wide",
+    weekdayText: "text-xs tracking-wider font-semibold pb-3",
+    dayCell: "h-12 w-12 text-sm font-bold rounded-xl",
+    gridGap: "gap-2",
   },
 }
 
@@ -58,7 +61,7 @@ function Calendar({
     <DayPicker
       showOutsideDays={showOutsideDays}
       className={cn(
-        "group/calendar bg-card border border-border",
+        "group/calendar bg-card border border-border shadow-sm w-fit relative",
         s.containerPadding,
         className
       )}
@@ -70,73 +73,80 @@ function Calendar({
         ...formatters,
       }}
       classNames={{
-        root: cn("w-full", defaultClassNames.root),
+        root: cn(defaultClassNames.root),
 
-        months: cn(
-          "flex flex-col gap-4",
-          defaultClassNames.months
-        ),
+        months: cn("flex flex-col gap-4", defaultClassNames.months),
 
-        month: cn(
-          "flex w-full flex-col gap-4",
-          defaultClassNames.month
-        ),
+        month: cn("flex flex-col", defaultClassNames.month),
 
-        // ✅ FIXED GRID (THIS WAS THE BIG ISSUE)
         month_grid: "w-full border-collapse",
 
-        weekdays: cn("grid grid-cols-7 mt-2", defaultClassNames.weekdays),
+        // Replaced custom grid arrays with native flex layouts that align with day picker specs
+        weekdays: cn("flex w-full justify-between items-center", defaultClassNames.weekdays),
 
         weekday: cn(
-          "text-center font-bold text-muted-foreground uppercase select-none",
+          "text-center font-medium text-muted-foreground/70 uppercase select-none flex items-center justify-center",
+          s.dayCell, // Matches widths perfectly to prevent shifts
           s.weekdayText
         ),
 
-        // ✅ FIXED GRID (NO FLEX)
+        // Handled spacing seamlessly using our configuration file gaps
         week: cn(
-          "grid grid-cols-7 w-full",
+          "flex w-full justify-between items-center mt-1",
+          s.gridGap,
           defaultClassNames.week
         ),
 
         day: cn(
-          "flex items-center justify-center select-none p-0",
+          "flex items-center justify-center select-none p-0 relative focus-within:relative focus-within:z-20",
           defaultClassNames.day
         ),
 
-        nav: cn(
-          "flex items-center justify-between w-full",
-          defaultClassNames.nav
-        ),
+        // Find these keys inside your classNames={{ ... }} block and replace them:
+
+        nav: cn("absolute top-4 left-4 right-4 flex items-center justify-between pointer-events-none", defaultClassNames.nav),
 
         button_previous: cn(
           buttonVariants({ variant: buttonVariant }),
-          "border border-border hover:bg-secondary",
+          "border border-border hover:bg-secondary transition-colors pointer-events-auto",
           s.navButton
         ),
 
         button_next: cn(
           buttonVariants({ variant: buttonVariant }),
-          "border border-border hover:bg-secondary",
+          "border border-border hover:bg-secondary transition-colors pointer-events-auto",
           s.navButton
         ),
 
-        month_caption: cn(
-          "flex justify-center font-bold uppercase",
-          s.captionText
+        month_caption: cn("flex justify-center font-semibold items-center h-9 mb-4", s.captionText),
+
+        caption_label: cn("font-semibold tracking-wide text-foreground relative z-10"),
+
+        /*nav: cn("flex items-center justify-between w-full mb-4", defaultClassNames.nav),
+
+        button_previous: cn(
+          buttonVariants({ variant: buttonVariant }),
+          "border border-border hover:bg-secondary transition-colors",
+          s.navButton
         ),
 
-        caption_label: cn(
-          "font-bold uppercase tracking-wider"
+        button_next: cn(
+          buttonVariants({ variant: buttonVariant }),
+          "border border-border hover:bg-secondary transition-colors",
+          s.navButton
         ),
+
+        month_caption: cn("flex justify-center font-semibold items-center h-8", s.captionText),
+
+        caption_label: cn("font-semibold tracking-wide text-foreground"),*/
 
         today: cn(
-          "relative text-foreground font-semibold",
-          "after:absolute after:bottom-1 after:left-1/2 after:-translate-x-1/2",
-          "after:h-1 after:w-1 after:rounded-full after:bg-barber-blue"
+          "relative border border-primary/30 font-semibold bg-primary/5 text-primary",
+          s.dayCell
         ),
 
-        outside: "text-muted-foreground/30",
-        disabled: "text-muted-foreground/20 line-through opacity-50",
+        outside: "text-muted-foreground/30 opacity-40 pointer-events-none",
+        disabled: "text-muted-foreground/20 line-through opacity-40 pointer-events-none",
         hidden: "invisible",
 
         ...classNames,
@@ -210,19 +220,17 @@ function CalendarDayButton({
       variant="ghost"
       data-selected={modifiers.selected}
       className={cn(
-        // base
-        "w-full h-full flex items-center justify-center rounded-none font-medium transition-all",
-
-        // hover
-        "hover:bg-secondary hover:text-white",
-
-        // selected (FULL override, no shrinking)
-        "data-[selected=true]:bg-barber-red data-[selected=true]:text-white data-[selected=true]:font-bold",
-
-        // important: no rings causing size mismatch
-        "data-[selected=true]:hover:bg-barber-red",
-
+        // Base structure setup matching size rules flawlessly
+        "flex items-center justify-center font-medium transition-all duration-200 p-0 m-0",
         dayCellClass,
+
+        // Hover styles setup
+        "hover:bg-secondary hover:text-secondary-foreground",
+
+        // Selected modifiers beautifully rounded according to config layout properties
+        "data-[selected=true]:bg-accent data-[selected=true]:text-accent-foreground data-[selected=true]:font-semibold",
+        "data-[selected=true]:hover:bg-accent data-[selected=true]:hover:text-accent-foreground",
+
         className
       )}
       {...props}

@@ -11,6 +11,15 @@ export interface Business {
   created_at: string
 }
 
+export interface AvailableSlots {
+  id: string,
+  business_id: string,
+  day_of_week: number,
+  start_time: string,
+  end_time: string,
+  created_at: string
+}
+
 export interface BusinessSettings {
   id: string
   business_id: string

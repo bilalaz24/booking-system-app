@@ -176,7 +176,7 @@ export default function SideBar() {
             </aside>
 
             {!open && (
-                <div className="bg-navfoot-bg z-50 w-full fixed top-0 left-0 md:hidden">
+                <div className="bg-navfoot-bg z-49 w-full fixed top-0 left-0 md:hidden">
                     <div className="relative h-16">
                         <Button className="absolute top-1/2 -translate-y-1/2 left-3" onClick={() => setOpen(true)}>
                             <MenuIcon />

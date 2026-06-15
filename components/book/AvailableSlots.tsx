@@ -38,8 +38,8 @@ const AvailableSlots = ({ slots, selectedDate, onSelectSlot }: SlotsProps) => {
                     border
                     ${
                       isSelected
-                        ? "bg-primary text-primary-foreground ring-2 ring-primary"
-                        : "bg-card text-card-foreground hover:border-barber-blue"
+                        ? "bg-accent text-accent-foreground ring-2 ring-accent"
+                        : "bg-card text-card-foreground hover:border-accent"
                     }
                   `}
                 >

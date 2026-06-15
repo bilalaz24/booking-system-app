@@ -96,7 +96,7 @@ const ContactInfo = ({ selectedDate, selectedSlot, selectedService }: Props) => 
                         <FieldGroup>
                             <Controller name='name' control={control} render={({ field }) => (
                                 <Field>
-                                    <FieldLabel>Namn <span className='text-barber-red'>*</span></FieldLabel>
+                                    <FieldLabel>Namn <span className='text-red-500'>*</span></FieldLabel>
                                     <Input type='text' {...field} />
                                     {errors.name && (
                                         <FieldError errors={[errors.name]} />
@@ -105,7 +105,7 @@ const ContactInfo = ({ selectedDate, selectedSlot, selectedService }: Props) => 
                             )} />
                             <Controller name='phone' control={control} render={({ field }) => (
                                 <Field>
-                                    <FieldLabel>Telefon <span className='text-barber-red'>*</span></FieldLabel>
+                                    <FieldLabel>Telefon <span className='text-red-500'>*</span></FieldLabel>
                                     <Input type='tel' required {...field} />
                                     {errors.phone && (
                                         <FieldError errors={[errors.phone]} />

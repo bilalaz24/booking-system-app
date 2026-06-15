@@ -213,19 +213,14 @@ const Profile = () => {
                 </CardContent>
             </Card>
 
-            {/* Bottom save (backup) */}
-            <FieldGroup>
-                <Field>
-                    <Button className="w-full sm:w-auto" type='submit' disabled={isSubmitting}>
-                        {
-                            isSubmitting ? (
-                                <div className='flex justify-center items-center gap-x-1'>
-                                    <Loader /><p>Sparar</p>
-                                </div>) : "Spara ändringar"
-                        }
-                    </Button>
-                </Field>
-            </FieldGroup>
+            <Button className="w-full sm:w-auto" type='submit' disabled={isSubmitting}>
+                {
+                    isSubmitting ? (
+                        <div className='flex justify-center items-center gap-x-1'>
+                            <Loader /><p>Sparar</p>
+                        </div>) : "Spara ändringar"
+                }
+            </Button>
         </form>
 
 

@@ -39,7 +39,7 @@ export default async function AboutPage() {
 
       {/* HERO */}
       <section className="text-center mb-20">
-        <div className="inline-block px-4 py-1 rounded-full bg-barber-red/10 text-barber-red text-sm mb-4">
+        <div className="inline-block px-4 py-1 rounded-full bg-highlight/10 text-highlight text-sm mb-4">
           {businessName}
         </div>
 
@@ -79,12 +79,12 @@ export default async function AboutPage() {
                 p-6
                 bg-card
                 transition-all
-                hover:border-barber-red/50
+                hover:border-highlight/50
                 hover:shadow-md
                 hover:-translate-y-1
               "
             >
-              <h3 className="font-semibold text-lg mb-2 group-hover:text-barber-red transition">
+              <h3 className="font-semibold text-lg mb-2 group-hover:text-highlight transition">
                 {service.title}
               </h3>
               <p className="text-muted-foreground text-sm leading-6">
@@ -120,7 +120,7 @@ export default async function AboutPage() {
       <section className="text-center">
         <div className="relative overflow-hidden rounded-2xl border p-10 bg-card">
           {/* glow effect */}
-          <div className="absolute inset-0 bg-gradient-to-r from-barber-red/10 via-transparent to-barber-blue/10 opacity-40" />
+          <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-transparent to-highlight/10 opacity-40" />
 
           <div className="relative">
             <h2 className="text-2xl font-semibold mb-3">
@@ -132,7 +132,7 @@ export default async function AboutPage() {
             </p>
 
             <Link href={routes.booking}>
-              <Button className="px-6 py-5 text-base bg-barber-red hover:bg-barber-red/90">
+              <Button className="px-6 py-5 text-base bg-primary hover:bg-primary/90">
                 Boka nu
               </Button>
             </Link>

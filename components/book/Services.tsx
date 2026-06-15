@@ -74,12 +74,12 @@ const Services = ({ onSelectService }: Props) => {
                   p-4
                   text-left
                   transition-all
-                  hover:border-barber-blue
+                  hover:border-ring
                   hover:shadow-md
                   hover:-translate-y-0.5
                   ${
                     isSelected
-                      ? "border-barber-red ring-2 ring-barber-red shadow-md"
+                      ? "border-accent ring-2 ring-accent shadow-md"
                       : ""
                   }
                 `}

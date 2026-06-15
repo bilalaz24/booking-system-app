@@ -24,16 +24,16 @@ const Navbar = async () => {
       </div>
       <ul className='hidden md:flex items-center gap-8 text-gray-300'>
         <li>
-          <Link className='hover:text-barber-blue' href={routes.home}>Hem</Link>
+          <Link className='hover:text-accent' href={routes.home}>Hem</Link>
         </li>
         <li>
-          <Link className='hover:text-barber-blue' href={routes.services}>Tjänster</Link>
+          <Link className='hover:text-accent' href={routes.services}>Tjänster</Link>
         </li>
         <li>
-          <Link className='hover:text-barber-blue' href={routes.about}>Om oss</Link>
+          <Link className='hover:text-accent' href={routes.about}>Om oss</Link>
         </li>
         <li>
-          <Link className='hover:text-barber-blue' href={routes.contact}>Kontakta</Link>
+          <Link className='hover:text-accent' href={routes.contact}>Kontakta</Link>
         </li>
       </ul>
       <div className='hidden md:block'>
