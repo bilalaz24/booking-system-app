@@ -45,7 +45,7 @@ export default async function ContactPage() {
 
   return (
     // Increased max-w-5xl to max-w-6xl and py-20 to py-28 to open up the page width and vertical breathing room
-    <main className="relative max-w-6xl mx-auto px-8 py-28">
+    <main className="max-w-6xl mx-auto px-8 py-28">
       {/* Background radial glow */}
       <div className="absolute inset-0 -z-10 bg-gradient-to-b from-background via-background to-black/5" />
 
@@ -54,7 +54,7 @@ export default async function ContactPage() {
         <div className="inline-block px-4 py-1.5 rounded-full bg-highlight/10 text-highlight text-sm mb-6 font-medium tracking-wide">
           {business.name}
         </div>
-        <h1 className="text-5xl md:text-6xl font-bold mb-6 tracking-tight">
+        <h1 className="text-5xl md:text-6xl font-bold mb-6 tracking-tight pt-2">
           Kontakta oss
         </h1>
         <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">

@@ -37,9 +37,9 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
 
-  --color-navfoot-bg: #0E1116;
+  --color-navfoot-bg: var(--navfoot-bg);
 
-  --color-highlight: #FF4D6D;
+  --color-highlight: var(--highlight);
   
   /* Hard Edges for a Serious Layout */
   /*--radius-sm: 0px;
@@ -60,45 +60,50 @@
 
 /* BOTH ROOT AND DARK ENFORCE THE SAME COMFORTABLE HIGH-CONTRAST PALETTE */
 :root, .dark {
-  /* Comfort Midnight Blue Dark Base (Extremely easy on the eyes) */
-  --background: #0A0F1D;
-  --foreground: #E2E8F0;
+  /* Deep Midnight Base (more neutral, less blue-pushed) */
+  --background: #0B1220;
+  --foreground: #E5EAF2;
   
-  /* Sapphire Slate Component Panels for a layered 3D depth */
-  --card: #131B2E;
-  --card-foreground: #F1F5F9;
-  --popover: #131B2E;
-  --popover-foreground: #F1F5F9;
+  /* Card surfaces (slightly lifted, not too blue) */
+  --card: #121A2B;
+  --card-foreground: #EAF0F8;
+  --popover: #121A2B;
+  --popover-foreground: #EAF0F8;
   
-  /* Rich corporate royal blue for main actions */
-  --primary: #3B82F6;
+  /* Primary (less harsh, more premium blue) */
+  --primary: #4F7CFF;
   --primary-foreground: #FFFFFF;
   
-  /* Deep slate secondary values */
-  --secondary: #1E293B;
-  --secondary-foreground: #94A3B8;
+  /* Secondary (more neutral slate) */
+  --secondary: #1A2436;
+  --secondary-foreground: #A9B4C7;
   
-  /* Muted states for readable background paneling */
-  --muted: #0F172A;
-  --muted-foreground: #94A3B8;
+  /* Muted (less deep black, smoother UI layering) */
+  --muted: #0F1726;
+  --muted-foreground: #93A4BB;
   
-  /* Soft ice blue accent to highlight active items, badges, and active sliders */
-  --accent: #60A5FA;
-  --accent-foreground: #0F172A;
+  /* Accent (softened cyan-blue, not neon) */
+  --accent: #5BA7FF;
+  --accent-foreground: #0B1220;
   
-  --destructive: #EF4444;
+  /* Destructive (slightly softened red) */
+  --destructive: #F05454;
   --destructive-foreground: #FFFFFF;
   
-  /* High contrast, deep slate boundaries to frame individual elements cleanly */
-  --border: #24334C;
-  --input: #141D2F;
-  --ring: rgba(59, 130, 246, 0.4);
+  /* Borders (cleaner separation, less harsh) */
+  --border: #24324A;
+  --input: #151F33;
+  
+  /* Ring (more subtle glow) */
+  --ring: rgba(79, 124, 255, 0.28);
   
   --radius: 14px;
 
-  /* Overriding specific custom variables to align with the soft blue theme */
-  --color-navfoot-bg: #060A13;
-  --color-highlight: #60A5FA;
+  /* Navigation/footer */
+  --navfoot-bg: #070D18;
+  
+  /* Highlight (less pink, more professional blue-pink hybrid removed) */
+  --highlight: #5BA7FF;
 }
 
 @layer base {
@@ -124,6 +129,7 @@
     /* FIX: Enforced font-black or font-bold explicitly so Oswald heavy weights display correctly */
     font-family: var(--font-heading), sans-serif !important;
     color: var(--primary);
+
     
     /* Clean, professional metal-blue soft gradient (light steel blue down to corporate blue) */
     background-image: linear-gradient(135deg, #93C5FD 0%, #2563EB 100%);
@@ -134,10 +140,10 @@
   }
 
   /* Adjust smaller subheadings slightly to have solid comfortable contrast */
-  h4, h5, h6 {
+  h3, h4, h5, h6 {
     background-image: none;
     -webkit-text-fill-color: initial;
-    color: #94A3B8;
+    color: #c8dfff;
   }
 
   /* Deep slate cards (eliminating the flat grey sheets) */

@@ -345,13 +345,13 @@ const Bookings = ({ page }: { page: string }) => {
                   Drop-in Status
                 </p>
 
-                <h2 className="text-3xl font-bold mt-2">
+                <h3 className="text-3xl font-bold mt-2">
                   {dropIn === 30
                     ? "Inte tillgänglig"
                     : dropIn === 60
                     ? "Begränsad tid"
                     : "Tillgänglig"}
-                </h2>
+                </h3>
 
                 <p className="text-muted-foreground mt-3">
                   Nästa tid om {timeUntil}
@@ -367,9 +367,9 @@ const Bookings = ({ page }: { page: string }) => {
                     <p className="text-lg text-muted-foreground">
                       Dagens bokningar
                     </p>
-                    <h2 className="text-3xl font-bold mt-2">
+                    <h4 className="text-3xl font-bold mt-2">
                       {todayBookings?.length ?? 0}
-                    </h2>
+                    </h4>
                   </div>
                   <CalendarDays />
                 </CardContent>
@@ -380,9 +380,9 @@ const Bookings = ({ page }: { page: string }) => {
                     <p className="text-lg text-muted-foreground">
                       Kommande
                     </p>
-                    <h2 className="text-3xl font-bold mt-2">
+                    <h4 className="text-3xl font-bold mt-2">
                       {upcomingBookings.length}
-                    </h2>
+                    </h4>
                   </div>
                   <Clock3 />
                 </CardContent>
@@ -393,13 +393,13 @@ const Bookings = ({ page }: { page: string }) => {
                     <p className="text-lg text-muted-foreground">
                       Slutförda
                     </p>
-                    <h2 className="text-3xl font-bold mt-2">
+                    <h4 className="text-3xl font-bold mt-2">
                       {
                         (passedBookings ?? []).filter(
                           b => (statusMap[b.id] || b.status) === "complete"
                         ).length
                       }
-                    </h2>
+                    </h4>
                   </div>
                   <CheckCircle2 className="h-8 w-8 text-green-500" />
                 </CardContent>
@@ -410,13 +410,13 @@ const Bookings = ({ page }: { page: string }) => {
                     <p className="text-lg text-muted-foreground">
                       Missade
                     </p>
-                    <h2 className="text-3xl font-bold mt-2">
+                    <h4 className="text-3xl font-bold mt-2">
                       {
                         (passedBookings ?? []).filter(
                           b => (statusMap[b.id] || b.status) === "missed"
                         ).length
                       }
-                    </h2>
+                    </h4>
                   </div>
                   <XCircle className="h-8 w-8 text-red-500" />
                 </CardContent>

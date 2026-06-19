@@ -32,7 +32,7 @@ export default async function AboutPage() {
   console.log(about)
 
   return (
-    <main className="relative max-w-5xl mx-auto px-6 py-20">
+    <main className=" max-w-5xl mx-auto px-6 py-20">
 
       {/* background glow */}
       <div className="absolute inset-0 -z-10 bg-gradient-to-b from-background via-background to-black/5" />
@@ -43,7 +43,7 @@ export default async function AboutPage() {
           {businessName}
         </div>
 
-        <h1 className="text-5xl font-bold mb-4 tracking-tight">
+        <h1 className="text-5xl font-bold mb-4 tracking-tight pt-2">
           Om {businessName}
         </h1>
 
@@ -55,7 +55,7 @@ export default async function AboutPage() {
       {/* STORY */}
       <section className="mb-20">
         <div className="bg-card border rounded-2xl p-8 shadow-sm hover:shadow-md transition">
-          <h2 className="text-2xl font-semibold mb-4">{about.story_title || "Vår historia"}</h2>
+          <h2 className="text-2xl font-semibold mb-4">Vår historia</h2>
           <p className="leading-7 text-muted-foreground">
             {about.story_content}
           </p>
@@ -84,9 +84,9 @@ export default async function AboutPage() {
                 hover:-translate-y-1
               "
             >
-              <h3 className="font-semibold text-lg mb-2 group-hover:text-highlight transition">
+              <h4 className="font-semibold text-lg mb-2 group-hover:text-highlight transition">
                 {service.title}
-              </h3>
+              </h4>
               <p className="text-muted-foreground text-sm leading-6">
                 {service.description}
               </p>
@@ -120,7 +120,7 @@ export default async function AboutPage() {
       <section className="text-center">
         <div className="relative overflow-hidden rounded-2xl border p-10 bg-card">
           {/* glow effect */}
-          <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-transparent to-highlight/10 opacity-40" />
+          <div className="absolute inset-0 bg-gradient-to-r from-accent/10 via-transparent to-primary/10 opacity-40" />
 
           <div className="relative">
             <h2 className="text-2xl font-semibold mb-3">

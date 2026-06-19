@@ -19,5 +19,21 @@ export const businessProfileSchema = z.object({
   facebook: z.string().optional().or(z.literal("")),
 })
 
-export type ProfileFormValues =
-  z.infer<typeof businessProfileSchema>
+export type ProfileFormValues = z.infer<typeof businessProfileSchema>
+
+// ----------------
+
+export const businessServicesSchema = z.object({
+  id: z.string().optional().or(z.literal("")),
+  name: z.string().min(1, "Service name is required").max(50, "Service name is too long"),
+  description: z.string().max(500, "Description is too long").optional().or(z.literal("")),
+  price: z.coerce.number().min(0, "Price must be positive"),
+  duration_min: z.coerce.number().min(1, "Duration must be at least 1 minute"),
+})
+
+export const businessServicesFormSchema = z.object({
+  services: z.array(businessServicesSchema),
+})
+
+export type ServicesFormValues = z.infer<typeof businessServicesFormSchema>
+export type ServiceFormValues = z.infer<typeof businessServicesSchema>

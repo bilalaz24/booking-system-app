@@ -25,7 +25,7 @@ const ServicesPage = async () => {
     }
 
     return (
-        <main className="relative max-w-5xl mx-auto px-6 py-20">
+        <main className="max-w-5xl mx-auto px-6 py-20">
             {/* background glow */}
             <div className="absolute inset-0 -z-10 bg-gradient-to-b from-background via-background to-black/5" />
 
@@ -35,7 +35,7 @@ const ServicesPage = async () => {
                     {businessName}
                 </div>
 
-                <h1 className="text-5xl font-bold mb-4 tracking-tight">
+                <h1 className="text-5xl font-bold mb-4 tracking-tight pt-2">
                     Våra tjänster
                 </h1>
 
