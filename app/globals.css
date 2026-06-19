@@ -60,52 +60,51 @@
 
 /* BOTH ROOT AND DARK ENFORCE THE SAME COMFORTABLE HIGH-CONTRAST PALETTE */
 :root, .dark {
-  /* Lux Midnight Dark Base (A comfortable, high-contrast dark palette) */
-  --background: #090D16;
+  /* Comfort Midnight Blue Dark Base (Extremely easy on the eyes) */
+  --background: #0A0F1D;
   --foreground: #E2E8F0;
   
-  /* Slate & Depth Components (Cards sit higher with a subtle radial undertone) */
-  --card: #111827;
+  /* Sapphire Slate Component Panels for a layered 3D depth */
+  --card: #131B2E;
   --card-foreground: #F1F5F9;
-  --popover: #111827;
+  --popover: #131B2E;
   --popover-foreground: #F1F5F9;
   
-  /* Deep Premium Indigo instead of stark tech-blue */
-  --primary: #6366F1;
+  /* Rich corporate royal blue for main actions */
+  --primary: #3B82F6;
   --primary-foreground: #FFFFFF;
   
-  /* Rich slate gray layers */
-  --secondary: #1F2937;
+  /* Deep slate secondary values */
+  --secondary: #1E293B;
   --secondary-foreground: #94A3B8;
   
-  /* Muted states - soft slate-900 background & slate-400 foreground for readability */
+  /* Muted states for readable background paneling */
   --muted: #0F172A;
   --muted-foreground: #94A3B8;
   
-  /* Energetic Teal Accent to pop key buttons and sliders */
-  --accent: #0D9488;
-  --accent-foreground: #FFFFFF;
+  /* Soft ice blue accent to highlight active items, badges, and active sliders */
+  --accent: #60A5FA;
+  --accent-foreground: #0F172A;
   
   --destructive: #EF4444;
   --destructive-foreground: #FFFFFF;
   
-  /* High contrast border lines to separate grid items cleanly */
-  --border: #2E3B4E;
-  --input: #1E293B;
-  --ring: rgba(99, 102, 241, 0.4);
+  /* High contrast, deep slate boundaries to frame individual elements cleanly */
+  --border: #24334C;
+  --input: #141D2F;
+  --ring: rgba(59, 130, 246, 0.4);
   
   --radius: 14px;
 
-  /* Overriding specific custom variables to align with premium look */
-  --color-navfoot-bg: #060910;
-  --color-highlight: #818CF8;
+  /* Overriding specific custom variables to align with the soft blue theme */
+  --color-navfoot-bg: #060A13;
+  --color-highlight: #60A5FA;
 }
 
 @layer base {
   * {
     font-family: var(--font-body), sans-serif;
     @apply border-border outline-ring/50;
-    /* Soft smooth transition for hover states */
     transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, box-shadow;
     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
     transition-duration: 150ms;
@@ -114,10 +113,10 @@
   body {
     /* FIX: Force applying Tailwind v4 recognized font-body token utility directly */
     @apply bg-background text-foreground;
-    /* Soft ambient lighting glow over background */
+    /* Soft ambient background blue glow that breaks the flat feeling beautifully */
     background-image: 
-      radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.04) 0%, transparent 40%),
-      radial-gradient(circle at 90% 80%, rgba(13, 148, 136, 0.04) 0%, transparent 45%);
+      radial-gradient(circle at 15% 15%, rgba(59, 130, 246, 0.05) 0%, transparent 45%),
+      radial-gradient(circle at 85% 85%, rgba(37, 99, 235, 0.04) 0%, transparent 45%);
     background-attachment: fixed;
   }
   
@@ -126,8 +125,8 @@
     font-family: var(--font-heading), sans-serif !important;
     color: var(--primary);
     
-    /* Elegant gradient heading text to remove flat look */
-    background-image: linear-gradient(135deg, #818CF8 0%, #0D9488 100%);
+    /* Clean, professional metal-blue soft gradient (light steel blue down to corporate blue) */
+    background-image: linear-gradient(135deg, #93C5FD 0%, #2563EB 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     
@@ -141,15 +140,15 @@
     color: #94A3B8;
   }
 
-  /* Card styling overrides for depth (eliminating flat cards) */
+  /* Deep slate cards (eliminating the flat grey sheets) */
   .card, [class*="rounded-"].border {
-    box-shadow: 0 10px 25px -15px rgba(0, 0, 0, 0.6);
+    box-shadow: 0 10px 30px -15px rgba(0, 0, 0, 0.7);
     background-color: var(--card);
   }
 
-  /* Input fields focusing effects */
+  /* Input fields focusing effects with soft blue glow */
   input, select, textarea {
-    background-color: #0F172A !important;
+    background-color: #0B101C !important;
     border-color: var(--border) !important;
   }
   input:focus, select:focus, textarea:focus {
@@ -161,7 +160,7 @@
     cursor: pointer;
   }
 
-  /* Elegant global scrollbar matching the dark theme */
+  /* High contrast scrollbars to match the comfortable theme */
   ::-webkit-scrollbar {
     width: 10px;
     height: 10px;
@@ -170,7 +169,7 @@
     background: var(--background);
   }
   ::-webkit-scrollbar-thumb {
-    background: #1F2937;
+    background: #1E293B;
     border-radius: 9999px;
     border: 3px solid var(--background);
   }
