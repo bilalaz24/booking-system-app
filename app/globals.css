@@ -58,60 +58,123 @@
   --font-body: var(--font-body), sans-serif;
 }
 
-/* BOTH ROOT AND DARK ENFORCE THE SAME INTENSE SERIOUS PALETTE */
+/* BOTH ROOT AND DARK ENFORCE THE SAME COMFORTABLE HIGH-CONTRAST PALETTE */
 :root, .dark {
-  /* The Void Black */
-  --background: #0B0F14;
-  --foreground: #E7EDF5;
+  /* Lux Midnight Dark Base (A comfortable, high-contrast dark palette) */
+  --background: #090D16;
+  --foreground: #E2E8F0;
   
-  /* The Sharp Slate */
-  --card: #121823;
-  --card-foreground: #E7EDF5;
-  --popover: #121823;
-  --popover-foreground: #E7EDF5;
+  /* Slate & Depth Components (Cards sit higher with a subtle radial undertone) */
+  --card: #111827;
+  --card-foreground: #F1F5F9;
+  --popover: #111827;
+  --popover-foreground: #F1F5F9;
   
-  /* True Barber Red for Shading Priorities (Buttons, Sliders) */
-  --primary: #4DA3FF;
-  --primary-foreground: #06121F;
+  /* Deep Premium Indigo instead of stark tech-blue */
+  --primary: #6366F1;
+  --primary-foreground: #FFFFFF;
   
-  /* Secondary States (Using deep panels) */
-  --secondary: #161E2C;
-  --secondary-foreground: #B7C3D6;
+  /* Rich slate gray layers */
+  --secondary: #1F2937;
+  --secondary-foreground: #94A3B8;
   
-  /* Muted Text / Inactive UI */
-  --muted: #111824;
-  --muted-foreground: #8FA0B8;
+  /* Muted states - soft slate-900 background & slate-400 foreground for readability */
+  --muted: #0F172A;
+  --muted-foreground: #94A3B8;
   
-  /* Hover/Focus States (Shifting to True Blue accent points) */
-  --accent: #FF3B5C;
+  /* Energetic Teal Accent to pop key buttons and sliders */
+  --accent: #0D9488;
   --accent-foreground: #FFFFFF;
   
-  --destructive: #C76D6D;
+  --destructive: #EF4444;
   --destructive-foreground: #FFFFFF;
   
-  /* Boundaries and Grid Lines */
-  --border: #1C2636;
-  --input: #1C2636;
-  --ring: rgba(77, 163, 255, 0.35);
+  /* High contrast border lines to separate grid items cleanly */
+  --border: #2E3B4E;
+  --input: #1E293B;
+  --ring: rgba(99, 102, 241, 0.4);
   
   --radius: 14px;
+
+  /* Overriding specific custom variables to align with premium look */
+  --color-navfoot-bg: #060910;
+  --color-highlight: #818CF8;
 }
 
 @layer base {
   * {
     font-family: var(--font-body), sans-serif;
     @apply border-border outline-ring/50;
+    /* Soft smooth transition for hover states */
+    transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, box-shadow;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 150ms;
   }
+  
   body {
     /* FIX: Force applying Tailwind v4 recognized font-body token utility directly */
     @apply bg-background text-foreground;
+    /* Soft ambient lighting glow over background */
+    background-image: 
+      radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.04) 0%, transparent 40%),
+      radial-gradient(circle at 90% 80%, rgba(13, 148, 136, 0.04) 0%, transparent 45%);
+    background-attachment: fixed;
   }
+  
   h1, h2, h3, h4, h5, h6 {
     /* FIX: Enforced font-black or font-bold explicitly so Oswald heavy weights display correctly */
     font-family: var(--font-heading), sans-serif !important;
-    @apply uppercase tracking-wider font-bold;
+    color: var(--primary);
+    
+    /* Elegant gradient heading text to remove flat look */
+    background-image: linear-gradient(135deg, #818CF8 0%, #0D9488 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    
+    @apply uppercase tracking-wider font-extrabold;
   }
+
+  /* Adjust smaller subheadings slightly to have solid comfortable contrast */
+  h4, h5, h6 {
+    background-image: none;
+    -webkit-text-fill-color: initial;
+    color: #94A3B8;
+  }
+
+  /* Card styling overrides for depth (eliminating flat cards) */
+  .card, [class*="rounded-"].border {
+    box-shadow: 0 10px 25px -15px rgba(0, 0, 0, 0.6);
+    background-color: var(--card);
+  }
+
+  /* Input fields focusing effects */
+  input, select, textarea {
+    background-color: #0F172A !important;
+    border-color: var(--border) !important;
+  }
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--primary) !important;
+    box-shadow: 0 0 0 2px var(--ring) !important;
+  }
+
   button:not(:disabled), [role="button"]:not(:disabled) {
     cursor: pointer;
+  }
+
+  /* Elegant global scrollbar matching the dark theme */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--background);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #1F2937;
+    border-radius: 9999px;
+    border: 3px solid var(--background);
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--primary);
   }
 }
