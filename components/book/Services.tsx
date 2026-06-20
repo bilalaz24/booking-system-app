@@ -51,7 +51,7 @@ const Services = ({ onSelectService }: Props) => {
   }
 
   return (
-    <div className="flex-1 border border-muted rounded-2xl p-6">
+    <div className="flex-1 p-6">
       <h2 className="text-2xl font-semibold mb-6 text-center">
         Välj en tjänst
       </h2>

@@ -20,9 +20,13 @@ export default async function AboutPage() {
   console.log("ABOUT PAGE BUSINESS ID: ",business.id)
   const { data: about, error } = await supabase.from("about_page").select("*").eq("business_id", business.id).single()
 
-  if (error || !about) {
+  if (!about) {
+    console.error("About page data not found for business id:", business.id)
+  }
+  if (error) {
     console.error("Error fetching about page", error)
   }
+
 
   const emptyFields = Object.entries(about)
   .filter(([_, value]) => value === null || value === "")

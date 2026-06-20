@@ -1,3 +1,4 @@
+import ContactForm from "@/components/ContactForm"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -142,11 +143,10 @@ export default async function ContactPage() {
               </p>
             </div>
 
-            <form className="space-y-6">
+            {/*<form className="space-y-6">
               <div className="grid gap-6 sm:grid-cols-2">
                 <div className="space-y-2">
                   <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Namn</label>
-                  {/* Added h-12 and px-4 for a premium, spacious input look */}
                   <Input type="text" placeholder="Ditt fullständiga namn" className="bg-background h-12 px-4 text-base shadow-sm focus-visible:ring-highlight" required />
                 </div>
                 <div className="space-y-2">
@@ -162,7 +162,6 @@ export default async function ContactPage() {
 
               <div className="space-y-2">
                 <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Meddelande</label>
-                {/* Added p-4 for breathing room inside the textarea */}
                 <Textarea 
                   placeholder="Skriv ditt meddelande här..." 
                   className="min-h-[160px] bg-background p-4 text-base shadow-sm focus-visible:ring-highlight resize-none leading-relaxed" 
@@ -173,7 +172,8 @@ export default async function ContactPage() {
               <Button type="submit" className="w-full sm:w-auto px-8 py-6 bg-primary hover:bg-primary/90 text-base transition-all font-semibold rounded-xl shadow-md hover:shadow-lg">
                 Skicka meddelande
               </Button>
-            </form>
+            </form>*/}
+            <ContactForm />
           </CardContent>
         </Card>
 

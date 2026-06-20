@@ -81,63 +81,94 @@ const ContactInfo = ({ selectedDate, selectedSlot, selectedService }: Props) => 
         }
     }
 
-    return (
-        <div className='flex-1 w-full flex flex-col items-center border border-b-muted rounded-2xl py-8'>
-            <h2 className="text-2xl font-semibold mb-6 text-center">
-                Boka din tid
-            </h2>
-            <Card className='max-w-md w-full'>
-                <CardHeader>
-                    <CardTitle>Dina uppgifter</CardTitle>
-                    <CardDescription>Fyll i dina kontaktuppgifter för att slutföra bokningen</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <form onSubmit={handleSubmit(onSubmit)}>
-                        <FieldGroup>
-                            <Controller name='name' control={control} render={({ field }) => (
-                                <Field>
-                                    <FieldLabel>Namn <span className='text-red-500'>*</span></FieldLabel>
-                                    <Input type='text' {...field} />
-                                    {errors.name && (
-                                        <FieldError errors={[errors.name]} />
-                                    )}
-                                </Field>
-                            )} />
-                            <Controller name='phone' control={control} render={({ field }) => (
-                                <Field>
-                                    <FieldLabel>Telefon <span className='text-red-500'>*</span></FieldLabel>
-                                    <Input type='tel' required {...field} />
-                                    {errors.phone && (
-                                        <FieldError errors={[errors.phone]} />
-                                    )}
-                                </Field>
-                            )} />
-                            <Controller name='email' control={control} render={({ field }) => (
-                                <Field>
-                                    <FieldLabel>Email</FieldLabel>
-                                    <Input type='email' {...field} />
-                                    {errors.email && (
-                                      <FieldError errors={[errors.email]} />
-                                    )}
-                                </Field>
-                            )} />
+return (
+  <div className="flex-1 w-full flex flex-col items-center py-8 px-4">
+    
+    <h2 className="text-2xl font-semibold mb-6 text-center">
+      Boka din tid
+    </h2>
 
-                            <Field>
-                                <Button type='submit' disabled={isSubmitting}>
-                                    {
-                                        isSubmitting ? (
-                                            <div className='flex justify-center items-center gap-x-1'>
-                                                <Loader /><p>Bokar...</p>
-                                            </div>) : "Boka nu"
-                                    }
-                                </Button>
-                            </Field>
-                        </FieldGroup>
-                    </form>
-                </CardContent>
-            </Card>
-        </div>
-    )
+    <div className="w-full max-w-md">
+      <Card className="rounded-2xl border bg-card shadow-sm">
+        
+        <CardHeader>
+          <CardTitle>Dina uppgifter</CardTitle>
+          <CardDescription>
+            Fyll i dina kontaktuppgifter för att slutföra bokningen
+          </CardDescription>
+        </CardHeader>
+
+        <CardContent>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <FieldGroup>
+
+              <Controller
+                name="name"
+                control={control}
+                render={({ field }) => (
+                  <Field>
+                    <FieldLabel>
+                      Namn
+                    </FieldLabel>
+                    <Input type="text" {...field} />
+                    {errors.name && (
+                      <FieldError errors={[errors.name]} />
+                    )}
+                  </Field>
+                )}
+              />
+
+              <Controller
+                name="phone"
+                control={control}
+                render={({ field }) => (
+                  <Field>
+                    <FieldLabel>
+                      Telefon
+                    </FieldLabel>
+                    <Input type="tel" {...field} />
+                    {errors.phone && (
+                      <FieldError errors={[errors.phone]} />
+                    )}
+                  </Field>
+                )}
+              />
+
+              <Controller
+                name="email"
+                control={control}
+                render={({ field }) => (
+                  <Field>
+                    <FieldLabel>E-post</FieldLabel>
+                    <Input type="email" {...field} />
+                    {errors.email && (
+                      <FieldError errors={[errors.email]} />
+                    )}
+                  </Field>
+                )}
+              />
+
+              <Field>
+                <Button type="submit" disabled={isSubmitting}>
+                  {isSubmitting ? (
+                    <div className="flex items-center gap-x-2">
+                      <Loader />
+                      <p>Bokar...</p>
+                    </div>
+                  ) : (
+                    "Boka nu"
+                  )}
+                </Button>
+              </Field>
+
+            </FieldGroup>
+          </form>
+        </CardContent>
+
+      </Card>
+    </div>
+  </div>
+)
 }
 
 export default ContactInfo

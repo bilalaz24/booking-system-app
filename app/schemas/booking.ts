@@ -3,7 +3,7 @@ import z from "zod"
 export const bookingSchema = z.object({
     service: z.string().uuid().optional().or(z.literal("")),
     name: z.string().min(1, "Name is required").max(30, "Name is too long"),
-    email: z.string().email("Invalid email").optional().or(z.literal("")),
+    email: z.string().email("Invalid email"),//.optional().or(z.literal("")),
     phone: z
         .string()
         .min(7, "Phone number is too short")

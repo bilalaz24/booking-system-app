@@ -15,6 +15,7 @@ import Loader from '../Loader'
 import { createClient } from '@/lib/supabase/client'
 import { Plus } from 'lucide-react'
 import { updateServices } from '@/lib/actions/staffServices'
+import { toast } from 'sonner'
 
 const Services = () => {
     const supabase = createClient()
@@ -69,7 +70,15 @@ const Services = () => {
 
     async function onSubmit(data: ServicesFormValues) {
         console.log(data.services)
-        await updateServices(data.services)
+        const result = await updateServices(data.services)
+    
+        if (result?.success) {
+            toast.success("Tjänster updaterades")
+        }
+    
+        if (result?.error) {
+            toast.error(result.error)
+        }
     }
 
     return (

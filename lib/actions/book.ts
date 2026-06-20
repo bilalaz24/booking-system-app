@@ -62,7 +62,7 @@ export async function bookAppointment(data: BookingData) {
         const slot = formData.get("slot")?.toString()
         const service = formData.get("service")?.toString()*/
 
-        if (!name || !phone || !date || !slot || !service) {
+        if (!name || !phone || !date || !slot || !service || !email) {
             return {
                 success: false,
                 error: "Missing fields"

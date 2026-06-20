@@ -27,8 +27,7 @@ const Footer = async () => {
             </h2>
 
             <p className="mt-3 max-w-sm text-sm text-muted-foreground">
-              Boka tider snabbt och enkelt online.
-              Vi hjälper dig att hitta en tid som passar dig.
+              {business?.description || "Vi erbjuder professionella tjänster för att möta dina behov. Boka en tid idag och upplev skillnaden!"}
             </p>
           </div>
 
