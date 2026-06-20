@@ -345,13 +345,13 @@ const Bookings = ({ page }: { page: string }) => {
                   Drop-in Status
                 </p>
 
-                <h3 className="text-3xl font-bold mt-2">
+                <h4 className="text-3xl uppercase font-bold mt-2">
                   {dropIn === 30
                     ? "Inte tillgänglig"
                     : dropIn === 60
                     ? "Begränsad tid"
                     : "Tillgänglig"}
-                </h3>
+                </h4>
 
                 <p className="text-muted-foreground mt-3">
                   Nästa tid om {timeUntil}

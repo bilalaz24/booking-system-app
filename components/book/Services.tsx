@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react"
 import { createClient } from "@/lib/supabase/client"
+import { useBusiness } from "../providers/BusinessProvider"
 
 interface Props {
   onSelectService: (serviceId: string) => void
@@ -9,12 +10,13 @@ interface Props {
 
 const Services = ({ onSelectService }: Props) => {
   const supabase = createClient()
+  const {business} = useBusiness()
 
   const [loading, setLoading] = useState(false)
   const [services, setServices] = useState<any[] | null>(null)
   const [selectedServiceId, setSelectedServiceId] = useState<string | null>(null)
 
-  const businessId = process.env.NEXT_PUBLIC_BUSINESS_ID
+  const businessId = business?.id
 
   const fetchServices = async () => {
     setLoading(true)
@@ -24,6 +26,7 @@ const Services = ({ onSelectService }: Props) => {
         .from("services")
         .select("*")
         .eq("business_id", businessId)
+        .eq("is_active", true)
 
       if (error) {
         console.error(error)

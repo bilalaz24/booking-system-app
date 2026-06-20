@@ -1,11 +1,13 @@
 import { getAvailableSlots } from '@/lib/actions/slots'
 import BookingForm from '@/components/book/BookingForm'
+import { getCurrentBusiness } from '@/lib/business/getCurrentBusiness'
 
 const Book = async () => {
-    
-    const businessId = process.env.NEXT_PUBLIC_BUSINESS_ID
+    const {business} = await getCurrentBusiness()
+
+    const businessId = business?.id
     if (!businessId) {
-        throw new Error("Missing NEXT_PUBLIC_BUSINESS_ID")
+        throw new Error("Missing business ID")
     }
 
     const d = new Date()

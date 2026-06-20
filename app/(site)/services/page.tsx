@@ -18,7 +18,7 @@ const ServicesPage = async () => {
 
     const businessName = business.name
     console.log("business:", business)
-    const { data: services, error } = await supabase.from("services").select("*").eq("business_id", business.id)
+    const { data: services, error } = await supabase.from("services").select("*").eq("business_id", business.id).eq("is_active", true)
 
     if (error || !services) {
         console.error("Error fetching services", error)

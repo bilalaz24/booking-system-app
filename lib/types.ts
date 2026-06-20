@@ -39,6 +39,7 @@ export interface Service {
   description: string,
   price: number,
   duration_min: number,
+  is_active: boolean,
   business_id: string,
   business_user_id: string
 }

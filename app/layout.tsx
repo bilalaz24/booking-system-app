@@ -32,28 +32,6 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-/*
-  const cookieStore = await cookies()
-  const supabase = createClient(cookieStore)
-
-  const businessId = process.env.NEXT_PUBLIC_BUSINESS_ID
-
-  const { data: business, error } = await supabase.from("businesses").select("*").eq("id", businessId).single()
-
-  const { data: business_config, error: business_config_error } = await supabase
-  .from("business_settings")
-  .select("*")
-  .eq("business_id", businessId)
-  .single()
-
-  if (error) throw business_config_error
-  if (business_config_error) throw business_config_error
-
-  const businessData = {
-    business,
-    settings: business_config
-  }*/
-
   const businessData = await getCurrentBusiness()
   console.log("Business data in RootLayout:", businessData)
 

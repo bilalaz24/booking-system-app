@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import { createClient } from "../supabase/server";
 import { bookingSchema } from "@/app/schemas/booking"
 import { z } from "zod"
+import { getCurrentBusiness } from "../business/getCurrentBusiness";
 
 type BookingData = z.infer<typeof bookingSchema>
 
@@ -35,7 +36,15 @@ export async function bookAppointment(data: BookingData) {
         const cookieStore = await cookies()
         const supabase = createClient(cookieStore)
 
-        const businessId = process.env.NEXT_PUBLIC_BUSINESS_ID
+        const { business } = await getCurrentBusiness()
+        const businessId = business?.id
+
+        if (!businessId) {
+            return {
+                success: false,
+                error: "Business not found",
+            }
+        }
 
         const {
             name,
