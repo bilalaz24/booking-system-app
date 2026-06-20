@@ -40,52 +40,57 @@
   --color-navfoot-bg: var(--navfoot-bg);
   --color-highlight: var(--highlight);
 
-  /* Fitness brands look better with slightly sharper, punchier corners */
-  --radius-sm: 4px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
-  --radius-xl: 16px;
-  --radius-2xl: 20px;
+  /* Soft, organic rounded corners for a welcoming, luxurious feel */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 22px;
+  --radius-2xl: 28px;
 
   --font-heading: var(--font-heading), sans-serif;
   --font-body: var(--font-body), sans-serif;
 }
 
 :root, .dark {
-  /* Clean, energetic dark mode palette (less purple/blue magic, more solid slate) */
-  --background: #0C111D;
-  --foreground: #F8FAFC;
+  /* Warm, welcoming light ivory canvas */
+  --background: #FAF8F5;
+  --foreground: #2A2927;
 
-  /* Card surfaces - crisp and solid */
-  --card: #161E2E;
-  --card-foreground: #F8FAFC;
-  --popover: #161E2E;
-  --popover-foreground: #F8FAFC;
+  /* Elegant, clean card surfaces */
+  --card: #FFFFFF;
+  --card-foreground: #2A2927;
+  --popover: #FFFFFF;
+  --popover-foreground: #2A2927;
 
-  /* Primary Electric Blue - represents energy and movement */
-  --primary: #3B82F6;
+  /* Primary Deep Charcoal - elegant, high-end editorial feel */
+  --primary: #1E1E1C;
   --primary-foreground: #FFFFFF;
 
-  --secondary: #223047;
-  --secondary-foreground: #94A3B8;
+  /* Secondary Soft Taupe/Warm Grey */
+  --secondary: #F3EFEA;
+  --secondary-foreground: #706E6A;
 
-  --muted: #111827;
-  --muted-foreground: #64748B;
+  /* Muted elements for a calm backdrop */
+  --muted: #F5F2EE;
+  --muted-foreground: #8C8984;
 
-  /* Accent High-energy Cyan for call-to-actions, stats, or metrics */
-  --accent: #0EA5E9;
-  --accent-foreground: #0C111D;
+  /* Accent Muted Rose Gold / Champagne tone for bookings, highlights, and badges */
+  --accent: #C5A880;
+  --accent-foreground: #FFFFFF;
 
-  --destructive: #EF4444;
+  --destructive: #C25C5C;
   --destructive-foreground: #FFFFFF;
 
-  --border: #2D3D56;
-  --input: #1F2A3C;
-  --ring: rgba(59, 130, 246, 0.4);
+  /* Subtle, delicate borders */
+  --border: #E6E1DA;
+  --input: #FFFFFF;
+  --ring: rgba(197, 168, 128, 0.3);
 
-  --radius: 12px;
-  --navfoot-bg: #090D16;
-  --highlight: #0EA5E9;
+  --radius: 16px;
+  
+  /* Navigation and footer matching the warm base */
+  --navfoot-bg: #F5F2EE;
+  --highlight: #C5A880;
 }
 
 @layer base {
@@ -94,75 +99,73 @@
     @apply border-border outline-ring/50;
     transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, box-shadow;
     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-    transition-duration: 150ms;
+    transition-duration: 200ms; /* Slightly longer transition for a smoother, calmer feel */
   }
 
   body {
     @apply bg-background text-foreground;
-    /* REMOVED: Glowing blue backgrounds. Fitness layouts should feel solid, clean, and grounded. */
     background-image: none; 
   }
 
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-heading), sans-serif !important;
-    
-    /* REMOVED: Text gradient (which screams gaming UI). 
-       REPLACED WITH: Solid, high-contrast, aggressive athletic white/primary colors. */
     background-image: none !important;
     -webkit-background-clip: initial !important;
     -webkit-text-fill-color: initial !important;
     
-    /* Strong, bold, action-oriented typography */
-    @apply uppercase tracking-tight font-black; 
+    /* REPLACED WITH: Elegant, tracked-out, regular/medium-weight premium look */
+    @apply capitalize tracking-widest font-medium; 
   }
 
   h1 {
-    color: var(--foreground); /* Big bold titles in solid white/light slate */
+    color: var(--primary);
+    @apply font-semibold; /* Just a touch heavier for main titles */
   }
 
   h2, h3 {
-    color: var(--primary); /* Subheadings use your primary brand color */
+    color: var(--accent); /* Chic branding accent colors for subtitles */
   }
 
   h4, h5, h6 {
     color: var(--secondary-foreground);
-    @apply normal-case tracking-normal font-bold;
+    @apply tracking-wide font-normal;
   }
 
-  /* Crisp athletic cards with subtle shadow rather than deep floaty gaming shadows */
+  /* Soft, cloud-like card shadows for a premium, lightweight look */
   .card, [class*="rounded-"].border {
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -2px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 20px -2px rgba(140, 137, 132, 0.08), 0 2px 8px -1px rgba(140, 137, 132, 0.04);
     background-color: var(--card);
   }
 
-  /* Clean, intense input fields for logging workouts/inputs */
+  /* Pristine, soft input forms */
   input, select, textarea {
-    background-color: #111827 !important;
+    background-color: #FFFFFF !important;
     border-color: var(--border) !important;
   }
   input:focus, select:focus, textarea:focus {
-    border-color: var(--primary) !important;
+    border-color: var(--accent) !important;
     box-shadow: 0 0 0 2px var(--ring) !important;
   }
 
   button:not(:disabled), [role="button"]:not(:disabled) {
     cursor: pointer;
-    @apply font-bold uppercase tracking-wider; /* Makes buttons look like actionable fitness triggers */
+    /* Soft, sophisticated button typography */
+    @apply font-medium uppercase tracking-widest text-xs; 
   }
 
-  /* Smooth scrollbars */
+  /* Minimalist, subtle scrollbars */
   ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+    width: 6px;
+    height: 6px;
   }
   ::-webkit-scrollbar-track {
     background: var(--background);
   }
   ::-webkit-scrollbar-thumb {
-    background: #334155;
+    background: #E6E1DA;
     border-radius: 9999px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: var(--primary);
+    background: var(--accent);
   }
 }
