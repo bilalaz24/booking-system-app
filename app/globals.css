@@ -11,99 +11,81 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  
+
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
-  
+
   --color-popover: var(--popover);
   --color-popover-foreground: var(--popover-foreground);
-  
+
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
-  
+
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
-  
+
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
-  
+
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
-  
+
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
-  
+
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
 
   --color-navfoot-bg: var(--navfoot-bg);
-
   --color-highlight: var(--highlight);
-  
-  /* Hard Edges for a Serious Layout */
-  /*--radius-sm: 0px;
-  --radius-md: 0px;
-  --radius-lg: 0px;
-  --radius-xl: 0px;
-  --radius-2xl: 0px;*/
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 14px;
-  --radius-xl: 18px;
-  --radius-2xl: 22px;
 
-  /* FIX: Explicitly mapping font families with functional tailwind keyword strings */
+  /* Fitness brands look better with slightly sharper, punchier corners */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 20px;
+
   --font-heading: var(--font-heading), sans-serif;
   --font-body: var(--font-body), sans-serif;
 }
 
-/* BOTH ROOT AND DARK ENFORCE THE SAME COMFORTABLE HIGH-CONTRAST PALETTE */
 :root, .dark {
-  /* Deep Midnight Base (more neutral, less blue-pushed) */
-  --background: #0B1220;
-  --foreground: #E5EAF2;
-  
-  /* Card surfaces (slightly lifted, not too blue) */
-  --card: #121A2B;
-  --card-foreground: #EAF0F8;
-  --popover: #121A2B;
-  --popover-foreground: #EAF0F8;
-  
-  /* Primary (less harsh, more premium blue) */
-  --primary: #4F7CFF;
-  --primary-foreground: #FFFFFF;
-  
-  /* Secondary (more neutral slate) */
-  --secondary: #1A2436;
-  --secondary-foreground: #A9B4C7;
-  
-  /* Muted (less deep black, smoother UI layering) */
-  --muted: #0F1726;
-  --muted-foreground: #93A4BB;
-  
-  /* Accent (softened cyan-blue, not neon) */
-  --accent: #5BA7FF;
-  --accent-foreground: #0B1220;
-  
-  /* Destructive (slightly softened red) */
-  --destructive: #F05454;
-  --destructive-foreground: #FFFFFF;
-  
-  /* Borders (cleaner separation, less harsh) */
-  --border: #24324A;
-  --input: #151F33;
-  
-  /* Ring (more subtle glow) */
-  --ring: rgba(79, 124, 255, 0.28);
-  
-  --radius: 14px;
+  /* Clean, energetic dark mode palette (less purple/blue magic, more solid slate) */
+  --background: #0C111D;
+  --foreground: #F8FAFC;
 
-  /* Navigation/footer */
-  --navfoot-bg: #070D18;
-  
-  /* Highlight (less pink, more professional blue-pink hybrid removed) */
-  --highlight: #5BA7FF;
+  /* Card surfaces - crisp and solid */
+  --card: #161E2E;
+  --card-foreground: #F8FAFC;
+  --popover: #161E2E;
+  --popover-foreground: #F8FAFC;
+
+  /* Primary Electric Blue - represents energy and movement */
+  --primary: #3B82F6;
+  --primary-foreground: #FFFFFF;
+
+  --secondary: #223047;
+  --secondary-foreground: #94A3B8;
+
+  --muted: #111827;
+  --muted-foreground: #64748B;
+
+  /* Accent High-energy Cyan for call-to-actions, stats, or metrics */
+  --accent: #0EA5E9;
+  --accent-foreground: #0C111D;
+
+  --destructive: #EF4444;
+  --destructive-foreground: #FFFFFF;
+
+  --border: #2D3D56;
+  --input: #1F2A3C;
+  --ring: rgba(59, 130, 246, 0.4);
+
+  --radius: 12px;
+  --navfoot-bg: #090D16;
+  --highlight: #0EA5E9;
 }
 
 @layer base {
@@ -114,47 +96,48 @@
     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
     transition-duration: 150ms;
   }
-  
+
   body {
-    /* FIX: Force applying Tailwind v4 recognized font-body token utility directly */
     @apply bg-background text-foreground;
-    /* Soft ambient background blue glow that breaks the flat feeling beautifully */
-    background-image: 
-      radial-gradient(circle at 15% 15%, rgba(59, 130, 246, 0.05) 0%, transparent 45%),
-      radial-gradient(circle at 85% 85%, rgba(37, 99, 235, 0.04) 0%, transparent 45%);
-    background-attachment: fixed;
+    /* REMOVED: Glowing blue backgrounds. Fitness layouts should feel solid, clean, and grounded. */
+    background-image: none; 
   }
-  
+
   h1, h2, h3, h4, h5, h6 {
-    /* FIX: Enforced font-black or font-bold explicitly so Oswald heavy weights display correctly */
     font-family: var(--font-heading), sans-serif !important;
-    color: var(--primary);
-
     
-    /* Clean, professional metal-blue soft gradient (light steel blue down to corporate blue) */
-    background-image: linear-gradient(135deg, #93C5FD 0%, #2563EB 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    /* REMOVED: Text gradient (which screams gaming UI). 
+       REPLACED WITH: Solid, high-contrast, aggressive athletic white/primary colors. */
+    background-image: none !important;
+    -webkit-background-clip: initial !important;
+    -webkit-text-fill-color: initial !important;
     
-    @apply uppercase tracking-wider font-extrabold;
+    /* Strong, bold, action-oriented typography */
+    @apply uppercase tracking-tight font-black; 
   }
 
-  /* Adjust smaller subheadings slightly to have solid comfortable contrast */
-  h3, h4, h5, h6 {
-    background-image: none;
-    -webkit-text-fill-color: initial;
-    color: #c8dfff;
+  h1 {
+    color: var(--foreground); /* Big bold titles in solid white/light slate */
   }
 
-  /* Deep slate cards (eliminating the flat grey sheets) */
+  h2, h3 {
+    color: var(--primary); /* Subheadings use your primary brand color */
+  }
+
+  h4, h5, h6 {
+    color: var(--secondary-foreground);
+    @apply normal-case tracking-normal font-bold;
+  }
+
+  /* Crisp athletic cards with subtle shadow rather than deep floaty gaming shadows */
   .card, [class*="rounded-"].border {
-    box-shadow: 0 10px 30px -15px rgba(0, 0, 0, 0.7);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -2px rgba(0, 0, 0, 0.3);
     background-color: var(--card);
   }
 
-  /* Input fields focusing effects with soft blue glow */
+  /* Clean, intense input fields for logging workouts/inputs */
   input, select, textarea {
-    background-color: #0B101C !important;
+    background-color: #111827 !important;
     border-color: var(--border) !important;
   }
   input:focus, select:focus, textarea:focus {
@@ -164,20 +147,20 @@
 
   button:not(:disabled), [role="button"]:not(:disabled) {
     cursor: pointer;
+    @apply font-bold uppercase tracking-wider; /* Makes buttons look like actionable fitness triggers */
   }
 
-  /* High contrast scrollbars to match the comfortable theme */
+  /* Smooth scrollbars */
   ::-webkit-scrollbar {
-    width: 10px;
-    height: 10px;
+    width: 8px;
+    height: 8px;
   }
   ::-webkit-scrollbar-track {
     background: var(--background);
   }
   ::-webkit-scrollbar-thumb {
-    background: #1E293B;
+    background: #334155;
     border-radius: 9999px;
-    border: 3px solid var(--background);
   }
   ::-webkit-scrollbar-thumb:hover {
     background: var(--primary);
