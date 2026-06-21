@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils"
 import { Button } from "../ui/button"
 
 import {
+  Building2,
   Calendar,
   ChevronDown,
   Clock,
@@ -179,6 +180,15 @@ function SidebarLinks({
             >
               <Package className="h-4 w-4" />
               Tjänster
+            </Link>
+
+            <Link
+              href={routes.staffSettingsAbout}
+              className={linkClass(routes.staffSettingsAbout)}
+              onClick={onNavigate}
+            >
+              <Building2 className="h-4 w-4" />
+              Om oss
             </Link>
 
           </div>
