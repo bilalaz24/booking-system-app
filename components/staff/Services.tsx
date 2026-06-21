@@ -16,11 +16,13 @@ import { createClient } from '@/lib/supabase/client'
 import { Plus } from 'lucide-react'
 import { updateServices } from '@/lib/actions/staffServices'
 import { toast } from 'sonner'
+import { useStaffUser } from '../providers/StaffUserProvider'
 
 const Services = () => {
     const supabase = createClient()
 
-    const {business, settings} = useBusiness()
+    //const {business, settings} = useBusiness()
+    const user = useStaffUser()
 
     const {
         control,
@@ -34,9 +36,9 @@ const Services = () => {
     })
 
     const fetchServices = async () => {    
-        if (!business?.id) return
+        if (!user?.business_id) return
 
-        const { data: servicesData, error } = await supabase.from("services").select("*").eq("business_id", business.id).eq("is_active", true)
+        const { data: servicesData, error } = await supabase.from("services").select("*").eq("business_id", user.business_id).eq("is_active", true)
     
         if (error) {
             console.error("Error fetching services", error)
@@ -57,10 +59,10 @@ const Services = () => {
     }
 
     useEffect(() => {
-        if (business) {
+        if (user?.business_id) {
             fetchServices()
         }
-    }, [business])
+    }, [user?.business_id])
 
 
     const { fields, append, remove, replace } = useFieldArray({

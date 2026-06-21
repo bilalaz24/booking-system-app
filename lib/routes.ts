@@ -11,5 +11,6 @@ export const routes = {
     staffSettingsProfile: "/staff/settings/profile",
     staffSettingsServices: "/staff/settings/services",
     staffSettingsHours: "/staff/settings/hours",
+    staffMessages: "/staff/messages",
     staffStats: "/staff/stats"
 }

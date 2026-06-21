@@ -64,7 +64,6 @@ const Bookings = ({ page }: { page: string }) => {
   const supabase = createClient()
   const user = useStaffUser()
 
-  const [bookings, setBookings] = useState<Booking[] | null>(null)
   const [todayBookings, setTodayBookings] = useState<Booking[] | null>(null)
   const [futureBookings, setFutureBookings] = useState<Booking[] | null>(null)
   const [passedBookings, setPassedBookings] = useState<Booking[] | null>(null)
@@ -86,38 +85,6 @@ const Bookings = ({ page }: { page: string }) => {
   const [statusLoading, setStatusLoading] = useState<Record<string, boolean>>({})
 
   const today = new Date().toISOString().split("T")[0]
-
-/*
-  const fetchAllBookings = async () => {
-    if (!user.business_id) return
-
-    setLoading(true)
-
-    const today = new Date().toISOString().split("T")[0]
-
-    const { data, error } = await supabase
-      .from("bookings")
-      .select(`
-        *,
-        service:service_id (*)  
-      `)
-      .eq("business_id", user.business_id)
-      //.eq("date", today)
-      .in("status", ["confirmed", "pending"])
-      .order("date", {ascending: true})
-      .order("start_time", {ascending: true})
-
-    if (error) {
-      console.error("Error fetching bookings for business user", error)
-    }
-
-    setBookings(data ?? [])
-    setTodayBookings((data ?? [])?.filter((b) => b.date === today))
-    setFutureBookings((data ?? [])?.filter((b) => b.date !== today && !isBookingPast(b.date, b.end_time)))
-    setPassedBookings((data ?? []).filter((b) => isBookingPast(b.date, b.end_time)))
-    setLoading(false)
-    console.log(data)
-  }*/
 
   const fetchToday = async () => {
     const { data, error } = await supabase

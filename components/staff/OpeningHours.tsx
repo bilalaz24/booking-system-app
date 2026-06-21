@@ -27,6 +27,7 @@ import { AvailableSlots } from "@/lib/types"
 import { updateOpeningHours } from "@/lib/actions/staffOpeningHours"
 import { toast } from "sonner"
 import Loader from "../Loader"
+import { useStaffUser } from "../providers/StaffUserProvider"
 
 const DAY_NAMES = [
   "Måndag",
@@ -58,7 +59,7 @@ type OpeningHoursFormValues = {
 
 export default function OpeningHours() {
   const supabase = createClient()
-  const { business } = useBusiness()
+  const user = useStaffUser()
 
   const [loading, setLoading] = useState(true)
 
@@ -75,14 +76,14 @@ export default function OpeningHours() {
   })
 
   const fetchOpeningHours = async () => {
-    if (!business?.id) return
+    if (!user?.id) return
 
     setLoading(true)
 
     const { data, error } = await supabase
       .from("available_slots")
       .select("*")
-      .eq("business_id", business.id)
+      .eq("business_id", user.business_id)
 
     if (error) {
       console.error(error)
@@ -121,7 +122,7 @@ export default function OpeningHours() {
 
   useEffect(() => {
     fetchOpeningHours()
-  }, [business?.id])
+  }, [user?.business_id])
 
   const onSubmit = async (data: OpeningHoursFormValues) => {
     console.log("submit:", data)

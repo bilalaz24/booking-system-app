@@ -4,7 +4,7 @@ import { useBusiness } from "./providers/BusinessProvider"
 import { getCurrentBusiness } from "@/lib/business/getCurrentBusiness"
 
 const Footer = async () => {
-  const { business } = await getCurrentBusiness()
+  const { business, settings } = await getCurrentBusiness()
 
   return (
     <footer
@@ -27,7 +27,7 @@ const Footer = async () => {
             </h2>
 
             <p className="mt-3 max-w-sm text-sm text-muted-foreground">
-              {business?.description || "Vi erbjuder professionella tjänster för att möta dina behov. Boka en tid idag och upplev skillnaden!"}
+              {settings?.hero_description || "Vi erbjuder professionella tjänster för att möta dina behov. Boka en tid idag och upplev skillnaden!"}
             </p>
           </div>
 

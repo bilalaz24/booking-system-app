@@ -4,7 +4,6 @@ export interface Business {
   phone: string
   email: string
   domain: string,
-  description: string,
   slug: string,
   address: string,
   city: string,
@@ -42,6 +41,16 @@ export interface Service {
   is_active: boolean,
   business_id: string,
   business_user_id: string
+}
+
+export interface Message {
+  id: string,
+  created_at: string,
+  name: string,
+  email: string,
+  subject: string,
+  message: string,
+  business_id: string,
 }
 
 export interface Booking {
