@@ -1,15 +1,9 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Controller, useForm, useFieldArray } from "react-hook-form"
+import { Controller, useForm } from "react-hook-form"
 
 import { Button } from "@/components/ui/button"
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 
@@ -22,12 +16,11 @@ import {
 } from "@/components/ui/select"
 
 import { createClient } from "@/lib/supabase/client"
-import { useBusiness } from "../providers/BusinessProvider"
+import { useStaffUser } from "../providers/StaffUserProvider"
 import { AvailableSlots } from "@/lib/types"
 import { updateOpeningHours } from "@/lib/actions/staffOpeningHours"
 import { toast } from "sonner"
 import Loader from "../Loader"
-import { useStaffUser } from "../providers/StaffUserProvider"
 
 const DAY_NAMES = [
   "Måndag",
@@ -63,16 +56,13 @@ export default function OpeningHours() {
 
   const [loading, setLoading] = useState(true)
 
-  const { control, handleSubmit, reset, formState: { isSubmitting }, } =
-    useForm<OpeningHoursFormValues>({
-      defaultValues: {
-        days: [],
-      },
-    })
-
-  const { fields } = useFieldArray({
+  const {
     control,
-    name: "days",
+    handleSubmit,
+    reset,
+    formState: { isSubmitting },
+  } = useForm<OpeningHoursFormValues>({
+    defaultValues: { days: [] },
   })
 
   const fetchOpeningHours = async () => {
@@ -92,14 +82,10 @@ export default function OpeningHours() {
     }
 
     const slotsByDay = new Map(
-      data.map((slot: AvailableSlots) => [
-        slot.day_of_week,
-        slot,
-      ])
+      data.map((slot: AvailableSlots) => [slot.day_of_week, slot])
     )
 
-    const formatTime = (time: string) =>
-      time.slice(0, 5)
+    const formatTime = (time: string) => time.slice(0, 5)
 
     const formattedDays = DAY_NAMES.map((_, index) => {
       const slot = slotsByDay.get(index)
@@ -125,16 +111,10 @@ export default function OpeningHours() {
   }, [user?.business_id])
 
   const onSubmit = async (data: OpeningHoursFormValues) => {
-    console.log("submit:", data)
     const result = await updateOpeningHours(data)
 
-    if (result?.success) {
-        toast.success("Öppettider updaterades")
-    }
-
-    if (result?.error) {
-        toast.error(result.error)
-    }
+    if (result?.success) toast.success("Öppettider uppdaterade")
+    if (result?.error) toast.error(result.error)
   }
 
   if (loading) {
@@ -146,8 +126,9 @@ export default function OpeningHours() {
   }
 
   return (
-    <div className="max-w-3xl space-y-6">
+    <div className="max-w-3xl space-y-8">
 
+      {/* HEADER */}
       <div>
         <h1 className="text-2xl font-semibold">
           Redigera öppettider
@@ -157,143 +138,121 @@ export default function OpeningHours() {
         </p>
       </div>
 
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="space-y-6"
-      >
-        <Card>
-          <CardHeader>
-            <CardTitle>
-              Öppettider
-            </CardTitle>
-          </CardHeader>
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
 
-          <CardContent className="space-y-3">
+        {/* LIST */}
+        <div className="rounded-lg border divide-y">
+          {DAY_NAMES.map((day, index) => (
+            <Controller
+              key={index}
+              name={`days.${index}`}
+              control={control}
+              render={({ field }) => {
+                const isOpen = field.value.open
 
-            {fields.map((field, index) => (
-              <div
-                key={field.id}
-                className="rounded-xl border bg-card p-4"
-              >
+                return (
+                  <div className="p-4 space-y-3">
 
-                {/* OPEN STATE CONTROL */}
-                <Controller
-                  name={`days.${index}.open`}
-                  control={control}
-                  render={({ field: openField }) => {
-                    const isOpen = openField.value
+                    {/* ROW HEADER */}
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h3 className="font-medium">{day}</h3>
 
-                    return (
-                      <>
-                        {/* Header */}
-                        <div className="flex items-center justify-between">
+                        <p className="text-sm text-muted-foreground">
+                          {isOpen
+                            ? `${field.value.startTime} - ${field.value.endTime}`
+                            : "Stängt"}
+                        </p>
+                      </div>
 
-                          <div>
-                            <h3 className="font-medium">
-                              {DAY_NAMES[field.dayOfWeek]}
-                            </h3>
+                      <Switch
+                        checked={isOpen}
+                        onCheckedChange={(val) =>
+                          field.onChange({
+                            ...field.value,
+                            open: val,
+                          })
+                        }
+                      />
+                    </div>
 
-                            <p className="text-sm text-muted-foreground">
-                              {isOpen
-                                ? `${field.startTime} - ${field.endTime}`
-                                : "Stängt"}
-                            </p>
-                          </div>
+                    {/* CONTENT */}
+                    {isOpen ? (
+                      <div className="grid grid-cols-2 gap-4">
+                        <Controller
+                          name={`days.${index}.startTime`}
+                          control={control}
+                          render={({ field }) => (
+                            <div className="space-y-2">
+                              <Label>Öppnar</Label>
+                              <Select
+                                value={field.value}
+                                onValueChange={field.onChange}
+                              >
+                                <SelectTrigger>
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {TIMES.map((time) => (
+                                    <SelectItem key={time} value={time}>
+                                      {time}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          )}
+                        />
 
-                          <Switch
-                            checked={isOpen}
-                            onCheckedChange={openField.onChange}
-                          />
-                        </div>
+                        <Controller
+                          name={`days.${index}.endTime`}
+                          control={control}
+                          render={({ field }) => (
+                            <div className="space-y-2">
+                              <Label>Stänger</Label>
+                              <Select
+                                value={field.value}
+                                onValueChange={field.onChange}
+                              >
+                                <SelectTrigger>
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {TIMES.map((time) => (
+                                    <SelectItem key={time} value={time}>
+                                      {time}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          )}
+                        />
+                      </div>
+                    ) : (
+                      <div className="text-sm text-muted-foreground">
+                        Stängt denna dag
+                      </div>
+                    )}
+                  </div>
+                )
+              }}
+            />
+          ))}
+        </div>
 
-                        {/* OPEN TIMES */}
-                        {isOpen ? (
-                          <div className="mt-4 grid grid-cols-2 gap-4">
+        {/* SAVE */}
+        <Button type="submit" disabled={isSubmitting}>
+          {isSubmitting ? (
+            <div className="flex items-center gap-x-2">
+              <Loader />
+              <span>Sparar...</span>
+            </div>
+          ) : (
+            "Spara ändringar"
+          )}
+        </Button>
 
-                            <Controller
-                              name={`days.${index}.startTime`}
-                              control={control}
-                              render={({ field }) => (
-                                <div className="space-y-2">
-                                  <Label>Öppnar</Label>
-                                  <Select
-                                    value={field.value}
-                                    onValueChange={field.onChange}
-                                  >
-                                    <SelectTrigger>
-                                      <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                      {TIMES.map((time) => (
-                                        <SelectItem
-                                          key={time}
-                                          value={time}
-                                        >
-                                          {time}
-                                        </SelectItem>
-                                      ))}
-                                    </SelectContent>
-                                  </Select>
-                                </div>
-                              )}
-                            />
-
-                            <Controller
-                              name={`days.${index}.endTime`}
-                              control={control}
-                              render={({ field }) => (
-                                <div className="space-y-2">
-                                  <Label>Stänger</Label>
-                                  <Select
-                                    value={field.value}
-                                    onValueChange={field.onChange}
-                                  >
-                                    <SelectTrigger>
-                                      <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                      {TIMES.map((time) => (
-                                        <SelectItem
-                                          key={time}
-                                          value={time}
-                                        >
-                                          {time}
-                                        </SelectItem>
-                                      ))}
-                                    </SelectContent>
-                                  </Select>
-                                </div>
-                              )}
-                            />
-
-                          </div>
-                        ) : (
-                          <div className="mt-4 rounded-lg bg-muted p-3">
-                            <p className="text-sm text-muted-foreground">
-                              Företaget är stängt denna dag.
-                            </p>
-                          </div>
-                        )}
-                      </>
-                    )
-                  }}
-                />
-              </div>
-            ))}
-
-          </CardContent>
-        </Card>
-
-      <Button type="submit" disabled={isSubmitting}>
-        {isSubmitting ? (
-          <div className="flex items-center gap-x-2">
-            <Loader />
-            <span>Sparar...</span>
-          </div>
-        ) : (
-          "Spara ändringar"
-        )}
-      </Button>
       </form>
     </div>
   )

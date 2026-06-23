@@ -1,6 +1,6 @@
-/*"use client"
+"use client"
 
-import React from "react"
+import React, { useEffect } from "react"
 import { Controller, useFieldArray, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 
@@ -8,270 +8,163 @@ import { Card, CardContent, CardHeader, CardTitle } from "../ui/card"
 import { Input } from "../ui/input"
 import { Textarea } from "../ui/textarea"
 import { Button } from "../ui/button"
-import {
-  Field,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-} from "../ui/field"
+import { Field, FieldError, FieldLabel } from "../ui/field"
 
 import Loader from "../Loader"
 import { toast } from "sonner"
-import { aboutSchema } from "@/app/schemas/about_page"
-
 import { Plus, Trash2 } from "lucide-react"
 
-// import these when you create them
-// import { aboutSchema, AboutFormValues } from "@/app/schemas/about"
-// import { updateAboutPage } from "@/lib/actions/staffAbout"
-
-type AboutFormValues = {
-  hero_description: string
-  story_content: string
-
-  services: {
-    title: string
-    description: string
-  }[]
-
-  why_us: string[]
-
-  cta_title: string
-  cta_description: string
-}
+import { aboutSchema, AboutFormValues } from "@/app/schemas/about_page"
+import { createClient } from "@/lib/supabase/client"
 
 const SettingsAbout = () => {
+  const supabase = createClient()
+
   const {
     control,
     handleSubmit,
-    formState: {
-      errors,
-      isSubmitting,
-    },
+    reset,
+    formState: { errors, isSubmitting },
   } = useForm<AboutFormValues>({
     resolver: zodResolver(aboutSchema),
-
     defaultValues: {
       hero_description: "",
-
       story_content: "",
-
-      services: [
-        {
-          title: "",
-          description: "",
-        },
-      ],
-
-      why_us: [""],
-
+      services: [{ title: "", description: "" }],
+      why_us: [{ text: "" }],
       cta_title: "",
       cta_description: "",
     },
   })
 
-  const {
-    fields: serviceFields,
-    append: appendService,
-    remove: removeService,
-  } = useFieldArray({
-    control,
-    name: "services",
-  })
+  const { fields: serviceFields, append: appendService, remove: removeService } =
+    useFieldArray({ control, name: "services" })
 
-  const {
-    fields: whyUsFields,
-    append: appendWhyUs,
-    remove: removeWhyUs,
-  } = useFieldArray({
-    control,
-    name: "why_us",
-  })
+  const { fields: whyUsFields, append: appendWhyUs, remove: removeWhyUs } =
+    useFieldArray({ control, name: "why_us" })
 
-  const onSubmit = async (
-    data: AboutFormValues
-  ) => {
+  const fetchAbout = async () => {
+    const { data } = await supabase.from("about_page").select("*").single()
+    if (!data) return
+
+    reset({
+      hero_description: data.hero_description ?? "",
+      story_content: data.story_content ?? "",
+      services: data.services ?? [],
+      why_us: (data.why_us ?? []).map((t: string) => ({ text: t })),
+      cta_title: data.cta_title ?? "",
+      cta_description: data.cta_description ?? "",
+    })
+  }
+
+  useEffect(() => {
+    fetchAbout()
+  }, [])
+
+  const onSubmit = async (data: AboutFormValues) => {
     console.log(data)
-
-    // const result =
-    //   await updateAboutPage(data)
-
-    toast.success(
-      "Om oss-sidan sparades"
-    )
+    toast.success("Sparat")
   }
 
   return (
     <div className="max-w-4xl space-y-6">
 
+      {/* HEADER */}
       <div>
-        <h1 className="text-2xl font-semibold">
-          Redigera Om oss
-        </h1>
-
+        <h1 className="text-2xl font-semibold">Om oss</h1>
         <p className="text-sm text-muted-foreground">
-          Hantera innehållet på
-          er Om oss-sida
+          Redigera innehållet på sidan
         </p>
       </div>
 
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="space-y-6"
-      >
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
 
-
+        {/* HERO */}
         <Card>
           <CardHeader>
-            <CardTitle>
-              Hero-sektion
-            </CardTitle>
+            <CardTitle>Hero</CardTitle>
           </CardHeader>
 
           <CardContent>
-            <FieldGroup>
-              <Controller
-                name="hero_description"
-                control={control}
-                render={({ field }) => (
-                  <Field>
-                    <FieldLabel>
-                      Kort beskrivning
-                    </FieldLabel>
-
-                    <Textarea
-                      className="min-h-[120px]"
-                      placeholder="Beskriv verksamheten..."
-                      {...field}
-                    />
-
-                    {errors.hero_description && (
-                      <FieldError
-                        errors={[
-                          errors.hero_description,
-                        ]}
-                      />
-                    )}
-                  </Field>
-                )}
-              />
-            </FieldGroup>
+            <Controller
+              name="hero_description"
+              control={control}
+              render={({ field }) => (
+                <Field>
+                  <FieldLabel>Beskrivning</FieldLabel>
+                  <Textarea {...field} />
+                  <FieldError errors={[errors.hero_description]} />
+                </Field>
+              )}
+            />
           </CardContent>
         </Card>
 
-
-
+        {/* STORY */}
         <Card>
           <CardHeader>
-            <CardTitle>
-              Vår historia
-            </CardTitle>
+            <CardTitle>Vår historia</CardTitle>
           </CardHeader>
 
           <CardContent>
-            <FieldGroup>
-              <Controller
-                name="story_content"
-                control={control}
-                render={({ field }) => (
-                  <Field>
-                    <FieldLabel>
-                      Historiatext
-                    </FieldLabel>
-
-                    <Textarea
-                      className="min-h-[220px]"
-                      placeholder="Berätta er historia..."
-                      {...field}
-                    />
-
-                    {errors.story_content && (
-                      <FieldError
-                        errors={[
-                          errors.story_content,
-                        ]}
-                      />
-                    )}
-                  </Field>
-                )}
-              />
-            </FieldGroup>
+            <Controller
+              name="story_content"
+              control={control}
+              render={({ field }) => (
+                <Field>
+                  <FieldLabel>Text</FieldLabel>
+                  <Textarea className="min-h-[180px]" {...field} />
+                  <FieldError errors={[errors.story_content]} />
+                </Field>
+              )}
+            />
           </CardContent>
         </Card>
 
-
+        {/* SERVICES */}
         <Card>
           <CardHeader>
-            <CardTitle>
-              Vad vi erbjuder
-            </CardTitle>
+            <CardTitle>Vad vi erbjuder</CardTitle>
           </CardHeader>
 
           <CardContent className="space-y-4">
-            {serviceFields.map(
-              (service, index) => (
-                <Card key={service.id}>
-                  <CardContent className="pt-6 space-y-4">
-                    <Controller
-                      control={control}
-                      name={`services.${index}.title`}
-                      render={({ field }) => (
-                        <Field>
-                          <FieldLabel>
-                            Titel
-                          </FieldLabel>
+            {serviceFields.map((service, index) => (
+              <div key={service.id} className="space-y-3 border rounded-md p-4">
+                <div className="flex gap-2">
+                  <Controller
+                    control={control}
+                    name={`services.${index}.title`}
+                    render={({ field }) => (
+                      <Input {...field} />
+                    )}
+                  />
 
-                          <Input
-                            placeholder="T.ex. Herrklippning"
-                            {...field}
-                          />
-                        </Field>
-                      )}
-                    />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    className="text-destructive hover:text-destructive/80"
+                    onClick={() => removeService(index)}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
 
-                    <Controller
-                      control={control}
-                      name={`services.${index}.description`}
-                      render={({ field }) => (
-                        <Field>
-                          <FieldLabel>
-                            Beskrivning
-                          </FieldLabel>
-
-                          <Textarea
-                            className="min-h-[100px]"
-                            placeholder="Beskriv tjänsten..."
-                            {...field}
-                          />
-                        </Field>
-                      )}
-                    />
-
-                    <div className="flex justify-end">
-                      <Button
-                        type="button"
-                        variant="outline"
-                        onClick={() =>
-                          removeService(index)
-                        }
-                      >
-                        <Trash2 className="h-4 w-4 mr-2" />
-                        Ta bort
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              )
-            )}
+                <Controller
+                  control={control}
+                  name={`services.${index}.description`}
+                  render={({ field }) => (
+                    <Textarea {...field} />
+                  )}
+                />
+              </div>
+            ))}
 
             <Button
               type="button"
               variant="outline"
+              className="border-primary/30 text-primary hover:bg-primary/10"
               onClick={() =>
-                appendService({
-                  title: "",
-                  description: "",
-                })
+                appendService({ title: "", description: "" })
               }
             >
               <Plus className="h-4 w-4 mr-2" />
@@ -280,65 +173,50 @@ const SettingsAbout = () => {
           </CardContent>
         </Card>
 
-
+        {/* WHY US */}
         <Card>
           <CardHeader>
-            <CardTitle>
-              Varför välja oss
-            </CardTitle>
+            <CardTitle>Varför välja oss</CardTitle>
           </CardHeader>
 
-          <CardContent className="space-y-4">
-            {whyUsFields.map(
-              (field, index) => (
-                <div
-                  key={field.id}
-                  className="flex gap-2"
-                >
-                  <Controller
-                    control={control}
-                    name={`why_us.${index}`}
-                    render={({ field }) => (
-                      <Input
-                        placeholder="Anledning"
-                        {...field}
-                      />
-                    )}
-                  />
+          <CardContent className="space-y-3">
+            {whyUsFields.map((field, index) => (
+              <div key={field.id} className="flex gap-2">
+                <Controller
+                  control={control}
+                  name={`why_us.${index}.text`}
+                  render={({ field }) => (
+                    <Input className="flex-1" {...field} />
+                  )}
+                />
 
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="icon"
-                    onClick={() =>
-                      removeWhyUs(index)
-                    }
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-              )
-            )}
+                <Button
+                  type="button"
+                  variant="ghost"
+                  className="text-destructive hover:text-destructive/80"
+                  onClick={() => removeWhyUs(index)}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
+            ))}
 
             <Button
               type="button"
               variant="outline"
-              onClick={() =>
-                appendWhyUs({ title: "", description: "" })
-              }
+              className="border-primary/30 text-primary hover:bg-primary/10"
+              onClick={() => appendWhyUs({ text: "" })}
             >
               <Plus className="h-4 w-4 mr-2" />
-              Lägg till anledning
+              Lägg till
             </Button>
           </CardContent>
         </Card>
 
-
+        {/* CTA */}
         <Card>
           <CardHeader>
-            <CardTitle>
-              Call To Action
-            </CardTitle>
+            <CardTitle>Call to Action</CardTitle>
           </CardHeader>
 
           <CardContent className="space-y-4">
@@ -346,16 +224,7 @@ const SettingsAbout = () => {
               name="cta_title"
               control={control}
               render={({ field }) => (
-                <Field>
-                  <FieldLabel>
-                    CTA-rubrik
-                  </FieldLabel>
-
-                  <Input
-                    placeholder="Redo att boka?"
-                    {...field}
-                  />
-                </Field>
+                <Input {...field} />
               )}
             />
 
@@ -363,49 +232,27 @@ const SettingsAbout = () => {
               name="cta_description"
               control={control}
               render={({ field }) => (
-                <Field>
-                  <FieldLabel>
-                    CTA-beskrivning
-                  </FieldLabel>
-
-                  <Textarea
-                    className="min-h-[100px]"
-                    placeholder="Beskriv CTA..."
-                    {...field}
-                  />
-                </Field>
+                <Textarea {...field} />
               )}
             />
           </CardContent>
         </Card>
 
-
-        <Button
-          type="submit"
-          disabled={isSubmitting}
-          className="w-full sm:w-auto"
-        >
+        {/* SAVE */}
+        <Button type="submit" disabled={isSubmitting}>
           {isSubmitting ? (
             <div className="flex items-center gap-2">
               <Loader />
-              <span>Sparar...</span>
+              Sparar...
             </div>
           ) : (
             "Spara ändringar"
           )}
         </Button>
+
       </form>
     </div>
   )
-}
-
-export default SettingsAbout*/
-import React from 'react'
-
-const SettingsAbout = () => {
-    return (
-        <div>SettingsAbout</div>
-    )
 }
 
 export default SettingsAbout

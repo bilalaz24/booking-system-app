@@ -13,7 +13,9 @@ export const aboutSchema = z.object({
   ),
 
   why_us: z.array(
-    z.string().min(1)
+    z.object({
+      text: z.string().min(1),
+    })
   ),
 
   cta_title: z.string().optional(),
