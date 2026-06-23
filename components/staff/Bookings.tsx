@@ -14,36 +14,50 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectVa
 import Loader from '../Loader'
 import type { Service, Booking } from '@/lib/types'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs'
+import { BusinessUser } from '@/lib/types'
 
-/*
-interface Service {
-  id: string,
-  created_at: string,
-  name: string,
-  description: string,
-  price: number,
-  duration_min: number,
-  business_id: string,
-  business_user_id: string
+export async function fetchBookings(user: BusinessUser, today: string) {
+  const supabase = createClient()
+
+  const fetchToday = supabase
+    .from("bookings")
+    .select("*, service:service_id(*)")
+    .eq("business_id", user.business_id)
+    .eq("date", today)
+    .in("status", ["confirmed", "pending"])
+    .order("start_time", { ascending: true })
+
+  const fetchFuture = supabase
+    .from("bookings")
+    .select("*, service:service_id(*)")
+    .eq("business_id", user.business_id)
+    .gt("date", today)
+    .in("status", ["confirmed", "pending"])
+    .order("date", { ascending: true })
+    .order("start_time", { ascending: true })
+
+  const fetchPassed = supabase
+    .from("bookings")
+    .select("*, service:service_id(*)")
+    .eq("business_id", user.business_id)
+    .or(
+      `date.lt.${today},and(date.eq.${today},end_time.lt.${new Date().toTimeString().slice(0,8)})`
+    )
+    .order("date", { ascending: false })
+    .order("start_time", { ascending: false })
+
+  const [todayRes, futureRes, passedRes] = await Promise.all([
+    fetchToday,
+    fetchFuture,
+    fetchPassed
+  ])
+
+  return {
+    today: todayRes.data ?? [],
+    future: futureRes.data ?? [],
+    passed: passedRes.data ?? []
+  }
 }
-
-interface Booking {
-  id: string,
-  business_id: string,
-  business_user_id: string | null,
-  created_at: string,
-  customer_email: string | null,
-  customer_name: string,
-  customer_phone: string,
-  date: string,
-  notes: string | null,
-  service_id: string,
-  start_time: string,
-  end_time: string,
-  status: string
-
-  service: Service
-}*/
 
 export function isBookingPast(date: string, time: string) {
   const [y, m, d] = date.split("-");
@@ -113,6 +127,7 @@ const Bookings = ({ page }: { page: string }) => {
     setEndHour(Number(data.end_time.split(":")[0]))
   }
 
+  /*
   const fetchToday = async () => {
     const { data, error } = await supabase
       .from("bookings")
@@ -164,6 +179,14 @@ const Bookings = ({ page }: { page: string }) => {
 
     console.log(data)
     setPassedBookings(data ?? [])
+  }*/
+
+  const fetchAll = async () => {
+    const { today: todaysBookings, future, passed } = await fetchBookings(user, today)
+
+    setTodayBookings(todayBookings)
+    setFutureBookings(future)
+    setPassedBookings(passed)
   }
 
   /*
@@ -222,7 +245,7 @@ const Bookings = ({ page }: { page: string }) => {
     //console.log(nextBooking)
 
     if (!nextBooking) {
-      setTimeUntil("No upcoming bookings");
+      setTimeUntil("Inga tider");
       return;
     }
 
@@ -289,7 +312,8 @@ const Bookings = ({ page }: { page: string }) => {
     
     const init = async () => {
       setLoading(true)
-      await Promise.all([fetchToday(), fetchFuture(), fetchPassed(), fetchHours()])
+      //await Promise.all([fetchAll(), fetchToday(), fetchFuture(), fetchPassed(), fetchHours()])
+      await Promise.all([fetchAll(), fetchHours()])
       //fetchAllBookings()
       setLoading(false)
     }

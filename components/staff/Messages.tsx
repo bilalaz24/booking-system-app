@@ -76,10 +76,9 @@ const Messages = () => {
       `Hej,\n\nTack för ditt meddelande.\n\n`
     )
 
-    // Gmail fallback (works everywhere)
-    const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${email}&su=${encodedSubject}&body=${encodedBody}`
+    const mailto = `mailto:${email}?subject=${encodedSubject}&body=${encodedBody}`
 
-    window.open(gmailUrl, "_blank")
+    window.location.href = mailto
   }
 
   if (loading) {

@@ -5,6 +5,7 @@ import { getCurrentBusiness } from "@/lib/business/getCurrentBusiness"
 
 const Footer = async () => {
   const { business, settings } = await getCurrentBusiness()
+  const PLATFORM = "RiseDigital"
 
   return (
     <footer
@@ -141,7 +142,7 @@ const Footer = async () => {
           </p>
 
           <p className="text-xs opacity-60">
-            Powered by your booking platform
+            Powered by {PLATFORM}
           </p>
         </div>
 

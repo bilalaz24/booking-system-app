@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils"
 import { Button } from "../ui/button"
 
 import {
+  BarChart3,
   Building2,
   Calendar,
   ChevronDown,
@@ -112,6 +113,15 @@ function SidebarLinks({
           Bokningar
         </Link>
 
+        <Link
+          href={routes.staffStats}
+          className={linkClass(routes.staffStats)}
+          onClick={onNavigate}
+        >
+          <BarChart3 className="h-4 w-4" />
+          Statistik
+        </Link>
+
         {/* SETTINGS */}
         <button
           onClick={() => setSettingsOpen(!settingsOpen)}
@@ -196,7 +206,7 @@ function SidebarLinks({
       </nav>
 
       {/* LOGOUT */}
-      <div className="mt-auto pt-6">
+      <div className="mt-auto mb-4 pt-6">
         <Button
           variant="outline"
           onClick={logout}

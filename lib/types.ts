@@ -31,6 +31,16 @@ export interface BusinessSettings {
   created_at: string
 }
 
+export interface BusinessUser {
+  id: string
+  business_id: string
+  name: string
+  email: string
+  role: string
+  auth_user_id: string
+  created_at: string
+}
+
 export interface Service {
   id: string,
   created_at: string,
