@@ -84,7 +84,6 @@ const Stats = ({
     }
   }, [todayBookings, futureBookings, passedBookings])
 
-  // 🔥 FIXED HOURLY DATA (this was your issue)
   const hourlyData = useMemo(() => {
     const hours = Array.from({ length: 24 }, (_, i) => ({
       hour: i,
@@ -128,7 +127,7 @@ const Stats = ({
         : "text-foreground"
 
     return (
-      <Card className="border-muted/50 bg-muted/10">
+      <Card className="border-muted/50 bg-card">
         <CardContent className="p-6">
           <div className="flex justify-between items-start">
             <div>
@@ -188,7 +187,6 @@ const Stats = ({
         />
       </div>
 
-      {/* 🔥 HOURLY CHART (FIXED + SHADCN STYLE) */}
       <Card className="border-muted/50">
         <CardContent className="p-6">
           <p className="text-sm text-muted-foreground">

@@ -55,9 +55,12 @@ export default async function RootLayout({
       className={`${oswald.variable} ${arimo.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-background text-foreground font-body">
+        <div className="glow-layer" />
         <BusinessProvider value={{business: businessData.business, settings: businessData.settings}}>
-          {/*<main>className="max-w-7xl flex-1 mx-auto w-full px-2 py-8 md:px-6 lg:px-8"*/}
+          <div className="app-layer">
             {children}
+          </div>
+          {/*<main>className="max-w-7xl flex-1 mx-auto w-full px-2 py-8 md:px-6 lg:px-8"*/}
           {/*</main>*/}
           <Toaster closeButton />
         </BusinessProvider>

@@ -113,21 +113,27 @@
       transform 160ms ease;
   }
 
-  body {
-    @apply bg-background text-foreground;
+  .glow-layer {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
 
-    min-height: 100vh;
-
-    /* THIS is what gives depth (not flat anymore) */
-    background-image:
+    background:
       radial-gradient(circle at top right,
-        rgba(255, 106, 0, 0.20),
-        transparent 35%
+        rgba(255, 106, 0, 0.18),
+        transparent 45%
       ),
       radial-gradient(circle at bottom left,
         rgba(255, 140, 42, 0.10),
-        transparent 40%
+        transparent 50%
       );
+
+    z-index: 0;
+  }
+
+  .app-layer {
+    position: relative;
+    z-index: 1;
   }
 
   h1, h2, h3, h4, h5, h6 {

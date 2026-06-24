@@ -93,8 +93,15 @@ const Bookings = ({ page }: { page: string }) => {
   const [endHour, setEndHour] = useState<number | null>(null)
 
   const [timeUntil, setTimeUntil] = useState("")
-  const [dropIn, setDropIn] = useState<number>()
-  const [dropInStyles, setDropInStyles] = useState("")
+  const [dropIn, setDropIn] = useState<30 | 60 | 0>()
+  console.log(dropIn)
+  const dropInStyles =
+    dropIn === 30
+      ? "border-red-500 border-2"
+      : dropIn === 60
+        ? "border-yellow-500 border-2"
+        : "border-green-500 border-2"
+  //const [dropInStyles, setDropInStyles] = useState("")
 
   const [statusMap, setStatusMap] = useState<Record<string, string>>({})
   const debounceRefs = useRef<Record<string, NodeJS.Timeout>>({})
@@ -247,6 +254,7 @@ const Bookings = ({ page }: { page: string }) => {
 
     if (!nextBooking) {
       setTimeUntil("Inga tider");
+      setDropIn(0)
       return;
     }
 
@@ -254,12 +262,12 @@ const Bookings = ({ page }: { page: string }) => {
 
     const minutesUntil = Math.floor(diff / (1000 * 60));
 
-    if (minutesUntil < 60) {
-      setDropIn(60)
-    }
-
     if (minutesUntil < 30) {
       setDropIn(30)
+    } else if (minutesUntil < 60) {
+      setDropIn(60)
+    } else {
+      setDropIn(0)
     }
 
     const hours = Math.floor(diff / (1000 * 60 * 60));
@@ -273,11 +281,12 @@ const Bookings = ({ page }: { page: string }) => {
     setTimeUntil(
       `${hours}h ${minutes}m`
     );
+    /*
     setDropInStyles(dropIn === 30
     ? "border-red-500 bg-red-500/10"
     : dropIn === 60
       ? "border-yellow-500 bg-yellow-500/10"
-      : "border-green-500 bg-green-500/10")
+      : "border-green-500 bg-green-500/10")*/
   };
   
   useEffect(() => {
@@ -397,7 +406,7 @@ const Bookings = ({ page }: { page: string }) => {
               </Card>
 
               {/* DROP IN */}
-              <Card className={dropInStyles}>
+              <Card className={`transition-all duration-300 ${dropInStyles}`}>
                 <CardContent className="p-6">
 
                   <p className="text-sm text-muted-foreground">
@@ -497,8 +506,8 @@ const Bookings = ({ page }: { page: string }) => {
                               transition-colors
                               ${
                                 isNext
-                                  ? "border-primary/40 bg-primary/5"
-                                  : ""
+                                  ? "border-primary/40 bg-card"
+                                  : "bg-card"
                               }
                             `}
                           >
@@ -578,8 +587,8 @@ const Bookings = ({ page }: { page: string }) => {
                               rounded-xl border px-4 py-3
                               ${
                                 isBooked
-                                  ? "border-primary/20 bg-primary/5"
-                                  : "bg-muted/30"
+                                  ? "border-primary/20 bg-card"
+                                  : "bg-card"
                               }
                             `}
                           >
@@ -840,7 +849,7 @@ const Bookings = ({ page }: { page: string }) => {
                       return (
                         <Card
                           key={booking.id}
-                          className="transition-colors hover:bg-muted/30"
+                          className="transition-colors hover:bg-card"
                         >
                           <CardContent className="p-4">
                             <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">

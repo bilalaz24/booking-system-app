@@ -1,7 +1,7 @@
 "use client"
 
 import { Button } from "../ui/button"
-import { useState } from "react"
+import { useState, useMemo } from "react"
 
 interface SlotsProps {
   slots: string[]
@@ -20,13 +20,29 @@ const AvailableSlots = ({ slots, selectedDate, onSelectSlot }: SlotsProps) => {
     onSelectSlot(selectedSlot)
   }
 
+  const filteredSlots = useMemo(() => {
+    if (!selectedDate) return []
+
+    const nowPlus1Hour = new Date()
+    nowPlus1Hour.setHours(nowPlus1Hour.getHours() + 1)
+
+    return slots.filter((slot) => {
+      const [h, m] = slot.split(":").map(Number)
+
+      const slotTime = new Date(selectedDate)
+      slotTime.setHours(h, m, 0, 0)
+
+      return slotTime >= nowPlus1Hour
+    })
+  }, [slots, selectedDate])
+
   return (
     <div className="flex-1 flex flex-col items-center px-3 gap-6">
       {/* Slots */}
       <div className="w-full max-w-md">
-        {slots.length > 0 ? (
+        {filteredSlots.length > 0 ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-            {slots.map((slot) => {
+            {filteredSlots.map((slot) => {
               const isSelected = selectedSlot === slot
 
               return (
@@ -49,7 +65,7 @@ const AvailableSlots = ({ slots, selectedDate, onSelectSlot }: SlotsProps) => {
             })}
           </div>
         ) : (
-          <p className="text-muted-foreground">Stängt</p>
+          <p className="text-muted-foreground">Inga tillgängliga tider</p>
         )}
       </div>
 

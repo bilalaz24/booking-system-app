@@ -16,6 +16,7 @@ import { Plus, Trash2 } from "lucide-react"
 
 import { aboutSchema, AboutFormValues } from "@/app/schemas/about_page"
 import { createClient } from "@/lib/supabase/client"
+import { updateAboutPage } from "@/lib/actions/staffAbout"
 
 const SettingsAbout = () => {
   const supabase = createClient()
@@ -63,7 +64,15 @@ const SettingsAbout = () => {
 
   const onSubmit = async (data: AboutFormValues) => {
     console.log(data)
-    toast.success("Sparat")
+    const result = await updateAboutPage(data)
+
+    if (result?.success) {
+        toast.success("Om oss sida updaterades")
+    }
+
+    if (result?.error) {
+        toast.error(result.error)
+    }
   }
 
   return (
