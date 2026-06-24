@@ -189,6 +189,15 @@ const Bookings = ({ page }: { page: string }) => {
     setPassedBookings(passed)
   }
 
+  const fetchAll = async () => {
+    const { today: todaysBookings, future, passed } =
+      await fetchBookings(user, today)
+
+    setTodayBookings(todaysBookings)
+    setFutureBookings(future)
+    setPassedBookings(passed)
+  }
+
   /*
   const cleanUp = async () => {
     const lastRun = localStorage.getItem("cleanup_last_run")
