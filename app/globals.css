@@ -40,7 +40,6 @@
   --color-navfoot-bg: var(--navfoot-bg);
   --color-highlight: var(--highlight);
 
-  /* Fitness brands look better with slightly sharper, punchier corners */
   --radius-sm: 4px;
   --radius-md: 8px;
   --radius-lg: 12px;
@@ -51,127 +50,183 @@
   --font-body: var(--font-body), sans-serif;
 }
 
-:root, .dark {
-  /* Clean, energetic dark mode palette (less purple/blue magic, more solid slate) */
-  --background: #0C111D;
-  --foreground: #F8FAFC;
+:root,
+.dark {
+  --background: #080d16;
+  --foreground: #f8fafc;
 
-  /* Card surfaces - crisp and solid */
-  --card: #161E2E;
-  --card-foreground: #F8FAFC;
-  --popover: #161E2E;
-  --popover-foreground: #F8FAFC;
+  --card: #131c2b;
+  --card-foreground: #f8fafc;
 
-  /* Primary Electric Blue - represents energy and movement */
-  --primary: #3B82F6;
-  --primary-foreground: #FFFFFF;
+  --popover: #182234;
+  --popover-foreground: #f8fafc;
 
-  --secondary: #223047;
-  --secondary-foreground: #94A3B8;
+  --primary: #3b82f6;
+  --primary-foreground: #ffffff;
 
-  --muted: #111827;
-  --muted-foreground: #64748B;
+  --secondary: #243248;
+  --secondary-foreground: #cbd5e1;
 
-  /* Accent High-energy Cyan for call-to-actions, stats, or metrics */
-  --accent: #0EA5E9;
-  --accent-foreground: #0C111D;
+  --muted: #101827;
+  --muted-foreground: #94a3b8;
 
-  --destructive: #EF4444;
-  --destructive-foreground: #FFFFFF;
+  --accent: #38bdf8;
+  --accent-foreground: #081018;
 
-  --border: #2D3D56;
-  --input: #1F2A3C;
-  --ring: rgba(59, 130, 246, 0.4);
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+
+  --border: rgba(255, 255, 255, 0.08);
+  --input: #182234;
+  --ring: rgba(59, 130, 246, 0.45);
 
   --radius: 12px;
-  --navfoot-bg: #090D16;
-  --highlight: #0EA5E9;
+
+  --navfoot-bg: #050912;
+  --highlight: #38bdf8;
 }
 
 @layer base {
   html {
-    /* Ensures the HTML container spans the full height and matches the dark base */
     background-color: var(--background);
     min-height: 100vh;
     scroll-behavior: smooth;
   }
-  
+
   * {
     font-family: var(--font-body), sans-serif;
+
     @apply border-border outline-ring/50;
-    transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, box-shadow;
+
+    transition-property:
+      color,
+      background-color,
+      border-color,
+      text-decoration-color,
+      fill,
+      stroke,
+      box-shadow,
+      transform;
+
     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-    transition-duration: 150ms;
+    transition-duration: 180ms;
   }
 
   body {
     @apply bg-background text-foreground;
-    /* REMOVED: Glowing blue backgrounds. Fitness layouts should feel solid, clean, and grounded. */
-    background-image: none;
+
     min-height: 100vh;
+
+    background-image:
+      radial-gradient(
+        circle at top right,
+        rgba(59, 130, 246, 0.15),
+        transparent 30%
+      ),
+      radial-gradient(
+        circle at top left,
+        rgba(56, 189, 248, 0.08),
+        transparent 35%
+      );
+
     background-attachment: fixed;
     background-repeat: no-repeat;
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     font-family: var(--font-heading), sans-serif !important;
-    
-    /* REMOVED: Text gradient (which screams gaming UI). 
-       REPLACED WITH: Solid, high-contrast, aggressive athletic white/primary colors. */
+
     background-image: none !important;
     -webkit-background-clip: initial !important;
     -webkit-text-fill-color: initial !important;
-    
-    /* Strong, bold, action-oriented typography */
-    @apply uppercase tracking-tight font-black; 
+
+    @apply uppercase tracking-tight font-black;
   }
 
   h1 {
-    color: var(--foreground); /* Big bold titles in solid white/light slate */
+    color: #ffffff;
   }
 
-  h2, h3 {
-    color: var(--primary); /* Subheadings use your primary brand color */
+  h2,
+  h3 {
+    color: #e2e8f0;
   }
 
-  h4, h5, h6 {
-    color: var(--secondary-foreground);
+  h4,
+  h5,
+  h6 {
+    color: #cbd5e1;
     @apply normal-case tracking-normal font-bold;
   }
 
-  /* Crisp athletic cards with subtle shadow rather than deep floaty gaming shadows */
-  .card, [class*="rounded-"].border {
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -2px rgba(0, 0, 0, 0.3);
-    background-color: var(--card);
+  .card,
+  [class*="rounded-"].border {
+    background:
+      linear-gradient(
+        180deg,
+        rgba(255,255,255,0.03),
+        rgba(255,255,255,0)
+      ),
+      var(--card);
+
+    border: 1px solid rgba(255,255,255,0.08);
+
+    box-shadow:
+      inset 0 1px 1px rgba(255,255,255,0.03),
+      0 12px 32px rgba(0,0,0,0.35);
   }
 
-  /* Clean, intense input fields for logging workouts/inputs */
-  input, select, textarea {
-    background-color: #111827 !important;
+  .card:hover,
+  [class*="rounded-"].border:hover {
+    border-color: rgba(59,130,246,0.25);
+
+    box-shadow:
+      inset 0 1px 1px rgba(255,255,255,0.04),
+      0 16px 40px rgba(0,0,0,0.45);
+  }
+
+  input,
+  select,
+  textarea {
+    background-color: var(--input) !important;
     border-color: var(--border) !important;
   }
-  input:focus, select:focus, textarea:focus {
+
+  input:focus,
+  select:focus,
+  textarea:focus {
     border-color: var(--primary) !important;
-    box-shadow: 0 0 0 2px var(--ring) !important;
+
+    box-shadow:
+      0 0 0 2px rgba(59,130,246,0.25),
+      0 0 20px rgba(59,130,246,0.15) !important;
   }
 
-  button:not(:disabled), [role="button"]:not(:disabled) {
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
     cursor: pointer;
-    @apply font-bold tracking-wider; /* Makes buttons look like actionable fitness triggers */
+    @apply font-bold tracking-wider;
   }
 
-  /* Smooth scrollbars */
   ::-webkit-scrollbar {
     width: 8px;
     height: 8px;
   }
+
   ::-webkit-scrollbar-track {
     background: var(--background);
   }
+
   ::-webkit-scrollbar-thumb {
     background: #334155;
     border-radius: 9999px;
   }
+
   ::-webkit-scrollbar-thumb:hover {
     background: var(--primary);
   }
