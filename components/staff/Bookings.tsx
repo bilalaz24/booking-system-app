@@ -182,14 +182,6 @@ const Bookings = ({ page }: { page: string }) => {
   }*/
 
   const fetchAll = async () => {
-    const { today: todaysBookings, future, passed } = await fetchBookings(user, today)
-
-    setTodayBookings(todayBookings)
-    setFutureBookings(future)
-    setPassedBookings(passed)
-  }
-
-  const fetchAll = async () => {
     const { today: todaysBookings, future, passed } =
       await fetchBookings(user, today)
 
