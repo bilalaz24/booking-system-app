@@ -14,7 +14,7 @@ const toTimeString = (minutes: number) => {
   return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`
 }
 
-export async function getAvailableSlots(businessId: string, date: string, service: string) {
+export async function getAvailableSlots(businessId: string, date: string, service: string | null) {
   const supabase = createAdminClient()
 
   const jsDay = new Date(date + "T00:00:00").getDay()
@@ -36,13 +36,23 @@ export async function getAvailableSlots(businessId: string, date: string, servic
         .eq("date", date),
     ])
 
-    const {data: serviceData, error} = await supabase
-      .from("services")
-      .select("*")
-      .eq("name", service)
-      .eq("business_id", businessId)
+    let serviceSelected
+    let serviceData
+
+    if (!service) {
+      serviceSelected = false
+    } else {
+      serviceSelected = true
+      const {data: serviceFetched, error} = await supabase
+        .from("services")
+        .select("*")
+        .eq("name", service)
+        .eq("business_id", businessId)
+      
+      serviceData = serviceFetched
+      console.log("SERVICE DATA", serviceData)
+    }
     
-    console.log("SERVICE DATA", serviceData)
 
   if (slotError) {
     console.error("Slot error:", slotError)

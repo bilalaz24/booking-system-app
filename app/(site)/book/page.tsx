@@ -14,7 +14,7 @@ const Book = async () => {
 
     console.log("from booking page", d)
     
-    const availableSlots: string[] = await getAvailableSlots(businessId!, d.toISOString().split("T")[0])
+    const availableSlots: string[] = await getAvailableSlots(businessId!, d.toISOString().split("T")[0], null)
 
     console.log("--------------------------")
     console.log(availableSlots)
