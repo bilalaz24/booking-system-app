@@ -1,7 +1,6 @@
 "use server"
 
 import { createAdminClient } from "@/lib/supabase/admin"
-import { Service } from "../types"
 
 const toMinutes = (time: string) => {
   const [h, m] = time.split(":").map(Number)
@@ -14,7 +13,11 @@ const toTimeString = (minutes: number) => {
   return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`
 }
 
-export async function getAvailableSlots(businessId: string, date: string, service: string | null) {
+export async function getAvailableSlots(
+  businessId: string,
+  date: string,
+  serviceId: string | null
+) {
   const supabase = createAdminClient()
 
   const jsDay = new Date(date + "T00:00:00").getDay()
@@ -36,24 +39,6 @@ export async function getAvailableSlots(businessId: string, date: string, servic
         .eq("date", date),
     ])
 
-    let serviceSelected
-    let serviceData
-
-    if (!service) {
-      serviceSelected = false
-    } else {
-      serviceSelected = true
-      const {data: serviceFetched, error} = await supabase
-        .from("services")
-        .select("*")
-        .eq("name", service)
-        .eq("business_id", businessId)
-      
-      serviceData = serviceFetched
-      console.log("SERVICE DATA", serviceData)
-    }
-    
-
   if (slotError) {
     console.error("Slot error:", slotError)
     return []
@@ -66,6 +51,21 @@ export async function getAvailableSlots(businessId: string, date: string, servic
 
   if (!slots) return []
 
+  let duration = 30
+
+  if (serviceId) {
+    const { data: serviceData, error } = await supabase
+      .from("services")
+      .select("duration_min")
+      .eq("id", serviceId)
+      .eq("business_id", businessId)
+      .single()
+
+    if (!error && serviceData?.duration_min) {
+      duration = serviceData.duration_min
+    }
+  }
+
   const workStart = toMinutes(slots.start_time)
   const workEnd = toMinutes(slots.end_time)
 
@@ -76,13 +76,13 @@ export async function getAvailableSlots(businessId: string, date: string, servic
 
   const result: string[] = []
 
-  const SLOT_DURATION = 30
+  const SLOT_STEP = 30 // keeps UI consistent
 
   let current = workStart
 
-  while (current + SLOT_DURATION <= workEnd) {
+  while (current + duration <= workEnd) {
     const slotStart = current
-    const slotEnd = current + SLOT_DURATION
+    const slotEnd = current + duration
 
     const overlaps = bookedRanges.some((b) => {
       return slotStart < b.end && slotEnd > b.start
@@ -92,7 +92,7 @@ export async function getAvailableSlots(businessId: string, date: string, servic
       result.push(toTimeString(slotStart))
     }
 
-    current += SLOT_DURATION
+    current += SLOT_STEP
   }
 
   return result

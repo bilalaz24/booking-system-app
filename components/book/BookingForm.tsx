@@ -26,23 +26,34 @@ const BookingForm = ({
   const calendarRef = useRef<HTMLDivElement | null>(null)
   const contactRef = useRef<HTMLDivElement | null>(null)
 
-  const handleServiceSelect = (serviceId: string) => {
+  // FIXED
+  const handleServiceSelect = async (serviceId: string) => {
     setSelectedService(serviceId)
 
-    // scroll to calendar
-    setTimeout(() => {
-        if (calendarRef.current) {
-        const yOffset = -80 // adjust this value
-        const y =
-            calendarRef.current.getBoundingClientRect().top +
-            window.pageYOffset +
-            yOffset
+    const date = selectedDate ?? initialDate
+    const formattedDate = date.toLocaleDateString("en-CA")
 
-        window.scrollTo({
-            top: y,
-            behavior: "smooth",
-        })
-        }
+    setLoadingSlots(true)
+
+    try {
+      const newSlots = await getAvailableSlots(
+        businessId,
+        formattedDate,
+        serviceId // IMPORTANT: use direct value, not state
+      )
+
+      setSlots(newSlots)
+    } catch (err) {
+      console.error("Kunde inte hämta tider:", err)
+    } finally {
+      setLoadingSlots(false)
+    }
+
+    setTimeout(() => {
+      calendarRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      })
     }, 100)
   }
 
@@ -55,13 +66,13 @@ const BookingForm = ({
     setSelectedSlot(null)
     setLoadingSlots(true)
 
-    try {
-      const formattedDate = date.toLocaleDateString("en-CA")
+    const formattedDate = date.toLocaleDateString("en-CA")
 
+    try {
       const newSlots = await getAvailableSlots(
-        businessId!,
+        businessId,
         formattedDate,
-        selectedService!
+        selectedService
       )
 
       setSlots(newSlots)
@@ -90,15 +101,11 @@ const BookingForm = ({
       </div>
 
       {/* CALENDAR + SLOTS */}
-      <div
-        ref={calendarRef}
-        className="w-full max-w-4xl p-6 text-center"
-      >
+      <div ref={calendarRef} className="w-full max-w-4xl p-6 text-center">
         <h2 className="text-2xl font-semibold mb-6">Välj en tid</h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
 
-          {/* CALENDAR */}
           <div className="flex justify-center">
             <AvailableDates
               selectedService={selectedService}
@@ -106,17 +113,14 @@ const BookingForm = ({
             />
           </div>
 
-          {/* SLOTS */}
           <div className="flex justify-center">
             {loadingSlots ? (
-              <p className="text-sm text-gray-500">
-                Laddar tider...
-              </p>
+              <p className="text-sm text-gray-500">Laddar tider...</p>
             ) : (
               <AvailableSlots
                 slots={slots}
                 selectedService={selectedService}
-                selectedDate={selectedDate || new Date()}
+                selectedDate={selectedDate || initialDate}
                 onSelectSlot={(slot) => {
                   handleSlotSelect(slot)
                   handleConfirmSlot()
@@ -124,20 +128,19 @@ const BookingForm = ({
               />
             )}
           </div>
+
         </div>
       </div>
 
       {/* CONTACT */}
-      <div
-        ref={contactRef}
-        className="w-full max-w-4xl"
-      >
+      <div ref={contactRef} className="w-full max-w-4xl">
         <ContactInfo
           selectedDate={selectedDate}
           selectedSlot={selectedSlot}
           selectedService={selectedService}
         />
       </div>
+
     </div>
   )
 }

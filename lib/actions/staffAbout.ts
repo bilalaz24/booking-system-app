@@ -76,18 +76,23 @@ export async function updateAboutPage(
   )
 
   // 4. Update business
-  const { error, data: updated } = await supabase
-  .from("about_page")
-  .update({
-      hero_description,
-      story_content,
-      why_us,
-      services,
-      cta_title,
-      cta_description
-    })
-    .eq("business_id", businessId)
-    .select("*")
+    const { data: updated, error } = await supabase
+      .from("about_page")
+      .upsert(
+        {
+          business_id: businessId,
+          hero_description,
+          story_content,
+          why_us,
+          services,
+          cta_title,
+          cta_description,
+        },
+        {
+          onConflict: "business_id",
+        }
+      )
+      .select();
     const { error: fetchError, data: fetch } = await supabase
       .from("about_page")
       .select("hero_description, story_content, why_us, services, cta_title, cta_description")
