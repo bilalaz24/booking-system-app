@@ -48,7 +48,7 @@ export default async function ContactPage() {
     // Increased max-w-5xl to max-w-6xl and py-20 to py-28 to open up the page width and vertical breathing room
     <main className="max-w-6xl mx-auto px-8 py-28">
       {/* Background radial glow */}
-      <div className="absolute inset-0 -z-10 bg-gradient-to-b from-background via-background to-black/5" />
+      <div className="absolute inset-0 -z-10" />
 
       {/* HERO HEADER */}
       <section className="text-center mb-24">

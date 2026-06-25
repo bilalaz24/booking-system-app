@@ -22,8 +22,6 @@ export interface AvailableSlots {
 export interface BusinessSettings {
   id: string
   business_id: string
-  primary_color: string
-  secondary_color: string
   hero_title: string,
   hero_description: string,
   instagram_url: string,

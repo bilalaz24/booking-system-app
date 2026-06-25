@@ -39,7 +39,7 @@ export default async function AboutPage() {
     <main className=" max-w-5xl mx-auto px-6 py-20">
 
       {/* background glow */}
-      <div className="absolute inset-0 -z-10 bg-gradient-to-b from-background via-background to-black/5" />
+      <div className="absolute inset-0 -z-10" />
 
       {/* HERO */}
       <section className="text-center mb-20">
