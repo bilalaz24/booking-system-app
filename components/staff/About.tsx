@@ -17,9 +17,11 @@ import { Plus, Trash2 } from "lucide-react"
 import { aboutSchema, AboutFormValues } from "@/app/schemas/about_page"
 import { createClient } from "@/lib/supabase/client"
 import { updateAboutPage } from "@/lib/actions/staffAbout"
+import { useStaffUser } from "../providers/StaffUserProvider"
 
 const SettingsAbout = () => {
   const supabase = createClient()
+  const user = useStaffUser()
 
   const {
     control,
@@ -45,7 +47,7 @@ const SettingsAbout = () => {
     useFieldArray({ control, name: "why_us" })
 
   const fetchAbout = async () => {
-    const { data } = await supabase.from("about_page").select("*").single()
+    const { data } = await supabase.from("about_page").select("*").eq("business_id", user.business_id).single()
     if (!data) return
 
     reset({
@@ -64,6 +66,9 @@ const SettingsAbout = () => {
 
   const onSubmit = async (data: AboutFormValues) => {
     console.log(data)
+    console.log("-----------------------------------------")
+    console.log("received")
+    console.log("-----------------------------------------")
     const result = await updateAboutPage(data)
 
     if (result?.success) {

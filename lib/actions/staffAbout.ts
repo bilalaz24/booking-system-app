@@ -9,6 +9,9 @@ export async function updateAboutPage(
 ) {
   const cookieStore = await cookies()
   const supabase = createClient(cookieStore)
+  console.log("-----------------------------------------")
+  console.log("received")
+  console.log("-----------------------------------------")
 
   // 1. Validate FIRST
   const parsed = aboutSchema.safeParse(data)
@@ -56,6 +59,9 @@ export async function updateAboutPage(
   }
 
   const businessId = businessUser.business_id
+  console.log("-----------------------------------------")
+  console.log(businessId)
+  console.log("-----------------------------------------")
 
   const why_us = why_us_object.map((reason) => reason.text)
 
