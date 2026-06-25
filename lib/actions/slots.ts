@@ -1,6 +1,7 @@
 "use server"
 
 import { createAdminClient } from "@/lib/supabase/admin"
+import { Service } from "../types"
 
 const toMinutes = (time: string) => {
   const [h, m] = time.split(":").map(Number)
@@ -13,7 +14,7 @@ const toTimeString = (minutes: number) => {
   return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`
 }
 
-export async function getAvailableSlots(businessId: string, date: string) {
+export async function getAvailableSlots(businessId: string, date: string, service: string) {
   const supabase = createAdminClient()
 
   const jsDay = new Date(date + "T00:00:00").getDay()
@@ -34,6 +35,14 @@ export async function getAvailableSlots(businessId: string, date: string) {
         .eq("business_id", businessId)
         .eq("date", date),
     ])
+
+    const {data: serviceData, error} = await supabase
+      .from("services")
+      .select("*")
+      .eq("name", service)
+      .eq("business_id", businessId)
+    
+    console.log("SERVICE DATA", serviceData)
 
   if (slotError) {
     console.error("Slot error:", slotError)

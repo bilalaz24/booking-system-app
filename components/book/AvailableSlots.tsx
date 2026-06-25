@@ -1,15 +1,17 @@
 "use client"
 
+import { Service } from "@/lib/types"
 import { Button } from "../ui/button"
 import { useState, useMemo } from "react"
 
 interface SlotsProps {
   slots: string[]
+  selectedService: string | null
   selectedDate: Date | null
   onSelectSlot: (slotId: string) => void
 }
 
-const AvailableSlots = ({ slots, selectedDate, onSelectSlot }: SlotsProps) => {
+const AvailableSlots = ({ selectedService, slots, selectedDate, onSelectSlot }: SlotsProps) => {
   const [selectedSlot, setSelectedSlot] = useState<string>("")
 
   const handleSelect = (slot: string) => {

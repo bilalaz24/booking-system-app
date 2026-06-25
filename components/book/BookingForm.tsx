@@ -60,7 +60,8 @@ const BookingForm = ({
 
       const newSlots = await getAvailableSlots(
         businessId!,
-        formattedDate
+        formattedDate,
+        selectedService!
       )
 
       setSlots(newSlots)
@@ -114,6 +115,7 @@ const BookingForm = ({
             ) : (
               <AvailableSlots
                 slots={slots}
+                selectedService={selectedService}
                 selectedDate={selectedDate || new Date()}
                 onSelectSlot={(slot) => {
                   handleSlotSelect(slot)
