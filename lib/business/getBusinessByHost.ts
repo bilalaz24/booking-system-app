@@ -20,7 +20,7 @@ export async function getBusinessByHost(host: string) {
 
   const subdomain =
     isLocalhost || isVercel
-      ? "trananu"
+      ? "fadestudio"
       : parts.length > 2
         ? parts[0]
         : null
