@@ -95,7 +95,7 @@ export default async function Home() {
                 <a href={`https://${settings.instagram_url}` || "*"} className="text-primary hover:underline">
                   Instagram
                 </a>
-                <a href={settings.facebook_url || "*"} className="text-primary hover:underline">
+                <a href={`https://${settings.facebook_url}` || "*"} className="text-primary hover:underline">
                   Facebook
                 </a>
               </div>
