@@ -15,27 +15,84 @@ import { ProfileFormValues } from "@/app/schemas/business"
 import Loader from "../Loader"
 import { updateBusiness } from "@/lib/actions/staffBusiness"
 import { toast } from "sonner"
+import { useStaffUser } from "../providers/StaffUserProvider"
+import { Business, BusinessSettings } from "@/lib/types"
 
 const Profile = () => {
     const supabase = createClient()
-    const {business, settings} = useBusiness()
-    const { control, handleSubmit, formState: { errors, isDirty, isSubmitting } } = useForm<ProfileFormValues>({
-        resolver: zodResolver(businessProfileSchema),
+    //const {business, settings} = useBusiness()
+    const user = useStaffUser()
+    const [business, setBusiness] = useState<Business>()
+    const [settings, setSettings] = useState<BusinessSettings>()
+
+    const fetchProfile = async () => {
+        if (!user?.business_id) return
+
+        const {
+            data: businessData,
+            error: businessError,
+        } = await supabase
+            .from("businesses")
+            .select("*")
+            .eq("id", user.business_id)
+            .single()
+
+        const {
+            data: settingsData,
+            error: settingsError,
+        } = await supabase
+            .from("business_settings")
+            .select("*")
+            .eq("business_id", user.business_id)
+            .single()
+
+        if (businessError || settingsError) {
+            console.error("Error fetching business profile")
+            return
+        }
+
+        setBusiness(businessData)
+        setSettings(settingsData)
+
+        reset({
+            name: businessData.name ?? "",
+            hero_title: settingsData.hero_title ?? "",
+            hero_description: settingsData.hero_description ?? "",
+
+            address: businessData.address ?? "",
+            city: businessData.city ?? "",
+
+            phone: businessData.phone ?? "",
+            email: businessData.email ?? "",
+
+            instagram: settingsData.instagram_url ?? "",
+            facebook: settingsData.facebook_url ?? "",
+        })
+    }
+
+    const {
+        control,
+        handleSubmit,
+        reset,
+        formState: { errors, isDirty, isSubmitting }
+    } = useForm<ProfileFormValues>({
+    resolver: zodResolver(businessProfileSchema),
         defaultValues: {
-            name: business.name,
-            hero_title: settings.hero_title,
-            hero_description: settings.hero_description,
-
-            address: business.address,
-            city: business.city,
-
-            phone: business.phone,
-            email: business.email,
-
-            instagram: settings.instagram_url,
-            facebook: settings.facebook_url,
+            name: "",
+            hero_title: "",
+            hero_description: "",
+            address: "",
+            city: "",
+            phone: "",
+            email: "",
+            instagram: "",
+            facebook: "",
         }
     })
+
+    useEffect(() => {
+        fetchProfile()
+    }, [user])
 
     const onSubmit = async (data: ProfileFormValues) => {
         console.log(data)
