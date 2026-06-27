@@ -17,7 +17,7 @@ const StatsPage = () => {
     const [passed, setPassed] = useState<Booking[]>()
 
     const loadBookings = async () => {
-        const { today: todaysBookings, future: futureBookings, passed: passedBookings } = await fetchBookings(user, today)
+        const { today: todaysBookings, future: futureBookings, passed: passedBookings } = await fetchBookings(user, today, "")
 
         if (!todaysBookings || !futureBookings || !passedBookings) {
             console.error("Error fetching bookings for stats")

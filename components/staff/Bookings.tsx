@@ -7,7 +7,7 @@ import { Item, ItemActions, ItemContent, ItemTitle } from '../ui/item'
 import { Button } from '../ui/button'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card'
-import { CalendarCheck, CalendarDays, CalendarX, CheckCircle2, Clock3, Loader2, XCircle } from 'lucide-react'
+import { CalendarCheck, CalendarDays, CalendarX, CheckCircle2, Clock3, Loader2, Search, XCircle } from 'lucide-react'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '../ui/dropdown-menu'
 import { completeBooking, missedBooking } from '@/lib/actions/staffBookings'
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
@@ -15,8 +15,9 @@ import Loader from '../Loader'
 import type { Service, Booking } from '@/lib/types'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs'
 import { BusinessUser } from '@/lib/types'
+import { Input } from '../ui/input'
 
-export async function fetchBookings(user: BusinessUser, today: string) {
+export async function fetchBookings(user: BusinessUser, today: string, search: string, dateFilter?: string, serviceId?: string) {
   const supabase = createClient()
 
   const fetchToday = supabase
@@ -36,7 +37,7 @@ export async function fetchBookings(user: BusinessUser, today: string) {
     .order("date", { ascending: true })
     .order("start_time", { ascending: true })
 
-  const fetchPassed = supabase
+  /*const fetchPassed = supabase
     .from("bookings")
     .select("*, service:service_id(*)")
     .eq("business_id", user.business_id)
@@ -44,13 +45,37 @@ export async function fetchBookings(user: BusinessUser, today: string) {
       `date.lt.${today},and(date.eq.${today},end_time.lt.${new Date().toTimeString().slice(0,8)})`
     )
     .order("date", { ascending: false })
+    .order("start_time", { ascending: false })*/
+  
+  let fetchPassed = supabase
+    .from("bookings")
+    .select("*, service:service_id(*)")
+    .eq("business_id", user.business_id)
+    .order("date", { ascending: false })
     .order("start_time", { ascending: false })
 
+  if (search.trim()) {
+    fetchPassed = fetchPassed.or(
+      `customer_name.ilike.%${search}%,customer_phone.ilike.%${search}%,customer_email.ilike.%${search}%`
+    )
+  }
+
+  // DATE FILTER
+  if (dateFilter) {
+    fetchPassed = fetchPassed.eq("date", dateFilter)
+  }
+
+  // SERVICE FILTER
+  if (serviceId) {
+    fetchPassed = fetchPassed.eq("service_id", serviceId)
+  }
+  
   const [todayRes, futureRes, passedRes] = await Promise.all([
     fetchToday,
     fetchFuture,
     fetchPassed
   ])
+  console.log("FETCHED",passedRes.data)
 
   return {
     today: todayRes.data ?? [],
@@ -94,7 +119,6 @@ const Bookings = ({ page }: { page: string }) => {
 
   const [timeUntil, setTimeUntil] = useState("")
   const [dropIn, setDropIn] = useState<30 | 60 | 0>()
-  console.log(dropIn)
   const dropInStyles =
     dropIn === 30
       ? "border-red-500 border-2"
@@ -108,6 +132,12 @@ const Bookings = ({ page }: { page: string }) => {
 
   const [loading, setLoading] = useState(false)
   const [statusLoading, setStatusLoading] = useState<Record<string, boolean>>({})
+
+  const [search, setSearch] = useState("")
+  const [dateFilter, setDateFilter] = useState<string | undefined>()
+  const [serviceFilter, setServiceFilter] = useState<string | undefined>()
+
+  const [servicesData, setServicesData] = useState<Service[]>([])
 
   const today = new Date().toISOString().split("T")[0]
   const weekday = (new Date().getDay() + 6) % 7
@@ -134,63 +164,37 @@ const Bookings = ({ page }: { page: string }) => {
     setEndHour(Number(data.end_time.split(":")[0]))
   }
 
-  /*
-  const fetchToday = async () => {
-    const { data, error } = await supabase
-      .from("bookings")
-      .select("*, service:service_id(*)")
+  const fetchServices = async () => {
+    const { data } = await supabase
+      .from("services")
+      .select("*")
       .eq("business_id", user.business_id)
-      .eq("date", today)
-      .in("status", ["confirmed", "pending"])
-      .order("start_time", { ascending: true })
+      //.eq("is_active", true)
     
-    if (error) {
-      console.error(error)
+    if (!data || !passedBookings) {
+      return
     }
+    
+    const usedServiceIds = new Set(
+      (passedBookings ?? []).map((b) => b.service?.id)
+    )
 
-    setTodayBookings(data ?? [])
+    const filtered = data.filter((s) => {
+      const hasBookings = usedServiceIds.has(s.id)
+      const isActive = s.is_active
+
+      // remove ONLY if inactive AND no bookings
+      return isActive || hasBookings
+    })
+
+    setServicesData(filtered ?? [])
   }
-
-  const fetchFuture = async () => {
-    const { data, error } = await supabase
-      .from("bookings")
-      .select("*, service:service_id(*)")
-      .eq("business_id", user.business_id)
-      .gt("date", today)
-      .in("status", ["confirmed", "pending"])
-      .order("date", { ascending: true })
-      .order("start_time", { ascending: true })
-    
-    if (error) {
-      console.error(error)
-    }
-
-    setFutureBookings(data ?? [])
-  }
-
-  const fetchPassed = async () => {
-    const { data, error } = await supabase
-      .from("bookings")
-      .select("*, service:service_id(*)")
-      .eq("business_id", user.business_id)
-      .or(
-        `date.lt.${today},and(date.eq.${today},end_time.lt.${new Date().toTimeString().slice(0,8)})`
-      )
-      //.in("status", ["confirmed", "pending"])
-      .order("date", { ascending: false })
-      .order("start_time", { ascending: false })
-    
-    if (error) {
-      console.error(error)
-    }
-
-    console.log(data)
-    setPassedBookings(data ?? [])
-  }*/
 
   const fetchAll = async () => {
     const { today: todaysBookings, future, passed } =
-      await fetchBookings(user, today)
+      await fetchBookings(user, today, search, dateFilter, serviceFilter)
+    
+    console.log("SEARCH",search)
 
     setTodayBookings(todaysBookings)
     setFutureBookings(future)
@@ -288,6 +292,16 @@ const Bookings = ({ page }: { page: string }) => {
       ? "border-yellow-500 bg-yellow-500/10"
       : "border-green-500 bg-green-500/10")*/
   };
+
+  useEffect(() => {
+    if (!user.business_id) return
+
+    const timeout = setTimeout(() => {
+      fetchAll()
+    }, 300) // debounce
+
+    return () => clearTimeout(timeout)
+  }, [search, dateFilter, serviceFilter])
   
   useEffect(() => {
 
@@ -315,6 +329,8 @@ const Bookings = ({ page }: { page: string }) => {
     console.log(initial)
     
     setStatusMap(initial)
+
+    fetchServices()
   }, [passedBookings])
 
   useEffect(() => {
@@ -830,6 +846,39 @@ const Bookings = ({ page }: { page: string }) => {
 
                 <div>
                   <h2 className="text-xl font-semibold">Historik</h2>
+                </div>
+
+                <div className="relative w-full lg:w-[320px]">
+                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+
+                  <Input
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    placeholder="Sök kund, telefon, datum..."
+                    className="pl-9"
+                  />
+                </div>
+
+                <div className="flex gap-2">
+                  <Button onClick={() => setDateFilter(undefined)}>All</Button>
+                  <Button onClick={() => setDateFilter(today)}>Today</Button>
+                  <Button onClick={() => setDateFilter("2026-06-26")}>Custom day</Button>
+                </div>
+
+                <div className="flex gap-2 flex-wrap">
+                  <Button onClick={() => setServiceFilter(undefined)}>
+                    All services
+                  </Button>
+
+                  {servicesData.map((s) => (
+                    <Button
+                      key={s.id}
+                      onClick={() => setServiceFilter(s.id)}
+                      variant={serviceFilter === s.id ? "default" : "outline"}
+                    >
+                      {s.name}
+                    </Button>
+                  ))}
                 </div>
 
                 {loading ? (
