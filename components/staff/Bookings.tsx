@@ -150,7 +150,7 @@ const Bookings = ({ page }: { page: string }) => {
       .eq("business_id", user.business_id)
       .eq("day_of_week", weekday)
       .order("day_of_week", {ascending: true})
-      .single()
+      .maybeSingle()
 
     if (error) {
       console.error(error)
@@ -338,12 +338,15 @@ const Bookings = ({ page }: { page: string }) => {
     
     const init = async () => {
       setLoading(true)
-      //await Promise.all([fetchAll(), fetchToday(), fetchFuture(), fetchPassed(), fetchHours()])
-      await Promise.all([fetchAll(), fetchHours()])
-      //fetchAllBookings()
-      setLoading(false)
-    }
-
+      try {
+        await Promise.all([fetchAll(), fetchHours()])
+      } catch (error) {
+        console.error("Init failed:", error)
+      } finally {
+        setLoading(false)
+      }
+     }
+ 
     init()
 
     const channel = supabase
