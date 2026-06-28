@@ -119,7 +119,7 @@ export default async function ContactPage() {
                 {socials.map((social, idx) => (
                   <a
                     key={idx}
-                    href={social.url}
+                    href={`https://${social.url}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center gap-2 px-4 py-3 rounded-xl border bg-card text-muted-foreground hover:text-highlight hover:border-highlight/40 transition-all shadow-sm font-medium text-sm"
