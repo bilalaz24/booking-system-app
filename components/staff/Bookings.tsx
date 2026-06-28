@@ -7,7 +7,7 @@ import { Item, ItemActions, ItemContent, ItemTitle } from '../ui/item'
 import { Button } from '../ui/button'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card'
-import { CalendarCheck, CalendarDays, CalendarIcon, CalendarX, CheckCircle2, Clock3, Loader2, Search, XCircle } from 'lucide-react'
+import { CalendarCheck, CalendarDays, CalendarIcon, CalendarX, CheckCircle2, Clock, Clock3, Loader2, Search, XCircle } from 'lucide-react'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '../ui/dropdown-menu'
 import { completeBooking, missedBooking } from '@/lib/actions/staffBookings'
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
@@ -784,72 +784,78 @@ const Bookings = ({ page }: { page: string }) => {
                       ))}
                     </div>
 
-                      <div className="grid grid-cols-7 gap-[6px] sm:gap-2">
-                        {Array.from({ length: totalCells }).map((_, i) => {
-                          const dayIndex = i - startDay + 1
+                    <div className="grid grid-cols-7 gap-[4px] sm:gap-1 lg:gap-1.5">
+                      {Array.from({ length: totalCells }).map((_, i) => {
+                        const dayIndex = i - startDay + 1
 
-                          if (dayIndex < 1 || dayIndex > daysInMonth) {
-                            return <div key={i} />
-                          }
+                        if (dayIndex < 1 || dayIndex > daysInMonth) {
+                          return <div key={i} />
+                        }
 
-                          const date = new Date(
-                            monthStart.getFullYear(),
-                            monthStart.getMonth(),
-                            dayIndex
-                          )
+                        const date = new Date(
+                          monthStart.getFullYear(),
+                          monthStart.getMonth(),
+                          dayIndex
+                        )
 
-                          const dateStr = `${date.getFullYear()}-${String(
-                            date.getMonth() + 1
-                          ).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`
+                        const dateStr = `${date.getFullYear()}-${String(
+                          date.getMonth() + 1
+                        ).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`
 
-                          const count = bookingCountByDate[dateStr] || 0
+                        const count = bookingCountByDate[dateStr] || 0
 
-                          const isToday =
-                            dateStr ===
-                            `${new Date().getFullYear()}-${String(
-                              new Date().getMonth() + 1
-                            ).padStart(2, "0")}-${String(new Date().getDate()).padStart(2, "0")}`
+                        const isToday =
+                          dateStr ===
+                          `${new Date().getFullYear()}-${String(
+                            new Date().getMonth() + 1
+                          ).padStart(2, "0")}-${String(new Date().getDate()).padStart(2, "0")}`
 
-                          return (
+                        return (
+                          <div
+                            key={i}
+                            className={`
+                              aspect-square rounded-md border
+                              p-[4px] sm:p-1 lg:p-1.5
+                              flex flex-col justify-between
+                              transition
+                              ${isToday ? "ring-1 ring-primary" : ""}
+                              ${
+                                count === 0
+                                  ? "bg-background border-muted"
+                                  : count <= 2
+                                  ? "bg-primary/5 border-primary/20"
+                                  : count <= 5
+                                  ? "bg-primary/10 border-primary/30"
+                                  : "bg-primary/20 border-primary/40"
+                              }
+                            `}
+                          >
+                            {/* DAY NUMBER (BIGGER + CLEARER) */}
                             <div
-                              key={i}
                               className={`
-                                aspect-square rounded-md border
-                                p-[4px] sm:p-2
-                                flex flex-col justify-between
-                                transition
-                                ${isToday ? "ring-2 ring-primary" : ""}
-                                ${
-                                  count === 0
-                                    ? "bg-background border-muted"
-                                    : count <= 2
-                                    ? "bg-primary/5 border-primary/20"
-                                    : count <= 5
-                                    ? "bg-primary/10 border-primary/30"
-                                    : "bg-primary/20 border-primary/40"
-                                }
+                                text-xs sm:text-sm lg:text-xl font-semibold
+                                ${isToday ? "text-primary" : "text-foreground"}
                               `}
                             >
-                              {/* DAY NUMBER */}
-                              <div className="text-[11px] sm:text-sm font-medium text-muted-foreground">
-                                {dayIndex}
-                              </div>
-
-                              {/* BOOKING INDICATOR */}
-                              <div className="flex items-end justify-end">
-                                {count > 0 ? (
-                                  <div className="text-[10px] sm:text-xs font-semibold text-primary leading-none">
-                                    {count}
-                                  </div>
-                                ) : (
-                                  <div className="h-1 w-1 rounded-full bg-muted-foreground/30" />
-                                )}
-                              </div>
+                              {dayIndex}
                             </div>
-                          )
-                        })}
-                      </div>
 
+                            {/* BOOKING COUNT (REAL BADGE NOW) */}
+                            <div className="flex items-end justify-end">
+                              {count > 0 ? (
+                                <div className="text-[8px] sm:text-xs font-bold px-1.5 py-[1px] rounded-md bg-primary text-primary-foreground">
+                                  {count}
+                                </div>
+                              ) : (
+                                <div className="text-[10px] text-muted-foreground font-medium">
+                                  <div className="h-1.5 w-1.5 rounded-full bg-muted-foreground/40" />
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        )
+                      })}
+                    </div>
                   </div>
                 ))}
 
