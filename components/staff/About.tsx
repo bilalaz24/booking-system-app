@@ -12,7 +12,7 @@ import { Field, FieldError, FieldLabel } from "../ui/field"
 
 import Loader from "../Loader"
 import { toast } from "sonner"
-import { Plus, Trash2 } from "lucide-react"
+import { Plus, Save, Trash2 } from "lucide-react"
 
 import { aboutSchema, AboutFormValues } from "@/app/schemas/about_page"
 import { createClient } from "@/lib/supabase/client"
@@ -253,15 +253,18 @@ const SettingsAbout = () => {
         </Card>
 
         {/* SAVE */}
-        <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? (
-            <div className="flex items-center gap-2">
-              <Loader />
-              Sparar...
-            </div>
-          ) : (
-            "Spara ändringar"
-          )}
+        <Button type="submit" disabled={isSubmitting} className="w-full sm:w-auto px-5">
+            {isSubmitting ? (
+                <div className="flex items-center gap-x-2">
+                <Loader />
+                <span>Sparar...</span>
+                </div>
+            ) : (
+                <div className="flex items-center gap-x-2">
+                <Save className="h-4 w-4" />
+                <span>Spara ändringar</span>
+                </div>
+            )}
         </Button>
 
       </form>

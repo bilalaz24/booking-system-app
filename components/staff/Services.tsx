@@ -13,7 +13,7 @@ import { Controller, useFieldArray, useForm } from "react-hook-form"
 import { zodResolver } from '@hookform/resolvers/zod'
 import Loader from '../Loader'
 import { createClient } from '@/lib/supabase/client'
-import { Plus } from 'lucide-react'
+import { Plus, Save } from 'lucide-react'
 import { updateServices } from '@/lib/actions/staffServices'
 import { toast } from 'sonner'
 import { useStaffUser } from '../providers/StaffUserProvider'
@@ -248,18 +248,18 @@ const Services = () => {
                 <Plus /> Lägg till tjänst
                 </Button>
 
-                <Button
-                type="submit"
-                disabled={isSubmitting}
-                >
-                {isSubmitting ? (
-                    <div className="flex items-center gap-2">
-                    <Loader />
-                    <span>Sparar...</span>
-                    </div>
-                ) : (
-                    "Spara ändringar"
-                )}
+                <Button type="submit" disabled={isSubmitting} className="w-full sm:w-auto px-5">
+                    {isSubmitting ? (
+                        <div className="flex items-center gap-x-2">
+                        <Loader />
+                        <span>Sparar...</span>
+                        </div>
+                    ) : (
+                        <div className="flex items-center gap-x-2">
+                        <Save className="h-4 w-4" />
+                        <span>Spara ändringar</span>
+                        </div>
+                    )}
                 </Button>
             </form>
         </div>

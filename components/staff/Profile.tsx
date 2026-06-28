@@ -17,6 +17,7 @@ import { updateBusiness } from "@/lib/actions/staffBusiness"
 import { toast } from "sonner"
 import { useStaffUser } from "../providers/StaffUserProvider"
 import { Business, BusinessSettings } from "@/lib/types"
+import { Save } from "lucide-react"
 
 const Profile = () => {
     const supabase = createClient()
@@ -269,14 +270,18 @@ const Profile = () => {
 
                 </CardContent>
             </Card>
-
-            <Button className="w-full sm:w-auto" type='submit' disabled={isSubmitting}>
-                {
-                    isSubmitting ? (
-                        <div className='flex justify-center items-center gap-x-1'>
-                            <Loader /><p>Sparar</p>
-                        </div>) : "Spara ändringar"
-                }
+            <Button type="submit" disabled={isSubmitting} className="w-full sm:w-auto px-5">
+                {isSubmitting ? (
+                    <div className="flex items-center gap-x-2">
+                    <Loader />
+                    <span>Sparar...</span>
+                    </div>
+                ) : (
+                    <div className="flex items-center gap-x-2">
+                    <Save className="h-4 w-4" />
+                    <span>Spara ändringar</span>
+                    </div>
+                )}
             </Button>
         </form>
 

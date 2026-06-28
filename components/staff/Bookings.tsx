@@ -195,7 +195,7 @@ const Bookings = ({ page }: { page: string }) => {
 
   const today = new Date().toISOString().split("T")[0]
   const weekday = (new Date().getDay() + 6) % 7
-  //const today = "2026-06-24"
+  //const today = "2026-06-30"
 
   const fetchHours = async () => {
     const { data, error } = await supabase
